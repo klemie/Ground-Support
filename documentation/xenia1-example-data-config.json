@@ -1,0 +1,65 @@
+{
+    "magpi": {
+        "acceleration": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "range": {
+            "acceleration": [0, 19]
+        }
+    },
+    "airbrakes": {
+        "percentOpen": 0,
+        "pot": 0,
+        "steps": 0
+    },
+    "strainGauges": {
+        "hx711s": []
+    },
+    "adx": {
+        "acceleration": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },        
+        "range": {
+            "acceleration": [0, 19]
+        }
+    },
+    "lsm": {
+        "temperature": 0,
+        "acceleration": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "gyroscope": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "magnetometer": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },        
+        "range": {
+            "acceleration": [0, 19],
+            "magnetometer": [-20, 50],
+            "gyroscope": [-30, 30]
+        }
+    },
+    "bme": {
+        "humidity": 0,
+        "temperature": 0,
+        "pressure": 0,
+        "altitude": 0,
+        "range": {
+            "humidity": [0, 200],
+            "pressure": [0, 3000],
+            "temperature": [-30, 30],
+            "altitude": [0, 10000]
+        }
+    }
+}
