@@ -42,7 +42,7 @@ To do this run
 
 
 ```bash
-npm install && cd client npm install
+npm install && cd client && npm install
 ```
 
 This will install and update all dependencies
