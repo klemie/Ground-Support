@@ -4,10 +4,12 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "watch": "babel-watch -L src/index.js"
+    "watch": "babel-watch -L src/index.js",
+    "devStart": "nodemon src/index.js"
   },
   "devDependencies": {
-    "babel-watch": "^7.7.0"
+    "babel-watch": "^7.7.0",
+    "nodemon": "^2.0.20"
   },
   "dependencies": {
     "@babel/core": "^7.20.2",
