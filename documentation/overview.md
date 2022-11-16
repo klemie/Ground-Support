@@ -39,9 +39,11 @@ _Not necessary for MVP_
 
 Go to there website and install ... (finish once docker is up and runner on local instance)
 
-**MongoDB**
+**MongoDB Atlas**
 
+We will be cloud hosting for our development environment. Our database will be hosted by MongoDB itself on MongoDB Atlas. 
 
+First go to [Atlas sign in](https://account.mongodb.com/account/login) and sign up for an account.
 
 #### Dev Environment Setup
 
@@ -65,17 +67,75 @@ This will install and update all dependencies
 
 **Create Database**
 
-To use the app you must first create a local database for your environment to do this
+To use the app you must first create a local database for your environment to do this go to mongoBD Atlas and create a new dataBase.
 
-You can startup the backend by 
+<p align="center">
+    <img src="./assets/Create%20a%20database.png" width="300"/>
+</p>
 
-```bash
-yarn watch ... (finish after MVP)
+Select the free option
+
+<p align="center">
+    <img src="./assets/select-free-database.png" width="300"/>
+</p>
+
+Select the AWS hosting service with a North american Server. And Name your cluster `GroundSupport`
+
+Create an Admin User with the credentials
+> Username: SupportAdmin
+
+> Password: UVR2015
+
+<p align="center">
+    <img src="./assets/admin-user-creation.png" width=300/>
+</p>
+
+**Network Access**
+
+In Here you can setup which IP adresses can access your database. For now click add new IP address and select `add current ip address` button. 
+
+⚠️ Do not click allow access anywhere. That is reserved for he production version.
+
+<p align="center">
+    <img src="./assets/add-new-ip.png" width=300/>
+</p>
+
+Next click on the database tab on the left and click the `Connect` button for the `GroundSupport` database.
+
+A popup will appear, click `connect your application`. This will give you a **Connection String**. All connection strings are different.
+
+<p align="center">
+    <img src="./assets/connect-database.png" width=300/>
+</p>
+
+Paste that in `./services/server-service/src/index.js` on line 5
+
+```ts
+mongoose.connect("{here}");
 ```
 
-The frontend can be started through
+***
+
+Depending on what type of development your doing you can either transpile just the backend, just the frontend or both concurrently.
+
+
+**Backend**
+
+`Note` Navigate to services/server-service
+```bash
+npm devStart
+```
+**Frontend**
+
+`Note` Navigate to client/src
+
 ```bash
 npm start
+```
+
+**Both**
+```bash
+npm
 ```
 ### Non-technical installation
 

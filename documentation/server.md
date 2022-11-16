@@ -46,18 +46,22 @@ export const EntityName = mongoose.model("entity", entitySchema);
 ```
 `Convention`  All _Entities_ are in Pascal Case (capital Fist letter)
 
-When calling entities only use `Entity.findById().save()` so the validator will run on it. 
+⚠️ When calling entities only use `Entity.findById().save()` so the validator will run on it. 
 
 **Updating Entities**
 
 ## Server Backend
 
-Entity's from the database are updated to the database through mongoose queries, the private API or the public API.
+Entity's from the database are updated to the database through mongoose queries, the private API or the public API. The preferred method for private (in app) communication between the server and is ...
 
 ## Telemetry
 
-The Telemetry Service is an iteration of UVic Rocketry's [groundstation](https://github.com/UVicRocketry/groundstation) proof of concept.
+The Telemetry Service is an iteration of UVic Rocketry's [groundstation](https://github.com/UVicRocketry/groundstation) proof of concept. Based on a deep dive into the 
 
 ### Decoding 
 
+To be filled in by the person who takes on
+
 ### Receiving
+
+To be filled in by the person who takes on 

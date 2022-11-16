@@ -1,13 +1,15 @@
 import mongoose from "mongoose";
+// import entities below
 import ExampleEntity from "./schemas/exampleSchema";
 
-mongoose.connect("mongodb://loacalhost/testdb",
+mongoose.connect("mongodb://loacalhost/GroundSupport",
     () => {
         console.log("Connect to Database")
     },
     err => console.error(err)
 );
-saveEntity();
+
+createEntity();
 async function createEntity() {
     // const exampleEntity = new ExampleEntity({ name: "101", exampleNumber: 43 });
     // await exampleEntity.save();
