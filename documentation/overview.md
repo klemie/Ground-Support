@@ -33,6 +33,13 @@ If they don't give you errors then installation of node was successful.
 npm install yarn
 ```
 
+**Python**
+
+Go to [python](https://www.python.org/downloads/release/python-3100/) and install python 3.10
+
+```bash
+```
+
 **Docker**
 
 _Not necessary for MVP_
@@ -116,27 +123,36 @@ mongoose.connect("{here}");
 
 ***
 
-Depending on what type of development your doing you can either transpile just the backend, just the frontend or both concurrently.
+Depending on what type of development your doing you can either transpile just the backend, the frontend or both concurrently.
 
 
 **Backend**
 
-`Note` Navigate to services/server-service
+`Navigate` to ./services/server-service
 ```bash
 npm devStart
 ```
 **Frontend**
 
-`Note` Navigate to client/src
+`Navigate` to ./client/src
 
 ```bash
 npm start
 ```
 
 **Both**
+
+`Navigate` to ./client/src
 ```bash
-npm
+npm both
 ```
+
+**Telemetry Backend**
+
+```bash
+python3 ...(finish when setup)
+```
+
 ### Non-technical installation
 
 download the newest release ... (update when there is a release)
