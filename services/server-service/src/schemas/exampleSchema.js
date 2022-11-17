@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const NestedSchema = new mongoose.Schema({
     Name: String,
@@ -7,7 +7,7 @@ const NestedSchema = new mongoose.Schema({
 
 // Validation only runs on create or save 
 
-export const ExampleSchema = new mongoose.Schema({
+const ExampleSchema = new mongoose.Schema({
     Name: {
         type: String, 
         required: true,
@@ -32,4 +32,6 @@ export const ExampleSchema = new mongoose.Schema({
     Nested: NestedSchema
 });
 
-export const ExampleEntity = mongoose.model("example", ExampleSchema);
+const ExampleEntity = mongoose.model("example", ExampleSchema);
+
+exports = ExampleEntity;

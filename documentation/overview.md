@@ -130,7 +130,7 @@ Depending on what type of development your doing you can either transpile just t
 
 `Navigate` to ./services/server-service
 ```bash
-npm devStart
+npm run devStart
 ```
 **Frontend**
 
@@ -144,7 +144,7 @@ npm start
 
 `Navigate` to ./client/src
 ```bash
-npm both
+npm run both
 ```
 
 **Telemetry Backend**
