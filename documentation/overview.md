@@ -35,7 +35,7 @@ npm install yarn
 
 **Python**
 
-Go to [python](https://www.python.org/downloads/release/python-3100/) and install python 3.10
+Go to [python](https://www.python.org/downloads/release/python-3100/) and install python >3.9
 
 ```bash
 ```
