@@ -4,6 +4,6 @@
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.12",
-    "concurrently": "^7.5.0"
+    "concurrently": "^7.5.0 "
   }
 }
