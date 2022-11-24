@@ -7,13 +7,14 @@ import UtilitiesView from "../views/utilities-view";
 import ModulesView from "../views/modules-view";
 
 function App() {
+  // useState for currentView
   return (
     <div className="App">
       <Grid container spacing={2} direction="row">
         {/* Any views should be rendered within this grid item */}
         <Grid item xs={10}>
-          <TelemetryView />
-          {/* <ModulesView /> */}
+          {/* <TelemetryView /> */}
+          <ModulesView />
         </Grid>
 
         {/* This grid to the right is reserved for Settings, Stepper (page changes), and End Mission button */}
