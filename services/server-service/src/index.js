@@ -1,9 +1,9 @@
-// const mongoose = require("mongoose");
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
+// import mongoose from "mongoose";
 
 // Only change the connection String
 mongoose.connect(
-    "mongodb+srv://SupportAdmin:UVR215@groundsupport.aiw5o28.mongodb.net/?retryWrites=true&w=majority",
+    process.env.CONNECTION_STRING,
     () => {
         console.log("Connect to Database")
     },
