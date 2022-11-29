@@ -3,7 +3,11 @@ import { Stepper, Step, StepButton, StepLabel } from "@mui/material";
 
 const steps = ["Telemetry View", "Module View", "Another View"];
 
-export default function VerticalStepper() {
+interface VerticalStepperProps {
+  currentStep?: String;
+}
+
+const VerticalStepper: React.FC<VerticalStepperProps> = (props: VerticalStepperProps) => {
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState<{
     [k: number]: boolean;
@@ -40,10 +44,20 @@ export default function VerticalStepper() {
 
   return (
     <>
-      <Stepper nonLinear activeStep={activeStep} orientation="vertical">
+      <Stepper
+        nonLinear
+        activeStep={activeStep}
+        orientation="vertical"
+      >
         {steps.map((label, index) => (
-          <Step key={label} completed={completed[index]}>
-            <StepButton color="inherit" onClick={handleStep(index)}>
+          <Step
+            key={label}
+            completed={completed[index]}
+          >
+            <StepButton
+              color="inherit"
+              onClick={handleStep(index)}
+            >
               {label}
             </StepButton>
           </Step>
@@ -51,4 +65,6 @@ export default function VerticalStepper() {
       </Stepper>
     </>
   );
-}
+};
+
+export default VerticalStepper;

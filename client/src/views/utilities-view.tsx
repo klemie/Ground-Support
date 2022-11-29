@@ -20,12 +20,16 @@ const UtilitiesView = () => {
 
         {/* Page change stepper */}
         <Grid item>
-          <VerticalStepper />
+          <VerticalStepper currentStep={"Telemetry View"} />
         </Grid>
 
-        {/* TODO: Should terminate terminate all data readings */}
+        {/* TODO: Should terminate all data readings */}
         <Grid item>
-          <Button fullWidth={true} variant="contained" color="error">
+          <Button
+            fullWidth={true}
+            variant="contained"
+            color="error"
+          >
             End Mission
           </Button>
         </Grid>
