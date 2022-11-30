@@ -13,7 +13,4 @@ const Field = new mongoose.Schema({
     Range: [Number]
 });
 
-const FieldModel = mongoose.model("example", Field);
-
-export {};
-module.exports = FieldModel;
+export default mongoose.model("Field", Field);

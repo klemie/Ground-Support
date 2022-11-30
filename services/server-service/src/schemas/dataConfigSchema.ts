@@ -15,4 +15,4 @@ const DataConfig = new mongoose.Schema({
     }
 });
 
-export default mongoose.model("example", DataConfig);
+export default mongoose.model("DataConfig", DataConfig);

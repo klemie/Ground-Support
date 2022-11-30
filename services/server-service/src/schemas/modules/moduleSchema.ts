@@ -14,7 +14,4 @@ const Module = new mongoose.Schema({
     }
 });
 
-const ModuleModel = mongoose.model("example", Module);
-
-export {};
-module.exports = ModuleModel;
+export default mongoose.model("Module", Module);

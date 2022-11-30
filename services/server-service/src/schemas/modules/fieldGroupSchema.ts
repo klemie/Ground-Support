@@ -6,5 +6,4 @@ const FieldGroup = new mongoose.Schema({
     Fields: [Field]
 });
 
-export {};
-module.exports = mongoose.model("example", FieldGroup);
+export default mongoose.model("FieldGroup", FieldGroup);
