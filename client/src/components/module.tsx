@@ -18,7 +18,7 @@ const statusMap = new Map<String, String> ([
 ]);
 
 interface ModuleProps {
-    title?: String,
+    title: String,
     fields: Array<String>
     fieldValues: Array<Number>,
     fieldRanges: Array<Array<Number>>
