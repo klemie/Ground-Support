@@ -4,6 +4,10 @@
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.12",
-    "concurrently": "^7.5.0"
+    "concurrently": "^7.5.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.190"
   }
 }
