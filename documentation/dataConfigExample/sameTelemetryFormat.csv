@@ -1,0 +1,3 @@
+
+BME280_Altitude, BME280_Temperature, BME280_Humidity, BME280_Pressure, LSM9DS1_acceleration_x, LSM9DS1_acceleration_y, LSM9DS1_acceleration_z, LSM9DS1_gyroscope_x, LSM9DS1_gyroscope_y, LSM9DS1_gyroscope_z, LSM9DS1_magnetometer_x, LSM9DS1_magnetometer_y, LSM9DS1_magnetometer_z, ADXL375_acceleration_x, ADXL375_acceleration_y, ADXL375_acceleration_z, MAGP-I_acceleration_x, MAGP-I_acceleration_y, MAGP-I_acceleration_z, Air_Brakes_Percent, Air_Brakes_POT, Air_Brakes_Steps, Strain_Gauge_1, Strain_Gauge_2, Strain_Gauge_3, Strain_Gauge_3, Strain_Gauge_4, Strain_Gauge_5, Strain_Gauge_6, Strain_Gauge_7, Strain_Gauge_8, Strain_Gauge_9, Strain_Gauge_10, Strain_Gauge_11, Strain_Gauge_12, timestamp  
+,,,,,,,,,,,,,,,,
