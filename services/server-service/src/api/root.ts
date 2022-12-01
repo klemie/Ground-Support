@@ -3,8 +3,7 @@ const express = require('express');
 
 //import endpoints here
 const dataConfigs = require('./routes/data-config');
-const missions = require('./routes/mission')
-const base = require('./routes/')
+const missions = require('./routes/mission');
 const server = express();
 
 //middleware
@@ -20,7 +19,12 @@ server.use('/api/missions', missions);
 server.use('/api/dataConfigs', dataConfigs);
 
 server.listen(5000, () => {
-    console.log("listing on port 5000");
+    try {
+        console.log("listing on port 5000");
+    }
+    catch (e) {
+        console.log(e);
+    }
 });
 
 export {};

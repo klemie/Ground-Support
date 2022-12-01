@@ -3,7 +3,7 @@ import * as CoordinatePair from "./coordinatePairSchema";
 import * as DataEntry from "./dataEntry"
 
 const MissionData = new mongoose.Schema({
-    Entries: [DataEntry.schema],
+    Entries: [DataEntry],
     Test: {
         type: Boolean,
         require: true

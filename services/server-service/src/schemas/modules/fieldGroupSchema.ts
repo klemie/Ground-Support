@@ -1,9 +1,25 @@
 import mongoose from "mongoose";
-const Field = require('./fieldSchema');
+
+const FieldValue = new mongoose.Schema({
+    Value: {
+        type: mongoose.SchemaTypes.Decimal128,
+        timestamps: true
+    },
+});
+
+const Field = new mongoose.Schema({
+    Name: String,
+    values: [FieldValue],
+    Range: [Number]
+});
 
 const FieldGroup = new mongoose.Schema({
     Name: String,
-    Fields: [Field]
+    Fields: {
+        type: [Field]
+    } 
 });
 
-export default mongoose.model("FieldGroup", FieldGroup);
+const FieldGroupModel = mongoose.model("FieldGroup", FieldGroup);
+
+export default FieldGroup;

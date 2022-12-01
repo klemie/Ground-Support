@@ -13,4 +13,4 @@ const DataEntry = new mongoose.Schema({
     }
 });
 
-export default mongoose.model("DataEntry", DataEntry);
+export default DataEntry;

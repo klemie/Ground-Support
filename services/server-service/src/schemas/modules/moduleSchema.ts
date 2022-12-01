@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
-import * as FieldGroups from "./fieldGroupSchema";
+import FieldGroup from "./fieldGroupSchema";
 
 const Module = new mongoose.Schema({
     Name: {
         type: String
     },
     FieldGroups: {
-        type: [FieldGroups]
+        type: [FieldGroup]
     },
     Status: {
         type: String,
@@ -14,4 +14,4 @@ const Module = new mongoose.Schema({
     }
 });
 
-export default mongoose.model("Module", Module);
+export default Module;
