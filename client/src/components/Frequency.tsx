@@ -1,34 +1,29 @@
-import React from "react";
-import {
-  Button,
-  TextField,
-  Stack,
-  Typography,
-  Input,
-  InputAdornment,
-  FormGroup,
-  InputLabel,
-} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Button, TextField, Stack, Typography, InputAdornment } from "@mui/material";
 
 interface FrequencyProps {
   value: Number;
+  updateFrequency: Function;
 }
 
 const Frequency: React.FC<FrequencyProps> = (props: FrequencyProps) => {
-  const [value, setValue] = React.useState(props.value);
+  const [value, setValue] = useState(props.value);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     if (data.get("frequency") != "") {
-      console.log("new frequency: " + data.get("frequency"));
       let value = String(data.get("frequency"));
       setValue(parseFloat(value));
     } else {
       console.log("no frequency data was entered");
     }
   };
+
+  useEffect(() => {
+    props.updateFrequency(value);
+  }, [value]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -41,7 +36,6 @@ const Frequency: React.FC<FrequencyProps> = (props: FrequencyProps) => {
 
         <TextField
           variant="outlined"
-          placeholder={"75"}
           name="frequency"
           type="number"
           size="small"
@@ -50,6 +44,7 @@ const Frequency: React.FC<FrequencyProps> = (props: FrequencyProps) => {
           InputProps={{
             endAdornment: <InputAdornment position="end">MHz</InputAdornment>,
           }}
+          defaultValue={value}
         />
 
         <Button
