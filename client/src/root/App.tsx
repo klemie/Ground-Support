@@ -1,31 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
-import Module from '../components/module';
+import React from "react";
+import "./App.css";
+import { Grid } from "@mui/material";
+
+import TelemetryView from "../views/telemetry-view";
+import UtilitiesView from "../views/utilities-view";
 
 function App() {
-  const [randomValues, setRandomValues] = useState([0,0,0]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const a = Math.floor(Math.random() * 60), 
-        b = Math.floor(Math.random() * 60), 
-        c = Math.floor(Math.random() * 60);
-      setRandomValues([a, b, c]);
-      console.log([a, b, c]);
-    }, 10000);
-    return () => clearInterval(interval)
-  }, [])
-
+  // useState for currentView
   return (
     <div className="App">
-      <header className="App-header">
-        <Module 
-          title="ModTitle" 
-          fields={ ["F1", "F2", "F3"] } 
-          fieldValues={ randomValues }
-          fieldRanges= { [[0,50], [0,50], [0,50]] }
-        />
-      </header>
+      <Grid
+        container
+        spacing={2}
+        direction="row"
+      >
+        {/* Any views should be rendered within this grid item */}
+        <Grid
+          item
+          xs={10}
+        >
+          <TelemetryView />
+        </Grid>
+
+        <Grid
+          item
+          xs={2}
+          borderLeft="1px solid"
+        >
+          <UtilitiesView />
+        </Grid>
+      </Grid>
     </div>
   );
 }
