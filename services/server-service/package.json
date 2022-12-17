@@ -1,24 +1,21 @@
 {
-  "name": "server-service",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "scripts": {
-    "watch": "babel-watch -L src/index.js",
-    "server": "nodemon src/index.js",
-    "api": "nodemon src/api/root.ts"
-  },
-  "devDependencies": {
-    "babel-watch": "^7.7.0",
-    "nodemon": "^2.0.20"
-  },
-  "dependencies": {
-    "@babel/core": "^7.20.2",
-    "@babel/polyfill": "^7.12.1",
-    "@babel/preset-env": "^7.20.2",
-    "babel-plugin-module-resolver": "^4.1.0",
-    "dotenv": "^16.0.3",
-    "mongoose": "^6.7.2",
-    "ts-node": "^10.9.1"
-  }
+	"name": "server-service",
+	"version": "1.0.0",
+	"main": "src/server.ts",
+	"license": "MIT",
+	"scripts": {
+		"build": "rm -rf build/ && tsc",
+		"server": "nodemon src/server.ts",
+		"api": "nodemon src/api/root.ts"
+	},
+	"devDependencies": {
+		"dotenv": "^16.0.3",
+		"nodemon": "^2.0.20",
+		"typescript": "^4.9.3"
+	},
+	"dependencies": {
+		"mongoose": "^6.7.2",
+		"ts-node": "^10.9.1",
+		"tsc": "^2.0.4"
+	}
 }
