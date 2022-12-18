@@ -1,1 +1,8 @@
 /node_modules
+yarn.lock
+.json*
+package-lock.json
+package.json
+client/package-lock.json
+client/package.json
+services/server-service/src/index.js

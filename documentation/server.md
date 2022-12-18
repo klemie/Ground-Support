@@ -1,4 +1,4 @@
-# Server Documentation
+# Backend Documentation
 
 ## Architecture
 
