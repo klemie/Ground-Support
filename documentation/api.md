@@ -1,7 +1,11 @@
 # internal API Docs
 
-## Endpoints 
+## Endpoints
 
-### DataConfig 
+### DataConfig
 
 ### Mission
+
+# CLI Logging
+
+## Color Legend
