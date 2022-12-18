@@ -5,17 +5,19 @@
 	"license": "MIT",
 	"scripts": {
 		"build": "rm -rf build/ && tsc",
-		"server": "nodemon src/server.ts",
-		"api": "nodemon src/api/root.ts"
+		"server": "nodemon src/server.ts"
 	},
 	"devDependencies": {
-		"dotenv": "^16.0.3",
-		"nodemon": "^2.0.20",
+		"@types/express": "^4.17.15",
 		"typescript": "^4.9.3"
 	},
 	"dependencies": {
+		"chalk": "^4.1.2",
+		"dotenv": "^16.0.3",
 		"mongoose": "^6.7.2",
+		"nodemon": "^2.0.20",
 		"ts-node": "^10.9.1",
-		"tsc": "^2.0.4"
+		"tsc": "^2.0.4",
+		"typescript": "^4.9.4"
 	}
 }
