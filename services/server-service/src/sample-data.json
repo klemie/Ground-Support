@@ -1,5 +1,5 @@
 [
-    {
+     {
         "module": "BME280",
         "Altitude": [
             { "field": "Altitude", "range": [2 , 3] }
