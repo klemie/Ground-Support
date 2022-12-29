@@ -85,9 +85,9 @@ SERVER_PORT = '';
 
 This will install and update all dependencies and setup the environment variables
 
-**Create Database**
+**Create Database Remote**
 
-To use the app you must first create a local database for your environment to do this go to mongoBD Atlas and create a new dataBase.
+To use the app you must first create a remote database for your environment to do this go to mongoBD Atlas and create a new dataBase.
 
 <p align="center">
     <img src="./assets/Create%20a%20database.png" width="300"/>
@@ -146,6 +146,30 @@ replace with environment variables
 ---
 
 Depending on what type of development your doing you can either transpile just the backend, the frontend or both concurrently.
+
+**Create Database Local**
+
+If you are JJ and scared of Hosting your data you can install a local database for development
+
+To do that you will need mongo DBs data management application `Compass` to get it go to: [Download](https://www.mongodb.com/try/download/community) and install the newest community addition.
+
+Go through the installer. Choose the `Complete` option
+
+<p align="center">
+    <img src="./assets/local-ds-installation.png" width=300/>
+</p>
+
+Copy this Path
+
+<p align="center">
+    <img src="./assets/local-ds-path.png" width=300/>
+</p>
+
+alter the path to `MongoDB/Server/6.0/bin`
+
+Navigate to that path in your favorite terminal
+
+copy connection string into `.env` file
 
 **Backend**
 
