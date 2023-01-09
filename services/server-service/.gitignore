@@ -1,6 +1,5 @@
 # dependencies
 /node_modules
-
-index.js
-
-*.json
+*package-lock.json
+.env
+/index.js
