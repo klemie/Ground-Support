@@ -4,15 +4,26 @@ export interface IMission {
     Name: String;
     IsTest: Boolean;
     LastUpdated: Date;
-
+    Data: [mongoose.ObjectId, mongoose.ObjectId]
 };
 
-export interface IGenericModel extends IGeneric, Document { };
+export interface IMissionModel extends IMission, Document { };
 
-const GenericSchema: Schema = new Schema(
+const MissionSchema: Schema = new Schema(
     {
-        name: {
+        Name: {
             type: String,
+            required: true
+        },
+        IsTest: {
+            type: Boolean,
+            required: true
+        },
+        LastUpdated: {
+            type: Date
+        },
+        Data: {
+            type: [mongoose.ObjectId, mongoose.ObjectId],
             required: true
         }
     },
@@ -22,4 +33,4 @@ const GenericSchema: Schema = new Schema(
     }
 );
 
-export default mongoose.model<IGeneric>('Generic', GenericSchema);
+export default mongoose.model<IMission>('Generic', MissionSchema);

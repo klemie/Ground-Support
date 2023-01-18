@@ -16,7 +16,7 @@ const FieldSchema: Schema = new Schema(
         Range: {
             type: Array<Number>,
             required: true,
-            validator: (r: Number) => {
+            validator: (r: Array<Number>) => {
 
             }
         }
