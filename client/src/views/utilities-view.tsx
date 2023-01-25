@@ -1,8 +1,17 @@
 import React from "react";
 import { Button, Grid } from "@mui/material";
 import VerticalStepper from "../components/VerticalStepper";
+import SettingsDialog from "../components/SettingsDialog";
 
 const UtilitiesView = () => {
+
+  /* For opening and closing the settings dialog:*/
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleOpen = () => {
+    setIsOpen(!isOpen);
+  }
+
   return (
     <>
       <Grid
@@ -15,7 +24,9 @@ const UtilitiesView = () => {
       >
         {/* TODO: Should call a Setting pop up */}
         <Grid item>
-          <Button variant="outlined">Settings</Button>
+          <SettingsDialog isOpen={isOpen} onClose={()=>setIsOpen(false)}/>
+          <Button variant="outlined" onClick={()=>handleOpen()}>Settings</Button>
+          
         </Grid>
 
         {/* Page change stepper */}
