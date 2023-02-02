@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Module from '../components/module';
+import _ from 'lodash';
 
 import { dataConfigParser } from './data-parser';
 import { Typography, Grid } from '@mui/material';
 
 type Field = {
 	fieldName: String;
-	fieldValue: String;
+	fieldValue: Number;
 	fieldRange: Array<Number>;
 }
 
@@ -14,6 +15,7 @@ export default function ModulesView() {
 	const input = require('./sample-data.json');
 	const dataConfig = dataConfigParser(input);
 	debugger;
+	
 
 	const [fieldValues, setFieldValues] = useState();
 
@@ -38,10 +40,12 @@ export default function ModulesView() {
 					});
 					debugger;
 
-					const f: Field = {
+					// const testValue = _.random(module['fieldRanges'][0][0], module['fieldRanges'][0][1])
+
+					const field: Field = {
 						fieldName: module.fields[0],
 						fieldRange: module.fieldRanges[0],
-						fieldValue: Math.random(module['fieldRanges'][0][0], module['fieldRanges'][0][1]).toFixed(4)
+						fieldValue: 1
 					};
 
 					return (
@@ -53,7 +57,7 @@ export default function ModulesView() {
 							<Module 
 								key={'module-' + module['module']} 
 								title={module['module'] || 'Title'} 
-								fields={f} 
+								fields={field} 
 							/>
 						</Grid>
 					);
