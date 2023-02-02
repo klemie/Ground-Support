@@ -1,5 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Card, Chip, TextField, CardContent, Divider, CardHeader, Grid } from '@mui/material';
+import { 
+	Card, 
+	Chip, 
+	TextField, 
+	CardContent, 
+	Divider, 
+	CardHeader, 
+	Tooltip,
+	Grid
+} from '@mui/material';
 import { Stack } from '@mui/system';
 import _ from 'lodash';
 
@@ -10,34 +19,38 @@ const statusMap = new Map<String, String>([
 	['Sus', '#C6232C']
 ]);
 
+interface Field {
+	fieldName: String;
+	fieldValue: String;
+	fieldRange: [ Number, Number ];
+}
+
 interface ModuleProps {
 	title: String;
-	fields: Array<String>;
-	fieldValues: Array<Number>;
-	fieldRanges: Array<Array<Number>>;
+	fields: Array<Field>;
 }
 
 const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 	const [statusColor, setStatusColor] = useState(statusMap.get('Inactive'));
 	const [status, setStatus] = useState('Inactive');
 
-	useEffect(() => {
-		for (const i in props.fieldValues) {
-			const v = props.fieldValues;
-			const r = props.fieldRanges;
-			if (v[i] > r[i][1] || v[i] < r[i][0]) {
-				setStatusColor(statusMap.get('Sus'));
-				setStatus('Failed');
-				return;
-			} else if (v[i] == 0) {
-				setStatusColor(statusMap.get('Inactive'));
-				setStatus('Inactive');
-			} else {
-				setStatusColor(statusMap.get('Active'));
-				setStatus('Active');
-			}
-		}
-	}, [props.fieldValues]);
+	// useEffect(() => {
+	// 	for (const i in props.fieldValues) {
+	// 		const v = props.fieldValues;
+	// 		const r = props.fieldRanges;
+	// 		if (v[i] > r[i][1] || v[i] < r[i][0]) {
+	// 			setStatusColor(statusMap.get('Sus'));
+	// 			setStatus('Failed');
+	// 			return;
+	// 		} else if (v[i] == 0) {
+	// 			setStatusColor(statusMap.get('Inactive'));
+	// 			setStatus('Inactive');
+	// 		} else {
+	// 			setStatusColor(statusMap.get('Active'));
+	// 			setStatus('Active');
+	// 		}
+	// 	}
+	// }, [props.fieldValues]);
 
 	/* ----------
 	with the code below I was trying to push group of 3 Modules into an array of fieldGrid 
@@ -58,22 +71,52 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 	// }
 	 ------ */
 
+	const fieldsGrid = _.chunk(props.fields, 3);
+	
+	useEffect(() => {
+		console.log(fieldsGrid);
+	}, []);
+
 	return (
 		<>
 			<Card variant="outlined">
 				<CardContent>
 					<CardHeader title={props.title || 'Default'} />
-					<Stack spacing={3}>
-						<Divider />
+					<Divider variant="fullWidth" sx={{ mb: 2 }} />
 
+					<Stack spacing={3} direction="row">
 						{props.fields.map((fieldName, i) => {
-							return <TextField key={i} id="value-text-field" label={fieldName} value={props.fieldValues[i]} defaultValue="Value"></TextField>;
+							return (
+								<Stack direction="column">
+									<Tooltip title={fieldName} placement="bottom">
+										<TextField 
+											key={i} 
+											id="value-text-field" 
+											label={fieldName} 
+											value={props.fieldValues[i]} 
+											defaultValue="Value" 
+											sx= {{
+												"min-width": 100,
+												input: {
+													textAlign: "center"
+												}
+											}}
+										/>
+									</Tooltip>
+								</Stack>
+							);
 						})}
-
-						<Divider />
-
-						<Chip color="primary" style={{ backgroundColor: String(statusColor) }} label={status} />
 					</Stack>
+
+					<Divider 
+						variant="fullWidth" 
+						sx={{ my: 2 }} 
+					/>
+					<Chip 
+						color="primary" 
+						style={{ backgroundColor: String(statusColor) }} 
+						label={status} 
+					/>
 				</CardContent>
 			</Card>
 		</>

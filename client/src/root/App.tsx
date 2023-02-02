@@ -17,7 +17,7 @@ function App() {
 					<ModulesView />
 				</Grid>
 
-				<Grid item xs={2} borderLeft="1px solid">
+				<Grid item xs={2}>
 					<UtilitiesView />
 				</Grid>
 			</Grid>
