@@ -6,8 +6,7 @@ import {
 	CardContent, 
 	Divider, 
 	CardHeader, 
-	Tooltip,
-	Grid
+	Tooltip
 } from '@mui/material';
 import { Stack } from '@mui/system';
 import _ from 'lodash';
@@ -19,10 +18,11 @@ const statusMap = new Map<String, String>([
 	['Sus', '#C6232C']
 ]);
 
-interface Field {
+export interface Field {
+	module?: String;
 	fieldName: String;
-	fieldValue: String;
-	fieldRange: [ Number, Number ];
+	fieldRange: Array<Number>;
+	fieldValue: Number;
 }
 
 interface ModuleProps {
@@ -71,42 +71,48 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 	// }
 	 ------ */
 
-	const fieldsGrid = _.chunk(props.fields, 3);
+	const fieldsMatrix = _.chunk(props.fields, 3);
 	
 	useEffect(() => {
-		console.log(fieldsGrid);
+		console.log(fieldsMatrix);
 	}, []);
-
+	
 	return (
 		<>
 			<Card variant="outlined">
-				<CardContent>
-					<CardHeader title={props.title || 'Default'} />
+				<CardHeader title={props.title || 'Default'} titleTypographyProps={{ variant: 'subtitle1' }} sx={{ padding: 2 }} />
+				<CardContent sx={{ paddingBlockStart: 0, paddingBlockEnd: 0 }}>
 					<Divider variant="fullWidth" sx={{ mb: 2 }} />
 
-					<Stack spacing={3} direction="row">
-						{fieldsGrid.map((chunk: Array<any>) => {
-							chunk.map((fieldName, i) => {
-								return (
-									<Stack direction="column">
-										<Tooltip title={fieldName} placement="bottom">
-											<TextField 
-												key={i} 
-												id="value-text-field" 
-												label={fieldName} 
-												value={props.fields[i]} 
-												defaultValue="Value" 
-												sx= {{
-													"min-width": 100,
-													input: {
-														textAlign: "center"
-													}
-												}}
-											/>
-										</Tooltip>
-									</Stack>
-								);
-							})
+					<Stack spacing={3} direction="row" justifyContent="center">
+						{fieldsMatrix.map((cols: Array<any>) => {
+							return ( 
+								<Stack spacing={3} direction="column" alignItems="center"> {
+									cols.map((field, i) => {
+										return (
+											<Tooltip key={i} title={field.fieldName} placement="bottom">
+												<TextField
+													key={i} 
+													id="value-text-field"
+													size="small" 
+													label={field.fieldName} 
+													value={field.fieldValue} 
+													defaultValue="NaNa" 
+													fullWidth
+													sx= {{
+														"min-width": 100,
+														"max-width": 150,
+														input: {
+															textAlign: "center"
+														}
+													}}
+												/>
+											</Tooltip>
+										)
+									})
+								}
+								</Stack>
+							)
 						})}
 					</Stack>
 
