@@ -17,8 +17,6 @@ export default function ModulesView() {
 
 	const [fieldValues, setFieldValues] = useState();
 
-
-
 	return (
 		<>
 			<Typography
@@ -41,12 +39,10 @@ export default function ModulesView() {
 					debugger;
 
 					const f: Field = {
-						fiedldName: module.fields[0],
+						fieldName: module.fields[0],
 						fieldRange: module.fieldRanges[0],
-						fieldValue: testValues
+						fieldValue: Math.random(module['fieldRanges'][0][0], module['fieldRanges'][0][1]).toFixed(4)
 					};
-				
-
 
 					return (
 						<Grid 
@@ -57,8 +53,7 @@ export default function ModulesView() {
 							<Module 
 								key={'module-' + module['module']} 
 								title={module['module'] || 'Title'} 
-								fields={m} 
-				
+								fields={f} 
 							/>
 						</Grid>
 					);

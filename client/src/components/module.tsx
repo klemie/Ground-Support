@@ -85,26 +85,28 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 					<Divider variant="fullWidth" sx={{ mb: 2 }} />
 
 					<Stack spacing={3} direction="row">
-						{props.fields.map((fieldName, i) => {
-							return (
-								<Stack direction="column">
-									<Tooltip title={fieldName} placement="bottom">
-										<TextField 
-											key={i} 
-											id="value-text-field" 
-											label={fieldName} 
-											value={props.fieldValues[i]} 
-											defaultValue="Value" 
-											sx= {{
-												"min-width": 100,
-												input: {
-													textAlign: "center"
-												}
-											}}
-										/>
-									</Tooltip>
-								</Stack>
-							);
+						{fieldsGrid.map((chunk: Array<any>) => {
+							chunk.map((fieldName, i) => {
+								return (
+									<Stack direction="column">
+										<Tooltip title={fieldName} placement="bottom">
+											<TextField 
+												key={i} 
+												id="value-text-field" 
+												label={fieldName} 
+												value={props.fields[i]} 
+												defaultValue="Value" 
+												sx= {{
+													"min-width": 100,
+													input: {
+														textAlign: "center"
+													}
+												}}
+											/>
+										</Tooltip>
+									</Stack>
+								);
+							})
 						})}
 					</Stack>
 
