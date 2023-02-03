@@ -11,7 +11,7 @@ import {
 import { Stack } from '@mui/system';
 import _ from 'lodash';
 
-const statusMap = new Map<String, String>([
+const statusMap = new Map<string, string>([
 	['Inactive', '#FCB701'],
 	['Active', '#65C464'],
 	['Default', 'grey'],
@@ -19,14 +19,14 @@ const statusMap = new Map<String, String>([
 ]);
 
 export interface Field {
-	module?: String;
-	fieldName: String;
+	module?: string;
+	fieldName: string;
 	fieldRange: Array<number>;
 	fieldValue: number;
 }
 
 interface ModuleProps {
-	title: String;
+	title: string;
 	fields: Array<Field>;
 }
 
@@ -35,11 +35,11 @@ const computeStatuses = (fields?: Array<Field>) => {
 	let status: string = 'Inactive';
 	fields?.forEach((field) => {
 		if (_.inRange(field.fieldValue, field.fieldRange[0], field.fieldRange[1])) {
-			status = 'Failed';
+			status = 'Active';
 		} else if (field.fieldValue == 0) {
 			status = 'Inactive';
 		} else {
-			status = 'Active';
+			status = 'Failed';
 		}
 		statuses.push(status);
 	});
@@ -54,8 +54,8 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 		const statuses = computeStatuses(props.fields);
 		statuses.forEach((st) => {
 			setStatus(st);
-			setStatusColor(st);
-		})
+			setStatusColor(statusMap.get(st));
+		}); // currently only the final field controls the whole status of the module
 	}, [props.fields]);
 
 	const fieldsMatrix = _.chunk(props.fields, 3);
@@ -63,16 +63,35 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 	return (
 		<>
 			<Card variant="outlined">
-				<CardHeader title={props.title || 'Default'} titleTypographyProps={{ variant: 'subtitle1' }} sx={{ padding: 2 }} />
+				<CardHeader 
+					title={props.title || 'Default'} 
+					titleTypographyProps={{ variant: 'subtitle1' }} 
+					sx={{ padding: 2 }} 
+				/>
 				<CardContent sx={{ paddingBlockStart: 0, paddingBlockEnd: 0 }}>
+
 					<Divider variant="fullWidth" sx={{ mb: 2 }} />
-					<Stack spacing={3} direction="row" justifyContent="center">
+
+					<Stack 
+						spacing={3} 
+						direction="row" 
+						justifyContent="center"
+					>
 						{fieldsMatrix.map((cols: Array<any>) => {
 							return ( 
-								<Stack spacing={3} direction="column" alignItems="center"> {
+								<Stack 
+									spacing={3} 
+									direction="column" 
+									alignItems="center"
+								> 
+								{
 									cols.map((field, i) => {
 										return (
-											<Tooltip key={i} title={field.fieldName} placement="bottom">
+											<Tooltip 
+												key={i} 
+												title={field.fieldName} 
+												placement="bottom"
+											>
 												<TextField
 													key={i} 
 													id="value-text-field"
@@ -98,10 +117,8 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 						})}
 					</Stack>
 
-					<Divider 
-						variant="fullWidth" 
-						sx={{ my: 2 }} 
-					/>
+					<Divider variant="fullWidth" sx={{ my: 2 }} />
+
 					<Chip 
 						color="primary" 
 						style={{ backgroundColor: String(statusColor) }} 

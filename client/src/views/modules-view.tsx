@@ -8,24 +8,22 @@ import { Typography, Grid } from '@mui/material';
 export default function ModulesView() {
 	const input = require('./sample-data.json');
 	const dataConfig = dataConfigParser(input);
-	
+	const [fieldValues, setFieldValues] = useState();
+
 	const formattedModules = dataConfig.map((module) => {
-		let mo = [];
+		let fields = [];
 		for (let index in module.fields) {
 			const [min, max] = module.fieldRanges[index];
-			debugger;
 			const field: Field = {
 				module: module.module,
 				fieldName: module.fields[index],
 				fieldRange: module.fieldRanges[index],
 				fieldValue: _.round(_.random(min, max, true), 3)
 			};
-			mo.push(field);
+			fields.push(field);
 		}
-		return mo;
+		return fields;
 	});
-
-	const [fieldValues, setFieldValues] = useState();
 
 	return (
 		<>

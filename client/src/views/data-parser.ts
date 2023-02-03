@@ -1,7 +1,7 @@
 interface Module {
-	module?: String;
-	fields: Array<String>;
-	fieldRanges: Array<Array<Number>>;
+	module?: string;
+	fields: Array<string>;
+	fieldRanges: Array<Array<number>>;
 }
 
 export const dataConfigParser = (file: any) => {
@@ -10,8 +10,8 @@ export const dataConfigParser = (file: any) => {
 		const fieldNames = Object.keys(moduleItem);
 		fieldNames.shift();
 
-		let fields = [] as String[];
-		let fieldRanges = [] as Number[][];
+		let fields = [] as string[];
+		let fieldRanges = [] as number[][];
 
 		fieldNames.forEach((fieldName) => {
 			moduleItem[fieldName].forEach((subfield: any) => {
