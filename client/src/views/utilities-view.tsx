@@ -15,7 +15,7 @@ const UtilitiesView = () => {
   return (
     <>
       <Grid
-        paddingX="2rem"
+        paddingX="1rem"
         paddingY="1rem"
         container
         direction="column"
