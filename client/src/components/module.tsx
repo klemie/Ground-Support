@@ -15,14 +15,14 @@ const statusMap = new Map<String, String>([
 	['Inactive', '#FCB701'],
 	['Active', '#65C464'],
 	['Default', 'grey'],
-	['Sus', '#C6232C']
+	['Failed', '#C6232C']
 ]);
 
 export interface Field {
 	module?: String;
 	fieldName: String;
-	fieldRange: Array<Number>;
-	fieldValue: Number;
+	fieldRange: Array<number>;
+	fieldValue: number;
 }
 
 interface ModuleProps {
@@ -30,52 +30,35 @@ interface ModuleProps {
 	fields: Array<Field>;
 }
 
+const computeStatuses = (fields?: Array<Field>) => {
+	let statuses: Array<string> = [];
+	let status: string = 'Inactive';
+	fields?.forEach((field) => {
+		if (_.inRange(field.fieldValue, field.fieldRange[0], field.fieldRange[1])) {
+			status = 'Failed';
+		} else if (field.fieldValue == 0) {
+			status = 'Inactive';
+		} else {
+			status = 'Active';
+		}
+		statuses.push(status);
+	});
+	return statuses;
+}
+
 const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
-	const [statusColor, setStatusColor] = useState(statusMap.get('Inactive'));
+	const [statusColor, setStatusColor] = useState(statusMap.get('Inactive')); //TODO: change to state array for all fields + module status
 	const [status, setStatus] = useState('Inactive');
 
-	// useEffect(() => {
-	// 	for (const i in props.fieldValues) {
-	// 		const v = props.fieldValues;
-	// 		const r = props.fieldRanges;
-	// 		if (v[i] > r[i][1] || v[i] < r[i][0]) {
-	// 			setStatusColor(statusMap.get('Sus'));
-	// 			setStatus('Failed');
-	// 			return;
-	// 		} else if (v[i] == 0) {
-	// 			setStatusColor(statusMap.get('Inactive'));
-	// 			setStatus('Inactive');
-	// 		} else {
-	// 			setStatusColor(statusMap.get('Active'));
-	// 			setStatus('Active');
-	// 		}
-	// 	}
-	// }, [props.fieldValues]);
-
-	/* ----------
-	with the code below I was trying to push group of 3 Modules into an array of fieldGrid 
-
-	// let fieldGrid = [];
-	// for (let i = 0; i < props.fields.length; i += 3) {
-	// 	const fieldNames3 = props.fields.slice(i, i + 3);
-	// 	const fieldValues3 = props.fieldValues.slice(i, i + 3);
-
-	// 	// const gridItems = fieldNames3.map((fieldName, i) => {
-	// 	// 	return;
-	// 	// 	<Grid item>
-	// 	// 		<TextField key={i} id="value-text-field" label={fieldName} value={fieldValues3[i]} defaultValue="Value"></TextField>
-	// 	// 	</Grid>;
-	// 	// });
-
-	// 	fieldGrid.push(<Grid container>{gridItems}</Grid>);
-	// }
-	 ------ */
+	useEffect(() => {
+		const statuses = computeStatuses(props.fields);
+		statuses.forEach((st) => {
+			setStatus(st);
+			setStatusColor(st);
+		})
+	}, [props.fields]);
 
 	const fieldsMatrix = _.chunk(props.fields, 3);
-	
-	useEffect(() => {
-		console.log(fieldsMatrix);
-	}, []);
 	
 	return (
 		<>
@@ -83,7 +66,6 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 				<CardHeader title={props.title || 'Default'} titleTypographyProps={{ variant: 'subtitle1' }} sx={{ padding: 2 }} />
 				<CardContent sx={{ paddingBlockStart: 0, paddingBlockEnd: 0 }}>
 					<Divider variant="fullWidth" sx={{ mb: 2 }} />
-
 					<Stack spacing={3} direction="row" justifyContent="center">
 						{fieldsMatrix.map((cols: Array<any>) => {
 							return ( 
