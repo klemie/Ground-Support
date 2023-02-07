@@ -8,6 +8,7 @@ import TelemetryView from '../views/telemetry-view';
 import UtilitiesView from '../views/utilities-view';
 
 import ModulesView from '../views/modules-view';
+import DataLog from '../components/DataLog';
 
 function App() {
   const [activeStep, setActiveStep] = React.useState(0);
@@ -15,7 +16,7 @@ function App() {
     [k: number]: boolean;
   }>({});
 
-  const steps = ["Telemetry View", "Module View", "Another View"];
+  const steps = ["Start up", "Standby", "Flight", "Recovery", "Flight Report"];
 
   const handleStep = (step: number) => () => {
     // check step number and handle view change here
@@ -23,16 +24,21 @@ function App() {
   };
 
   function returnView(view: number){
-    if(view === 0){
-      return <TelemetryView/>;
+    switch(view) {
+      case 0:
+        return <TelemetryView />
+        break;
+      case 1:
+        return <TelemetryView />;
+        break
+      case 2:
+        return <ModulesView />;
+        break
+      default:
+        return <DataLog />;
     }
-    return <ModulesView/>;
   }
 
-  const ahhh = ()=>{
-    
-  }
-	// useState for currentView
 	return (
 		<div className="App">
 			<Grid container spacing={2} direction="row">
