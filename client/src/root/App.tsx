@@ -4,11 +4,14 @@ import { Grid } from "@mui/material";
 
 import TelemetryView from "../views/telemetry-view";
 import UtilitiesView from "../views/utilities-view";
+import MissionSelectionView from "../views/missionSelection-view";
 
 function App() {
   // useState for currentView
   return (
     <div className="App">
+      <MissionSelectionView />
+      
       <Grid
         container
         spacing={2}
