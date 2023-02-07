@@ -3,7 +3,7 @@
 ## Design Patterns
 
 Uses a MCV architecture.
-Component based design.
+Component based design. Signal page application
 ## MUI
 
 Material User Interface (MUI) is a react component library that builds off of the material design standard regulated by Google. All our styling is made in accordance with these standards. To make sure we follow these standards we will be refraining from creating our own styles as much as possible. This lessing the amount of work on our developers and generally following a proven styling standard.

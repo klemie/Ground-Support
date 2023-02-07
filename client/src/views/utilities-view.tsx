@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Grid } from "@mui/material";
 import VerticalStepper from "../components/VerticalStepper";
 import SettingsDialog from "../components/SettingsDialog";
@@ -6,7 +6,7 @@ import SettingsDialog from "../components/SettingsDialog";
 const UtilitiesView = () => {
 
   /* For opening and closing the settings dialog:*/
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleOpen = () => {
     setIsOpen(!isOpen);

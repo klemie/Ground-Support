@@ -11,39 +11,53 @@ def send_data():
 
 def generate_random_packet():
     return {
-        "Header": {
-            'Latitude': 48.463695,
-            'Longitude': -123.311645, 
-            'Satellites': random.randint(0, 40),
-            'Date': '00:00:00'
-        },
-        "ADX": {
-            'ax': random.uniform(-12, 12),
-            'ay': random.uniform(-12, 12),
-            'az': random.uniform(-12, 12)
-        },
-        'BME': {
-            'h': random.uniform(-12, 12),
-            't': random.uniform(-32, 32),
-            'p': random.uniform(0, 1000),
-            'a': random.uniform(-12, 12)
-        },
-        'LSM': {
-            'gx': random.uniform(-12, 12),
-            'gy': random.uniform(-12, 12),
-            'gz': random.uniform(-12, 12),
-            'ax': random.uniform(-12, 12),
-            'ay': random.uniform(-12, 12),
-            'az': random.uniform(-12, 12),
-            'mx': random.uniform(-12, 12),
-            'my': random.uniform(-12, 12),
-            'mz': random.uniform(-12, 12)
-
-        },
-        'AIRBRAKE': {
-           'percent':  random.uniform(0, 100),
-           'POT': random.uniform(-1200, 1200)
-        }
+        "Header": [
+            48.463695,
+            -123.311645, 
+            random.randint(0, 40),
+            '00:00:00'
+        ],
+        "ADX": [
+            random.uniform(-12, 12),
+            random.uniform(-12, 12),
+            random.uniform(-12, 12)
+        ],
+        'BME': [
+            random.uniform(-12, 12),
+            random.uniform(-32, 32),
+            random.uniform(0, 1000),
+            random.uniform(-12, 12)
+        ],
+        'LSM': [
+                random.uniform(-12, 12),
+                random.uniform(-12, 12),
+                random.uniform(-12, 12),
+                random.uniform(-12, 12),
+                random.uniform(-12, 12),
+                random.uniform(-12, 12),
+                random.uniform(-12, 12),
+                random.uniform(-12, 12),
+                random.uniform(-12, 12)
+        ],
+        'AIRBRAKE': [
+            random.uniform(0, 100),
+            random.uniform(-1200, 1200),
+            random.uniform(-1200, 1200)
+        ],
+        'strainGauges': [
+            random.uniform(0, 100),
+            random.uniform(0, 100),
+            random.uniform(0, 100),
+            random.uniform(0, 100),
+            random.uniform(0, 100),
+            random.uniform(0, 100),
+            random.uniform(0, 100),
+            random.uniform(0, 100),
+            random.uniform(0, 100),
+            random.uniform(0, 100),
+            random.uniform(0, 100),
+            random.uniform(0, 100)
+        ]
     }
 
 if __name__=='__main__': 
