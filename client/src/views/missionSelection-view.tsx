@@ -3,6 +3,10 @@ import React, { useState, useEffect } from "react";
 import { Grid, Typography, Chip, Stack } from "@mui/material";
 import { Add } from "@mui/icons-material";
 
+import "../styles/missionSelect.css";
+
+import addRocket from "../static/images/AddRocket.png";
+
 interface Mission {
   id: Number;
   name: String;
@@ -36,9 +40,20 @@ export default function MissionSelectionView() {
     setMissionData(dummyMissionData)
   },[])
 
+  function addNewMission () {
+    console.log("Adding new mission...")
+  }
+
+  function setMission (data: Mission)  {
+    console.log("Setting Mission to:", data)
+  }
+
   const missions = missionData.map((data: Mission)=>{
     return <div key={data.id.toString()}>
-      <Chip label={data.name} color="primary" />
+      <Stack direction="column" spacing={1}>
+        <img src={addRocket} alt="Mission" width={40}></img>
+        <Chip label={data.name} color="primary" onClick={() => setMission(data)}/> 
+      </Stack>
     </div>
   })
 
@@ -59,9 +74,12 @@ export default function MissionSelectionView() {
 
         {/* Mission Selection */}
         <Grid item>
-          <Stack direction="row" spacing={5}>
+          <Stack direction="row" justifyContent="center" spacing={8}>
             { missions }
-            <Chip label="New Mission" color="default" icon={<Add />}/>
+            <Stack direction="column" spacing={1} onClick={addNewMission}>
+              <img src={addRocket} alt="Add Rocket" width={40}></img>
+              <Chip label="New Mission" color="default"/>
+            </Stack>
           </Stack>
         </Grid>
     </Grid>

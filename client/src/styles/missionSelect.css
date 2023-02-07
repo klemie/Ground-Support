@@ -1,0 +1,10 @@
+img {
+    position: static;
+    align-self: center;
+    transition: all, 1s;
+}
+
+img:hover {
+    opacity: 0.6;
+    cursor: pointer;
+}
