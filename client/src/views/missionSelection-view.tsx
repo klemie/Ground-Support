@@ -13,7 +13,11 @@ interface Mission {
   image: String;
 }
 
-export default function MissionSelectionView() {
+interface MissionSelectProps {
+  setCurrentView: (viewName: string) => void;
+}
+
+export default function MissionSelectionView(props: MissionSelectProps) {
 
   const dummyMissionData: Mission[] = [
     {
@@ -41,18 +45,20 @@ export default function MissionSelectionView() {
   },[])
 
   function addNewMission () {
+    props.setCurrentView("Active_Mission");
     console.log("Adding new mission...")
   }
 
   function setMission (data: Mission)  {
+    props.setCurrentView("Active_Mission");
     console.log("Setting Mission to:", data)
   }
 
   const missions = missionData.map((data: Mission)=>{
     return <div key={data.id.toString()}>
-      <Stack direction="column" spacing={1}>
+      <Stack direction="column" spacing={1} onClick={() => setMission(data)}>
         <img src={addRocket} alt="Mission" width={40}></img>
-        <Chip label={data.name} color="primary" onClick={() => setMission(data)}/> 
+        <Chip label={data.name} color="primary"/> 
       </Stack>
     </div>
   })

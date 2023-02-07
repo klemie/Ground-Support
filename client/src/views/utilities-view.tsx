@@ -3,7 +3,11 @@ import { Button, Grid } from "@mui/material";
 import VerticalStepper from "../components/VerticalStepper";
 import SettingsDialog from "../components/SettingsDialog";
 
-const UtilitiesView = () => {
+interface UtilitiesProps {
+  setCurrentView: (viewName: string) => void;
+}
+
+const UtilitiesView = (props: UtilitiesProps) => {
 
   /* For opening and closing the settings dialog:*/
   const [isOpen, setIsOpen] = React.useState(false);
@@ -40,6 +44,7 @@ const UtilitiesView = () => {
             fullWidth={true}
             variant="contained"
             color="error"
+            onClick={() => props.setCurrentView("Mission_Selection")}
           >
             End Mission
           </Button>
