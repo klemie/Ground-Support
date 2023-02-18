@@ -2,10 +2,10 @@ import React from 'react';
 import './App.css';
 import { Button, Grid } from '@mui/material';
 import { Stepper, Step, StepButton, StepLabel } from "@mui/material";
-import VerticalStepper from "../components/VerticalStepper";
+
+import SettingsDialog from '../components/SettingsDialog';
 
 import TelemetryView from '../views/telemetry-view';
-import UtilitiesView from '../views/utilities-view';
 
 import ModulesView from '../views/modules-view';
 import DataLog from '../components/DataLog';
@@ -21,6 +21,11 @@ function App() {
   const handleStep = (step: number) => () => {
     // check step number and handle view change here
     setActiveStep(step);
+  };
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+
+  const handleSettingsDialog = () => {
+    setIsSettingsOpen(!isSettingsOpen);
   };
 
   function returnView(view: number){
@@ -39,6 +44,11 @@ function App() {
     }
   }
 
+  const fullHeight = {
+    height: "100vh",
+    overflow: "auto"
+  };
+
 	return (
 		<div className="App">
 			<Grid container spacing={2} direction="row">
@@ -48,57 +58,55 @@ function App() {
 				</Grid>
 
 				<Grid item xs={2}>
-        <>
-      <Grid
-        paddingX="1rem"
-        paddingY="1rem"
-        container
-        direction="column"
-        justifyContent="space-between"
-        height="100%"
-      >
-        {/* TODO: Should call a Setting pop up */}
-        <Grid item>
-          <Button variant="outlined">Settings</Button>
-        </Grid>
-
-        {/* Page change stepper */}
-        <Grid item>
-        <>
-      <Stepper
-        nonLinear
-        activeStep={activeStep}
-        orientation="vertical"
-      >
-        {steps.map((label, index) => (
-          <Step
-            key={label}
-            completed={completed[index]}
+          <Grid
+            paddingX="1rem"
+            paddingY="1rem"
+            container
+            direction="column"
+            justifyContent="space-between"
+            height="100%"
+            style={fullHeight}
           >
-            <StepButton
-              color="inherit"
-              onClick={handleStep(index)}
-            >
-              {label}
-            </StepButton>
-          </Step>
-        ))}
-      </Stepper>
-    </>
-        </Grid>
+            {/* TODO: Should call a Setting pop up */}
+            <Grid item>
+              <SettingsDialog isOpen={isSettingsOpen} onClose={()=>setIsSettingsOpen(false)}/>
+              <Button variant="outlined" onClick={()=>handleSettingsDialog()}>Settings</Button>
+            </Grid>
 
-        {/* TODO: Should terminate all data readings */}
-        <Grid item>
-          <Button
-            fullWidth={true}
-            variant="contained"
-            color="error"
-          >
-            End Mission
-          </Button>
-        </Grid>
-      </Grid>
-    </>
+            {/* Page change stepper */}
+            <Grid item>
+              <Stepper
+                nonLinear
+                activeStep={activeStep}
+                orientation="vertical"
+              >
+                {steps.map((label, index) => (
+                  <Step
+                    key={label}
+                    completed={completed[index]}
+                  >
+                    <StepButton
+                      color="inherit"
+                      onClick={handleStep(index)}
+                    >
+                      {label}
+                    </StepButton>
+                  </Step>
+                ))}
+              </Stepper>
+            </Grid>
+
+            {/* TODO: Should terminate all data readings */}
+            <Grid item>
+              <Button
+                fullWidth={true}
+                variant="contained"
+                color="error"
+              >
+                End Mission
+              </Button>
+            </Grid>
+          </Grid>
 				</Grid>
 			</Grid>
 		</div>
