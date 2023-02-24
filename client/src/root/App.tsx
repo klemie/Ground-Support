@@ -1,12 +1,18 @@
 import React from "react";
 import "./App.css";
-import { Grid } from "@mui/material";
+import { Grid, Button, Modal } from "@mui/material";
 
 import TelemetryView from "../views/telemetry-view";
 import UtilitiesView from "../views/utilities-view";
+import RocketProfilePopup from "../components/RocketProfilePopup";
 
 function App() {
   // useState for currentView
+
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   return (
     <div className="App">
       <Grid
@@ -19,6 +25,14 @@ function App() {
           item
           xs={10}
         >
+          <Button onClick={handleOpen}>Open modal</Button>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-rocket-profile"
+          >
+            <RocketProfilePopup closeModal={handleClose}/>
+          </Modal>
           <TelemetryView />
         </Grid>
 
