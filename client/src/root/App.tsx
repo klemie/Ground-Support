@@ -1,13 +1,32 @@
-import React, { useState } from "react";
-import "./App.css";
-import { Grid } from "@mui/material";
+import React, { useState } from 'react';
+import './App.css';
+import { Button, Grid } from '@mui/material';
+import { Stepper, Step, StepButton, StepLabel } from "@mui/material";
 
-import TelemetryView from "../views/telemetry-view";
-import UtilitiesView from "../views/utilities-view";
+import TelemetryView from '../views/telemetry-view';
 import MissionSelectionView from "../views/missionSelection-view";
+import ModulesView from '../views/modules-view';
+
+import SettingsDialog from '../components/SettingsDialog';
+import DataLog from '../components/DataLog';
 
 function App() {
+  const [activeStep, setActiveStep] = useState(0);
+  const [completed, setCompleted] = useState<{
+    [k: number]: boolean;
+  }>({});
 
+  const steps = ["Start up", "Standby", "Flight", "Recovery", "Flight Report"];
+
+  const handleStep = (step: number) => () => {
+    // check step number and handle view change here
+    setActiveStep(step);
+  };
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const handleSettingsDialog = () => {
+    setIsSettingsOpen(!isSettingsOpen);
+  };
   // useState for currentView
   const [currentView, setCurrentView] = useState("Mission_Selection");
 
@@ -15,35 +34,94 @@ function App() {
     setCurrentView(viewName);
   };
 
-  return (
-    <div className="App">
+  function returnView(view: number){
+    switch(view) {
+      case 0:
+        return <TelemetryView />
+        break;
+      case 1:
+        return <TelemetryView />;
+        break;
+      case 2:
+        return <ModulesView />;
+        break;
+      default:
+        return <DataLog />;
+    }
+  }
+
+  const fullHeight = {
+    height: "100vh",
+    overflow: "auto"
+  };
+
+	return (
+		<div className="App">
       { (currentView == "Mission_Selection") && <MissionSelectionView setCurrentView={updateView}/> }
       
-      { 
-        (currentView == "Active_Mission") && 
-        <Grid
-          container
-          spacing={2}
-          direction="row"
-        >
-          {/* Any views should be rendered within this grid item */}
-          <Grid
-            item
-            xs={10}
-          >
-            <TelemetryView />
-          </Grid>
+      { (currentView == "Active_Mission") && 
+			<Grid container spacing={2} direction="row">
+				{/* Any views should be rendered within this grid item */}
+				<Grid item xs={10}>
+          {returnView(activeStep)}
+				</Grid>
 
+				<Grid item xs={2}>
           <Grid
-            item
-            xs={2}
+            paddingX="1rem"
+            paddingY="1rem"
+            container
+            direction="column"
+            justifyContent="space-between"
+            height="100%"
+            style={fullHeight}
           >
-            <UtilitiesView setCurrentView={updateView}/>
+            {/* TODO: Should call a Setting pop up */}
+            <Grid item>
+              <SettingsDialog isOpen={isSettingsOpen} onClose={()=>setIsSettingsOpen(false)}/>
+              <Button variant="outlined" onClick={()=>handleSettingsDialog()}>Settings</Button>
+            </Grid>
+
+            {/* Page change stepper */}
+            <Grid item>
+              <Stepper
+                nonLinear
+                activeStep={activeStep}
+                orientation="vertical"
+              >
+                {steps.map((label, index) => (
+                  <Step
+                    key={label}
+                    completed={completed[index]}
+                  >
+                    <StepButton
+                      color="inherit"
+                      onClick={handleStep(index)}
+                    >
+                      {label}
+                    </StepButton>
+                  </Step>
+                ))}
+              </Stepper>
+            </Grid>
+
+            {/* TODO: Should terminate all data readings */}
+            <Grid item>
+              <Button
+                fullWidth={true}
+                variant="contained"
+                color="error"
+                onClick={() => setCurrentView("Mission_Selection")}
+              >
+                End Mission
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
+				</Grid>
+			</Grid>
       }
-    </div>
-  );
+		</div>
+	);
 }
 
 export default App;
