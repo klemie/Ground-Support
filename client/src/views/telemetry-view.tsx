@@ -10,11 +10,9 @@ export default function TelemetryView() {
   const [satelliteCount, setSatelliteCount] = useState<Number>(50);
   
   const breadCrumbs: Breadcrumb[] = [
-    { name: "Name1", path: "/Name1", active: false },
-    { name: "Name2", path: "/Name1/Name2/", active: false },
-    { name: "Name3", path: "/Name1/Name2/Name3", active: true }
+    { name: "New Mission", path: "/", active: false },
+    { name: "Telemetry View", path: "/", active: true }
   ];
-
 
   function updateFrequency(newValue: Number) {
     setFrequency(newValue);
@@ -35,7 +33,7 @@ export default function TelemetryView() {
       >
         {/* Page Header */}
         <Grid item>
-          <Header view="view" breadCrumbs={breadCrumbs} />
+          <Header breadCrumbs={breadCrumbs} />
         </Grid>
 
         {/* Parameters Controllers */}

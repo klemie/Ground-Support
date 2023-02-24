@@ -5,12 +5,11 @@ import groundSupport from "../static/images/groundSupport.svg";
 
 export interface Breadcrumb {
     name: string;
-    path: string;
+    path?: string;
     active: boolean;
 };
 
 interface HeaderProps {
-    view: string;
     breadCrumbs: Breadcrumb[];
 };
 
@@ -25,7 +24,7 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
                 <Link
                     underline="hover"
                     color="inherit"
-                    href={ crumb.path }
+                    href={ crumb.path || "/" }
                 >
                     { crumb.name }
                 </Link>
@@ -47,14 +46,14 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
             spacing={2}
             alignItems="flex-start" 
         >
-            <img src={groundSupport} alt="Ground Support Icon" height={100}/>
+            <img src={groundSupport} alt="Ground Support Icon" height={80}/>
             <Stack
                 direction="column"
                 alignItems="flex-start" 
                 spacing={1}
             >
-                <Typography variant="h2" sx={{ fontWeight: 'medium' }}>Ground Support</Typography>
-                <Breadcrumbs>
+                <Typography variant="h3" sx={{ fontWeight: 600 }}>Ground Support</Typography>
+                <Breadcrumbs onClick={handleClick}>
                     { crumbs }
                 </Breadcrumbs>
             </Stack>
