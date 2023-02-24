@@ -9,17 +9,18 @@ import MissionSelectionView from "../views/missionSelection-view";
 function App() {
 
   // useState for currentView
-  const [currentView, setCurrentView]=useState("Mission_Selection")
+  const [currentView, setCurrentView] = useState("Mission_Selection");
 
   const updateView = (viewName: string) => {
-    setCurrentView(viewName)
-  }
+    setCurrentView(viewName);
+  };
 
   return (
     <div className="App">
-      { currentView == "Mission_Selection" && <MissionSelectionView setCurrentView={updateView}/> }
+      { (currentView == "Mission_Selection") && <MissionSelectionView setCurrentView={updateView}/> }
       
-      { currentView == "Active_Mission" && 
+      { 
+        (currentView == "Active_Mission") && 
         <Grid
           container
           spacing={2}
@@ -36,7 +37,6 @@ function App() {
           <Grid
             item
             xs={2}
-            borderLeft="1px solid"
           >
             <UtilitiesView setCurrentView={updateView}/>
           </Grid>
