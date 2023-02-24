@@ -3,10 +3,16 @@ import Frequency from "../components/Frequency";
 import { Grid, Typography } from "@mui/material";
 import SatelliteCount from "../components/SatelliteCount";
 import DataLog from "../components/DataLog";
+import Header, { Breadcrumb } from "../components/Header";
 
 export default function TelemetryView() {
   const [frequency, setFrequency] = useState<Number>(100);
   const [satelliteCount, setSatelliteCount] = useState<Number>(50);
+  
+  const breadCrumbs: Breadcrumb[] = [
+    { name: "New Mission", path: "/", active: false },
+    { name: "Telemetry View", path: "/", active: true }
+  ];
 
   function updateFrequency(newValue: Number) {
     setFrequency(newValue);
@@ -22,12 +28,12 @@ export default function TelemetryView() {
         container
         direction="column"
         paddingX="2rem"
-        paddingY="1rem"
+        paddingY="2rem"
         gap={3}
       >
         {/* Page Header */}
         <Grid item>
-          <Typography variant="h3">Telemetry View</Typography>
+          <Header breadCrumbs={breadCrumbs} />
         </Grid>
 
         {/* Parameters Controllers */}
