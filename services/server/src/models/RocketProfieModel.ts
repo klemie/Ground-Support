@@ -1,18 +1,18 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IRocketProfile {
-    rocketName: String;
-    Height: Number;
-    Class: String;
-    MotorType: String;
-    Motor: String;
+    RocketName: string;
+    Height: number;
+    Class: string;
+    MotorType: string;
+    Motor: string;
 };
 
 export interface IRocketProfileModel extends IRocketProfile, Document { };
 
 const RocketProfileSchema: Schema = new Schema(
     {
-        rocketName: {
+        RocketName: {
             type: String,
             required: true
         },
@@ -23,23 +23,28 @@ const RocketProfileSchema: Schema = new Schema(
         Class: {
             type: String,
             required: true,
-            validator: (c: String) => {
-
+            validate: {
+                validator: (c: string) => {
+                    const cl = c.toLowerCase();
+                    return cl === "10k" || "30k";
+                },
+                message: "Current available classes are 10K and 30K"
             }
         },
         MotorType: {
             type: String,
             required: true,
-            validator: (mt: String) => {
-
+            validate: {
+                validator: (mt: string) => {
+                    const type = mt.toLowerCase();
+                    return type == "solid" || type == "hybrid" || type == "liquid";
+                },
+                message: "Must be of type solid, hybrid or liquid"
             }
         },
         Motor: {
             type: String,
-            required: true,
-            validator: (m: String) => {
-
-            }
+            required: true
         }
     },
     {

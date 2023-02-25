@@ -1,11 +1,12 @@
 import mongoose, { Document, Schema } from "mongoose";
 import MissionModel from "./MissionModel";
+import { isValidCoordinates } from "../library/CoordinateValidation";
 
 export interface IRocket {
-    Name: String;
+    Name: string;
     Date: Date;
-    Coordinates: Array<Number>;
-    Mission: Array<mongoose.ObjectId>
+    Coordinates: Array<number>;
+    Mission: Array<mongoose.Schema.Types.ObjectId>
 };
 
 export interface IRocketModel extends IRocket, Document { };
@@ -23,13 +24,13 @@ const RocketSchema: Schema = new Schema(
         Coordinates: {
             type: Array,
             require: true,
-            validator: (cs: Array<Number>) => {
-
+            validator: (cs: Array<number>) => {
+                return isValidCoordinates(cs[0], cs[1]);
             }
         },
         Mission: {
-            type: mongoose.ObjectId,
-            ref: 'Mission'
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Mission',
             required: true
         }
     },
