@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import { Grid, Button, Modal } from "@mui/material";
 
@@ -9,7 +9,7 @@ import RocketProfilePopup from "../components/RocketProfilePopup";
 function App() {
   // useState for currentView
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -29,7 +29,6 @@ function App() {
           <Modal
             open={open}
             onClose={handleClose}
-            aria-labelledby="modal-rocket-profile"
           >
             <RocketProfilePopup closeModal={handleClose}/>
           </Modal>
