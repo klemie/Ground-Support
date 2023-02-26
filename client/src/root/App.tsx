@@ -4,7 +4,7 @@ import { Grid } from "@mui/material";
 
 import TelemetryView from "../views/telemetry-view";
 import UtilitiesView from "../views/utilities-view";
-import MissionSelectionView from "../views/missionSelection-view";
+import MissionSelectionView from "../views/mission-selection-view";
 
 function App() {
 

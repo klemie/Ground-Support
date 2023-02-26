@@ -8,9 +8,10 @@ import "../styles/missionSelect.css";
 import addRocket from "../static/images/AddRocket.png";
 
 interface Mission {
-  id: Number;
-  name: String;
-  image: String;
+  id: number;
+  name: string;
+  image: string;
+  active: boolean;
 }
 
 interface MissionSelectProps {
@@ -24,32 +25,35 @@ export default function MissionSelectionView(props: MissionSelectProps) {
       id: 1,
       name: "MVP-1",
       image: "MVP-1.png",
+      active: true,
     },
     {
       id: 2,
       name: "MVP-2",
       image: "MVP-2.png",
+      active: false,
     },
     {
       id: 3,
       name: "XENIA-1",
       image: "XENIA-1.png",
+      active: true,
     }
-  ]
+  ];
 
-  const [missionData, setMissionData]=useState(dummyMissionData)
+  const [missionData, setMissionData] = useState(dummyMissionData);
 
-  useEffect(()=>{
-    //make an API call when component first mounts and setUserData with response
+  useEffect(() => {
+    //make an API call when component first mounts and setMissionData with response
     setMissionData(dummyMissionData)
-  },[])
+  },[]);
 
-  function addNewMission () {
+  const addNewMission = () => {
     props.setCurrentView("Active_Mission");
     console.log("Adding new mission...")
   }
 
-  function setMission (data: Mission)  {
+  const setMission = (data: Mission) => {
     props.setCurrentView("Active_Mission");
     console.log("Setting Mission to:", data)
   }
@@ -58,29 +62,35 @@ export default function MissionSelectionView(props: MissionSelectProps) {
     return <div key={data.id.toString()}>
       <Stack direction="column" spacing={1} onClick={() => setMission(data)}>
         <img src={addRocket} alt="Mission" width={40}></img>
-        <Chip label={data.name} color="primary"/> 
+        <Chip label={data.name} color={ data.active ? "primary" : "warning" } sx={{ fontWeight: "bold" }}/> 
       </Stack>
     </div>
   })
 
   return (
-    <>
+    <div style={{ width: "100vw", height: "99vh" }}>
       <Grid
         container
         direction="column"
         paddingX="2rem"
         paddingY="1rem"
         gap={3}
+        sx={{ height: "100%", width: "100%" }}
       >
 
         {/* Page Header */}
-        <Grid item>
+        <Grid 
+          container 
+          justifyContent="center" 
+          alignItems="center"
+          style={{ height: "10%" }}
+        >
           <Typography variant="h3">Mission Selection</Typography>
         </Grid>
 
         {/* Mission Selection */}
         <Grid item>
-          <Stack direction="row" justifyContent="center" spacing={8}>
+          <Stack direction="row" justifyContent="center" spacing={8} >
             { missions }
             <Stack direction="column" spacing={1} onClick={addNewMission}>
               <img src={addRocket} alt="Add Rocket" width={40}></img>
@@ -89,7 +99,7 @@ export default function MissionSelectionView(props: MissionSelectProps) {
           </Stack>
         </Grid>
     </Grid>
-    </>
+    </div>
   );
 
 }
