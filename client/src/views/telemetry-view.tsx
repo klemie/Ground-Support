@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Frequency from '../components/Frequency';
-import { Grid, TextField, Typography } from '@mui/material';
+import { Grid, Stack, TextField, Typography } from '@mui/material';
 import SatelliteCount from '../components/SatelliteCount';
 import axios from 'axios';
 
@@ -29,22 +29,22 @@ export default function TelemetryView() {
 		const getData = async () => {
 			try {
 				let res = await axios.get("http://127.0.0.1:5000/gateway");
-				const [ lon, lat, sat, ts ] = res.data.Header;
+				const [ lon, lat, sat, ts ] = res.data.header;
 				// if packet being transmitted is old do not update data
-				if (res.data.Header[3] === ts) {
-					return 
+				console.log(ts, timeStamp, ts === timeStamp)
+				if (ts !== timeStamp) {
+					setLongitude(lon);
+					setLatitude(lat);
+					setSatelliteCount(sat);
+					setTimeStamp(ts);
 				}
-				setLongitude(lon);
-				setLatitude(lat);
-				setSatelliteCount(sat);
-				setTimeStamp(ts);
 			} catch (error) {
 				console.error(error);
 			}
 		}
-		const interval = setInterval(getData, 500);
+		const interval = setInterval(getData, 1000);
 		return () => clearInterval(interval);
-	}, [telemetryData]);
+	}, [telemetryData, timeStamp]);
 
 	return (
 		<>
@@ -61,33 +61,38 @@ export default function TelemetryView() {
 				</Grid>
 				<Grid container justifyContent="space-evenly">
 					{/* These text fields are temporary until the telemetry log component is done */}
-					<TextField
-						variant="outlined"
-						value={longitude}
-						disabled
-						name="Longitude"
-						label="Longitude"
-						size="medium"
-						InputLabelProps={{ shrink: true }}
-					/>
-					<TextField
-						variant="outlined"
-						value={latitude}
-						disabled
-						name="Latitude"
-						label="Latitude"
-						size="medium"
-						InputLabelProps={{ shrink: true }}
-					/>
-					<TextField
-						variant="outlined"
-						value={timeStamp}
-						disabled
-						name="time-stamp"
-						label="Time Stamp"
-						size="medium"
-						InputLabelProps={{ shrink: true }}
-					/>
+					<Stack spacing={3} width={"100%"}>
+						<TextField
+							variant="outlined"
+							value={longitude}
+							disabled
+							name="Longitude"
+							label="Longitude"
+							size="medium"
+							fullWidth
+							InputLabelProps={{ shrink: true }}
+						/>
+						<TextField
+							variant="outlined"
+							value={latitude}
+							disabled
+							name="Latitude"
+							label="Latitude"
+							size="medium"
+							fullWidth
+							InputLabelProps={{ shrink: true }}
+						/>
+						<TextField
+							variant="outlined"
+							value={timeStamp}
+							disabled
+							name="time-stamp"
+							label="Time Stamp"
+							fullWidth
+							InputLabelProps={{ shrink: true }}
+						/>
+					</Stack>
+					
 				</Grid>
 			</Grid>
 		</>
