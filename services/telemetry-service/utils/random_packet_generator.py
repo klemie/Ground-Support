@@ -21,7 +21,7 @@ def generate_random_packet():
             coordinate.x,
             coordinate.y, 
             random.randint(0, 40),
-            datetime.datetime.now()
+            datetime.datetime.now().timestamp()
         ],
         'BME': [
             random.uniform(-12, 12),
