@@ -2,29 +2,49 @@ import React, { useState, useEffect } from 'react';
 import Frequency from '../components/Frequency';
 import { Grid, TextField, Typography } from '@mui/material';
 import SatelliteCount from '../components/SatelliteCount';
-import DataLog from '../components/DataLog';
+import axios from 'axios';
 
 export default function TelemetryView() {
-	const [frequency, setFrequency] = useState<Number>(100);
-	const [satelliteCount, setSatelliteCount] = useState<Number>(50);
-	const [data, setData] = useState({});
+	const [frequency, setFrequency] = useState<number>(100);
+	const [satelliteCount, setSatelliteCount] = useState<number>(50);
+	const [longitude, setLongitude] = useState<number>();
+	const [latitude, setLatitude] = useState<number>();
+	const [timeStamp, setTimeStamp] = useState<string>("0");
 
-	function updateFrequency(newValue: Number) {
+	const [telemetryData, setTelemetryData] = useState({});
+
+	const updateFrequency = (newValue: number) => {
 		setFrequency(newValue);
-	}
+	};
+
+	const updateSatelliteCount = (newValue: number) => {
+		setSatelliteCount(newValue);
+	};
 
 	useEffect(() => {
 		console.log('parent received new frequency: ', frequency);
 	}, [frequency]);
 
 	useEffect(() => {
-		const fetchData = async () => {
-			const response = await fetch('http://localhost:9090/gateway/');
-			console.log(`Response: ${response}`);
-			setData(response.text());
-			return response;
-		};
-	}, []);
+		const getData = async () => {
+			try {
+				let res = await axios.get("http://127.0.0.1:5000/gateway");
+				const [ lon, lat, sat, ts ] = res.data.Header;
+				// if packet being transmitted is old do not update data
+				if (res.data.Header[3] === ts) {
+					return 
+				}
+				setLongitude(lon);
+				setLatitude(lat);
+				setSatelliteCount(sat);
+				setTimeStamp(ts);
+			} catch (error) {
+				console.error(error);
+			}
+		}
+		const interval = setInterval(getData, 500);
+		return () => clearInterval(interval);
+	}, [telemetryData]);
 
 	return (
 		<>
@@ -37,10 +57,37 @@ export default function TelemetryView() {
 				{/* Parameters Controllers */}
 				<Grid container direction="row" justifyContent="space-between" alignItems="center">
 					<Frequency value={frequency} updateFrequency={updateFrequency} />
-					<SatelliteCount value={satelliteCount} />
+					<SatelliteCount value={satelliteCount} updateCount={updateSatelliteCount}  />
 				</Grid>
-				<Grid item>
-					<TextField multiline defaultValue={data} />
+				<Grid container justifyContent="space-evenly">
+					{/* These text fields are temporary until the telemetry log component is done */}
+					<TextField
+						variant="outlined"
+						value={longitude}
+						disabled
+						name="Longitude"
+						label="Longitude"
+						size="medium"
+						InputLabelProps={{ shrink: true }}
+					/>
+					<TextField
+						variant="outlined"
+						value={latitude}
+						disabled
+						name="Latitude"
+						label="Latitude"
+						size="medium"
+						InputLabelProps={{ shrink: true }}
+					/>
+					<TextField
+						variant="outlined"
+						value={timeStamp}
+						disabled
+						name="time-stamp"
+						label="Time Stamp"
+						size="medium"
+						InputLabelProps={{ shrink: true }}
+					/>
 				</Grid>
 			</Grid>
 		</>

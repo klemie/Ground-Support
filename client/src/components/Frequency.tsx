@@ -13,7 +13,7 @@ const Frequency: React.FC<FrequencyProps> = (props: FrequencyProps) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    if (data.get("frequency") != "") {
+    if (data.get("frequency") !== "") {
       let value = String(data.get("frequency"));
       setValue(parseFloat(value));
     } else {
@@ -23,7 +23,7 @@ const Frequency: React.FC<FrequencyProps> = (props: FrequencyProps) => {
 
   useEffect(() => {
     props.updateFrequency(value);
-  }, [value]);
+  }, [value, props]);
 
   return (
     <form onSubmit={handleSubmit}>

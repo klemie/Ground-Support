@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Chip, TextField, CardContent, Divider, CardHeader } from "@mui/material";
 import { Stack } from "@mui/system";
-import _ from "lodash";
+// import _ from "lodash";
 
 const statusMap = new Map<String, String>([
   ["Inactive", "#FCB701"],
@@ -29,7 +29,7 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
         setStatusColor(statusMap.get("Sus"));
         setStatus("Failed");
         return;
-      } else if (v[i] == 0) {
+      } else if (v[i] === 0) {
         setStatusColor(statusMap.get("Inactive"));
         setStatus("Inactive");
       } else {
@@ -37,7 +37,7 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
         setStatus("Active");
       }
     }
-  }, [props.fieldValues]);
+  }, [props.fieldValues, props.fieldRanges]);
 
   return (
     <>
