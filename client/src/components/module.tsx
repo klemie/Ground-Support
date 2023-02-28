@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
 	Card, 
 	Chip, 
@@ -36,7 +36,7 @@ const computeStatuses = (fields?: Array<Field>) => {
 	fields?.forEach((field) => {
 		if (_.inRange(field.fieldValue, field.fieldRange[0], field.fieldRange[1])) {
 			status = 'Active';
-		} else if (field.fieldValue == 0) {
+		} else if (field.fieldValue === 0) {
 			status = 'Inactive';
 		} else {
 			status = 'Failed';

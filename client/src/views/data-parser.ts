@@ -4,7 +4,7 @@ interface Module {
 	fieldRanges: Array<Array<number>>;
 }
 
-export const dataConfigParser = (file: any) => {
+export const dataConfigParser = (file: any): Module[] => {
 	let dataConfig = Object.keys(file).map((key) => {
 		const moduleItem = file[key];
 		const fieldNames = Object.keys(moduleItem);
@@ -21,11 +21,13 @@ export const dataConfigParser = (file: any) => {
 			});
 		});
 
-		return <Module>{
+		const module: Module = {
 			module: moduleItem['module'].trim(),
 			fields: fields,
 			fieldRanges: fieldRanges
 		};
+
+		return module;
 	});
 
 	return dataConfig;

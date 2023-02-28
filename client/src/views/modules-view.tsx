@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {  useState } from 'react';
 import Module, { Field } from '../components/module';
 import _ from 'lodash';
 
@@ -6,9 +6,12 @@ import { dataConfigParser } from './data-parser';
 import { Typography, Grid } from '@mui/material';
 
 export default function ModulesView() {
-	const input = require('./sample-data.json');
-	const dataConfig = dataConfigParser(input);
-	const [fieldValues, setFieldValues] = useState();
+	const [ dataConfig, setDataConfig ] = useState(dataConfigParser(require('./sample-data.json')));
+	
+	// Call dataConfig endpoint
+	// useEffect(() => {
+	// 	setDataConfig();
+	// }, [dataConfig]);
 
 	const formattedModules = dataConfig.map((module) => {
 		let fields = [];
@@ -45,7 +48,7 @@ export default function ModulesView() {
 				justifyContent="space-between"
 				alignItems="stretch"
 			>
-				{formattedModules.map((module, index) => {
+				{formattedModules.map((module) => {
 					return (
 						<Grid 
 							item 
