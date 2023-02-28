@@ -16,7 +16,7 @@ export const dataConfigParser = (file: any): Module[] => {
 		fieldNames.forEach((fieldName) => {
 			moduleItem[fieldName].forEach((subfield: any) => {
 				let capitalizedFieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
-				fields.push(capitalizedFieldName + ' ' + subfield['field']);
+				fields.push(`${capitalizedFieldName} ${fieldName !== subfield['field'] ? subfield['field'] : ''}`);
 				fieldRanges.push(subfield['range']);
 			});
 		});

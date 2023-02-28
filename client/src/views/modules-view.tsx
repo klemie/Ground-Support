@@ -1,12 +1,12 @@
 import React, {  useState } from 'react';
-import Module, { Field } from '../components/module';
+import Module, { Field } from '../components/Module';
 import _ from 'lodash';
 
-import { dataConfigParser } from './data-parser';
+import { dataConfigParser } from '../utils/data-parser';
 import { Typography, Grid } from '@mui/material';
 
 export default function ModulesView() {
-	const [ dataConfig, setDataConfig ] = useState(dataConfigParser(require('./sample-data.json')));
+	const [ dataConfig, setDataConfig ] = useState(dataConfigParser(require('../utils/sample-data.json')));
 	
 	// Call dataConfig endpoint
 	// useEffect(() => {
