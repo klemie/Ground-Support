@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import Frequency from '../components/Frequency';
-import { Grid, Stack, TextField, Typography } from '@mui/material';
+import { Grid, Card, Stack, TextField, Typography, CardContent } from '@mui/material';
 import SatelliteCount from '../components/SatelliteCount';
 import axios from 'axios';
+import getTelemetryData from '../utils/fetchPacket';
+import goat from "../statics/goat.jpg";
+
 
 export default function TelemetryView() {
 	const [frequency, setFrequency] = useState<number>(100);
 	const [satelliteCount, setSatelliteCount] = useState<number>(50);
-	const [longitude, setLongitude] = useState<number>();
-	const [latitude, setLatitude] = useState<number>();
+
+	// Telemetry packet state
+	const [longitude, setLongitude] = useState<number>(0);
+	const [latitude, setLatitude] = useState<number>(0);
+	const [altitude, setAltitude] = useState<number>(0);
 	const [timeStamp, setTimeStamp] = useState<string>("0");
 
 	const [telemetryData, setTelemetryData] = useState({});
@@ -26,25 +32,20 @@ export default function TelemetryView() {
 	}, [frequency]);
 
 	useEffect(() => {
-		const getData = async () => {
-			try {
-				let res = await axios.get("http://127.0.0.1:5000/gateway");
-				const [ lon, lat, sat, ts ] = res.data.header;
-				// if packet being transmitted is old do not update data
-				console.log(ts, timeStamp, ts === timeStamp)
-				if (ts !== timeStamp) {
-					setLongitude(lon);
-					setLatitude(lat);
-					setSatelliteCount(sat);
-					setTimeStamp(ts);
-				}
-			} catch (error) {
-				console.error(error);
-			}
-		}
-		const interval = setInterval(getData, 1000);
+		const interval = setInterval(async () => {
+			const data =  await getTelemetryData();
+			console.log(data.header)
+			const { altitude, latitude, longitude, satellites, timeStamp } = data.header;
+			console.log(altitude, latitude, longitude, satellites, timeStamp)
+			setLongitude(longitude);
+			setLatitude(latitude);
+			setAltitude(altitude);
+			setSatelliteCount(satellites);
+			setTimeStamp(timeStamp);
+			setTelemetryData(data);
+		}, 1000);
 		return () => clearInterval(interval);
-	}, [telemetryData, timeStamp]);
+	}, [timeStamp]);
 
 	return (
 		<>
@@ -61,38 +62,51 @@ export default function TelemetryView() {
 				</Grid>
 				<Grid container justifyContent="space-evenly">
 					{/* These text fields are temporary until the telemetry log component is done */}
-					<Stack spacing={3} width={"100%"}>
-						<TextField
-							variant="outlined"
-							value={longitude}
-							disabled
-							name="Longitude"
-							label="Longitude"
-							size="medium"
-							fullWidth
-							InputLabelProps={{ shrink: true }}
-						/>
-						<TextField
-							variant="outlined"
-							value={latitude}
-							disabled
-							name="Latitude"
-							label="Latitude"
-							size="medium"
-							fullWidth
-							InputLabelProps={{ shrink: true }}
-						/>
-						<TextField
-							variant="outlined"
-							value={timeStamp}
-							disabled
-							name="time-stamp"
-							label="Time Stamp"
-							fullWidth
-							InputLabelProps={{ shrink: true }}
-						/>
-					</Stack>
-					
+					<Card  sx={{ width: '100%' }}>
+						<CardContent>
+							<Stack spacing={3} width={"100%"}>
+								<TextField
+									variant="outlined"
+									value={longitude}
+									disabled
+									name="Longitude"
+									label="Longitude"
+									size="medium"
+									fullWidth
+									InputLabelProps={{ shrink: true }}
+								/>
+								<TextField
+									variant="outlined"
+									value={latitude}
+									disabled
+									name="Latitude"
+									label="Latitude"
+									size="medium"
+									fullWidth
+									InputLabelProps={{ shrink: true }}
+								/>
+								<TextField
+									variant="outlined"
+									value={altitude}
+									disabled
+									name="Altitude"
+									label="Altitude"
+									size="medium"
+									fullWidth
+									InputLabelProps={{ shrink: true }}
+								/>
+								<TextField
+									variant="outlined"
+									value={timeStamp}
+									disabled
+									name="time-stamp"
+									label="Time Stamp"
+									fullWidth
+									InputLabelProps={{ shrink: true }}
+								/>
+							</Stack>
+						</CardContent>
+					</Card>
 				</Grid>
 			</Grid>
 		</>

@@ -2,6 +2,10 @@ from shapely.geometry import Polygon, Point
 import random
 import datetime
 
+'''
+This file is used for mocking data
+'''
+
 def generate_random_coordinate():
     coord_bounds = Polygon([
         (32.97175827941012, -106.965486509431), 
@@ -13,48 +17,51 @@ def generate_random_coordinate():
     random_coordinate = Point([random.uniform(min_x, max_x), random.uniform(min_y, max_y)])
     return random_coordinate
 
-
 def generate_random_packet():
     coordinate = generate_random_coordinate()
     return {
-        'header': [
-            coordinate.x,
-            coordinate.y, 
-            random.randint(0, 40),
-            datetime.datetime.now().timestamp()
-        ],
-        'BME': [
-            random.uniform(-12, 12),
-            random.uniform(-32, 32),
-            random.uniform(0, 1000),
-            random.uniform(-12, 12)
-        ],
-        'LSM': [
-            random.uniform(-12, 12),
-            random.uniform(-12, 12),
-            random.uniform(-12, 12),
-            random.uniform(-12, 12),
-            random.uniform(-12, 12),
-            random.uniform(-12, 12),
-            random.uniform(-12, 12),
-            random.uniform(-12, 12),
-            random.uniform(-12, 12)
-        ],
-        'strainGauges': [
-            random.uniform(0, 100),
-            random.uniform(0, 100),
-            random.uniform(0, 100),
-            random.uniform(0, 100),
-            random.uniform(0, 100),
-            random.uniform(0, 100),
-            random.uniform(0, 100),
-            random.uniform(0, 100),
-            random.uniform(0, 100),
-            random.uniform(0, 100),
-            random.uniform(0, 100),
-            random.uniform(0, 100)
-        ],
-        'battery': [
-            random.randint(0, 100)
-        ]
+        'header': {
+            'latitude': coordinate.x,
+            'longitude': coordinate.y, 
+            'altitude': random.uniform(0, 10000),
+            'satellites': random.randint(0, 40),
+            'timeStamp': datetime.datetime.now().timestamp(),
+        },
+        'BME': {
+            'altitude': random.uniform(-12, 12),
+            'temperature': random.uniform(-32, 32),
+            'humidity': random.uniform(0, 1000),
+            'pressure' :random.uniform(-12, 12)
+        },
+        'LSM': {
+            'acceleration_x': random.uniform(-12, 12),
+            'acceleration_y': random.uniform(-12, 12),
+            'acceleration_z': random.uniform(-12, 12),
+            'gyroscope_x': random.uniform(-12, 12),
+            'gyroscope_y': random.uniform(-12, 12),
+            'gyroscope_z': random.uniform(-12, 12),
+            'magnetometer_x': random.uniform(-12, 12),
+            'magnetometer_y': random.uniform(-12, 12),
+            'magnetometer_z': random.uniform(-12, 12)
+        },
+        'strainGauges': {
+            'gauge_1': random.uniform(0, 100),
+            'gauge_2': random.uniform(0, 100),
+            'gauge_3': random.uniform(0, 100),
+            'gauge_4': random.uniform(0, 100),
+            'gauge_5': random.uniform(0, 100),
+            'gauge_6': random.uniform(0, 100),
+            'gauge_7': random.uniform(0, 100),
+            'gauge_8': random.uniform(0, 100),
+            'gauge_9': random.uniform(0, 100),
+            'gauge_10': random.uniform(0, 100),
+            'gauge_11': random.uniform(0, 100),
+            'gauge_12': random.uniform(0, 100)
+        },
+        'rocketStatus': {
+            'batteries': random.randint(0, 100),
+            'latitude': coordinate.x,
+            'longitude': coordinate.y,
+            'altitude': random.randint(0, 100000)
+        }
     }
