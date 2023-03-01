@@ -43,19 +43,14 @@ export default function ModulesView() {
 			paddingY="2rem" 
 			gap={3}
 		>
-			<Typography
-				variant="h3" 
-				sx={{ py: 2 }}
-			>
+			<Grid container>
 				<Header breadCrumbs={breadCrumbs} />
-			</Typography>
-
+			</Grid>
 			<Grid 
 				container 
 				spacing={3}
 				direction="row"
 				sx={{ 
-					pl: 3,
 					display: "flex"
 				}}
 				justifyContent="space-between"
