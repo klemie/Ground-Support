@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { TextField, Stack, Typography } from "@mui/material";
 
 interface SatelliteCountProps {
-  value: Number;
-}
+  value: number;
+  updateCount: Function;
+};
+
 
 const SatelliteCount: React.FC<SatelliteCountProps> = (props: SatelliteCountProps) => {
+  const [value,  setValue] = useState(props.value);
+
+  useEffect(() => {
+    setValue(props.value);
+  }, [value, props]);
+
   return (
     <>
       <Stack
@@ -17,7 +25,7 @@ const SatelliteCount: React.FC<SatelliteCountProps> = (props: SatelliteCountProp
 
         <TextField
           variant="outlined"
-          value={props.value}
+          value={value}
           disabled
           name="satellite"
           size="small"

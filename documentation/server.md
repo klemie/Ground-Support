@@ -93,9 +93,15 @@ Entity's from the database are updated to the database through mongoose queries,
 
 The Telemetry Service is an iteration of UVic Rocketry's [groundstation](https://github.com/UVicRocketry/groundstation) proof of concept. Based on a deep dive into the old code we have determined ...
 
+### Packets
+
+#### Packet API format 
+
+
 ### Decoding
 
 To be filled in by the person who takes on
+
 
 ### Receiving
 
