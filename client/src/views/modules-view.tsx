@@ -5,6 +5,9 @@ import _ from 'lodash';
 import { dataConfigParser } from '../utils/data-parser';
 import { Typography, Grid } from '@mui/material';
 
+const ROUND_TO = 3;
+const FLOATING = true;
+
 export default function ModulesView() {
 	const [ dataConfig, setDataConfig ] = useState(dataConfigParser(require('../utils/sample-data.json')));
 	
@@ -21,7 +24,7 @@ export default function ModulesView() {
 				module: module.module,
 				fieldName: module.fields[index],
 				fieldRange: module.fieldRanges[index],
-				fieldValue: _.round(_.random(min, max, true), 3)
+				fieldValue: _.round(_.random(min, max, FLOATING), ROUND_TO)
 			};
 			fields.push(field);
 		}

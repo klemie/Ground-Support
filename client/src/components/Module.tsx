@@ -11,6 +11,8 @@ import {
 import { Stack } from '@mui/system';
 import _ from 'lodash';
 
+const CHUNK_SIZE = 3;
+
 const statusMap = new Map<string, string>([
 	['Inactive', '#FCB701'],
 	['Active', '#65C464'],
@@ -19,9 +21,9 @@ const statusMap = new Map<string, string>([
 ]);
 
 export interface Field {
-	module?: string;
+	module: string;
 	fieldName: string;
-	fieldRange: Array<number>;
+	fieldRange: [number, number];
 	fieldValue: number;
 }
 
@@ -31,10 +33,12 @@ interface ModuleProps {
 }
 
 const computeStatuses = (fields?: Array<Field>) => {
-	let statuses: Array<string> = [];
+	let statuses: [string] = [""];
 	let status: string = 'Inactive';
 	fields?.forEach((field) => {
-		if (_.inRange(field.fieldValue, field.fieldRange[0], field.fieldRange[1])) {
+		const max = field.fieldRange[0];
+		const min = field.fieldRange[1];
+		if (_.inRange(field.fieldValue, min, max)) {
 			status = 'Active';
 		} else if (field.fieldValue === 0) {
 			status = 'Inactive';
@@ -44,7 +48,7 @@ const computeStatuses = (fields?: Array<Field>) => {
 		statuses.push(status);
 	});
 	return statuses;
-}
+};
 
 const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 	const [statusColor, setStatusColor] = useState(statusMap.get('Inactive')); //TODO: change to state array for all fields + module status
@@ -58,7 +62,7 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 		}); // currently only the final field controls the whole status of the module
 	}, [props.fields]);
 
-	const fieldsMatrix = _.chunk(props.fields, 3);
+	const fieldsMatrix = _.chunk(props.fields, CHUNK_SIZE);
 	
 	return (
 		<>

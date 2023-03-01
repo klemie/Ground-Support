@@ -1,7 +1,7 @@
 interface Module {
-	module?: string;
+	module: string;
 	fields: Array<string>;
-	fieldRanges: Array<Array<number>>;
+	fieldRanges: Array<[number, number]>;
 }
 
 export const dataConfigParser = (file: any): Module[] => {
@@ -11,12 +11,13 @@ export const dataConfigParser = (file: any): Module[] => {
 		fieldNames.shift();
 
 		let fields = [] as string[];
-		let fieldRanges = [] as number[][];
+		let fieldRanges: Array<[number, number]> = [];
 
 		fieldNames.forEach((fieldName) => {
 			moduleItem[fieldName].forEach((subfield: any) => {
 				let capitalizedFieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
 				fields.push(`${capitalizedFieldName} ${fieldName !== subfield['field'] ? subfield['field'] : ''}`);
+				console.log(fieldRanges)
 				fieldRanges.push(subfield['range']);
 			});
 		});

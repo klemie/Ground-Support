@@ -41,18 +41,6 @@
         ]
     },
     {
-        "module": "Air Brakes",
-        "Percent": [
-            { "field": "Percent", "range": [0 , 100] }
-        ],
-        "POT": [
-            { "field": "POT", "range": [-1200 , 1200] }
-        ],
-        "Steps": [
-            { "field": "Steps", "range": [-200 , 200] }
-        ]
-    },
-    {
         "module": "Rocket Status",
         "Battery": [
             { "field": "Percent", "range": [0, 100] }
@@ -63,7 +51,7 @@
 
         ],
         "Altitude": [
-            { "field": "Altitude", "range": [-90, 90] }
+            { "field": "Altitude", "range": [0, 100000] }
         ]
     },
     {
