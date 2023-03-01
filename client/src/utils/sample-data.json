@@ -45,8 +45,8 @@
         "Battery": [
             { "field": "Percent", "range": [0, 100] }
         ],
-        "cooridnates": [
-            { "field": "Latidute", "range": [-90, 90] },
+        "coordinates": [
+            { "field": "Latitude", "range": [-90, 90] },
             { "field": "Longitude", "range": [-180, 180] }
 
         ],
