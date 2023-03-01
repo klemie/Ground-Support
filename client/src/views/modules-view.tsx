@@ -1,5 +1,5 @@
 import React, {  useState } from 'react';
-import Module, { Field } from '../components/Module';
+import Module, { Field } from '../components/Module_';
 import _ from 'lodash';
 
 import { dataConfigParser } from '../utils/data-parser';
