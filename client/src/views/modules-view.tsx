@@ -1,9 +1,9 @@
 import React, {  useState } from 'react';
 import Module, { Field } from '../components/Module';
-import _ from 'lodash';
-
-import { dataConfigParser } from '../utils/data-parser';
+import Header, { Breadcrumb } from "../components/Header";
 import { Typography, Grid } from '@mui/material';
+import { dataConfigParser } from '../utils/data-parser';
+import _ from 'lodash';
 
 const ROUND_TO = 3;
 const FLOATING = true;
@@ -15,7 +15,10 @@ export default function ModulesView() {
 	// useEffect(() => {
 	// 	setDataConfig();
 	// }, [dataConfig]);
-
+	const breadCrumbs: Breadcrumb[] = [
+		{ name: "New Mission", path: "/", active: false },
+		{ name: "Module View", path: "/", active: true }
+	];
 	const formattedModules = dataConfig.map((module) => {
 		let fields = [];
 		for (let index in module.fields) {
@@ -33,19 +36,21 @@ export default function ModulesView() {
 
 	return (
 		<>
-			<Typography
-				variant="h3" 
-				sx={{ py: 2 }}
-			>
-				Modules View
-			</Typography>
-
+		<Grid 
+			container 
+			direction="column" 
+			paddingX="2rem" 
+			paddingY="2rem" 
+			gap={3}
+		>
+			<Grid container>
+				<Header breadCrumbs={breadCrumbs} />
+			</Grid>
 			<Grid 
 				container 
 				spacing={3}
 				direction="row"
 				sx={{ 
-					pl: 3,
 					display: "flex"
 				}}
 				justifyContent="space-between"
@@ -67,6 +72,7 @@ export default function ModulesView() {
 					);
 				})}
 			</Grid>
+		</Grid>
 		</>
 	);
 }

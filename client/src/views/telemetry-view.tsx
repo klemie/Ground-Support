@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Frequency from '../components/Frequency';
 import { Grid, Card, Stack, TextField, Typography, CardContent } from '@mui/material';
 import SatelliteCount from '../components/SatelliteCount';
-import axios from 'axios';
 import getTelemetryData from '../utils/fetchPacket';
-import goat from "../statics/goat.jpg";
-
+import Header, { Breadcrumb } from "../components/Header";
 
 export default function TelemetryView() {
 	const [frequency, setFrequency] = useState<number>(100);
@@ -18,6 +16,10 @@ export default function TelemetryView() {
 	const [timeStamp, setTimeStamp] = useState<string>("0");
 
 	const [telemetryData, setTelemetryData] = useState({});
+	const breadCrumbs: Breadcrumb[] = [
+		{ name: "New Mission", path: "/", active: false },
+		{ name: "Telemetry View", path: "/", active: true }
+	];
 
 	const updateFrequency = (newValue: number) => {
 		setFrequency(newValue);
@@ -49,14 +51,25 @@ export default function TelemetryView() {
 
 	return (
 		<>
-			<Grid container direction="column" paddingX="2rem" paddingY="1rem" gap={3}>
+			<Grid 
+				container 
+				direction="column" 
+				paddingX="2rem" 
+				paddingY="2rem" 
+				gap={3}
+			>
 				{/* Page Header */}
 				<Grid item>
-					<Typography variant="h3">Telemetry View</Typography>
+					<Header breadCrumbs={breadCrumbs} />
 				</Grid>
 
 				{/* Parameters Controllers */}
-				<Grid container direction="row" justifyContent="space-between" alignItems="center">
+				<Grid 
+					container 
+					direction="row" 
+					justifyContent="space-between" 
+					alignItems="center"
+				>
 					<Frequency value={frequency} updateFrequency={updateFrequency} />
 					<SatelliteCount value={satelliteCount} updateCount={updateSatelliteCount}  />
 				</Grid>
