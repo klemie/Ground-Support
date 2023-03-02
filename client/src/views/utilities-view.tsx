@@ -2,7 +2,6 @@ import React from "react";
 import { Button, Grid } from "@mui/material";
 import VerticalStepper from "../components/VerticalStepper";
 import SettingsDialog from "../components/SettingsDialog";
-import MissionConfig from "../components/MissionConfig";
 
 const UtilitiesView = () => {
 
@@ -11,12 +10,6 @@ const UtilitiesView = () => {
 
   const handleOpen = () => {
     setIsOpen(!isOpen);
-  }
-
-  const [missionConfigOpen, setMissionConfigOpen] = React.useState(false);
-
-  const handleMissionConfigOpen = () => {
-    setMissionConfigOpen(!missionConfigOpen);
   }
 
   return (
@@ -34,18 +27,6 @@ const UtilitiesView = () => {
           <SettingsDialog isOpen={isOpen} onClose={()=>setIsOpen(false)}/>
           <Button variant="outlined" onClick={()=>handleOpen()}>Settings</Button>
           
-        </Grid>
-
-        <Grid item>
-          <MissionConfig 
-            missionName={"ur mom"} 
-            location={[23.30384, 85.47959]} 
-            date={new Date(2023, 5, 23)} 
-            rocketProfile={"Xenia-2"} 
-            isOpen={missionConfigOpen} 
-            handleClose={()=>setMissionConfigOpen(false)}
-          />
-          <Button variant="contained" onClick={()=>handleMissionConfigOpen()}>Mission Config</Button>
         </Grid>
 
         {/* Page change stepper */}
