@@ -4,7 +4,7 @@ import { Card, CardActions, CardContent, Button, InputAdornment, TextField, Form
 import { Close, Add } from "@mui/icons-material";
 
 interface RocketProfileProps {
-  closeModal: () => void;
+  onClose: () => void;
 }
 
 const cardStyle = {
@@ -16,7 +16,7 @@ const cardStyle = {
   boxShadow: 24,
 };
 
-const button = {
+const buttonStyle = {
   height: 45,
   borderRadius: 6,
   mt: 10,
@@ -31,7 +31,7 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 
   const saveProfile = () => {
     console.log("Saving profile");
-    props.closeModal();
+    props.onClose();
   }
 
   return (
@@ -39,7 +39,7 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
       <Card>
         <CardHeader title="New Rocket Profile"
         action={
-          <IconButton aria-label="Close" onClick={props.closeModal}>
+          <IconButton aria-label="Close" onClick={props.onClose}>
             <Close />
           </IconButton>
         }/>
@@ -49,11 +49,11 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
           <Stack direction="column" spacing={2}>
             <Stack direction="row" spacing={4}>
               <TextField sx={{minWidth: "40%"}} id="profile-name" label="Profile Name" variant="outlined" />
-              <Button size="small" sx={button} variant="contained" startIcon={<Add />} component="label">
+              <Button size="small" sx={buttonStyle} variant="contained" startIcon={<Add />} component="label">
                 <input hidden accept="*" type="file" />
                 SVG
               </Button>
-              <Button size="small" sx={button} variant="contained" startIcon={<Add />} component="label">
+              <Button size="small" sx={buttonStyle} variant="contained" startIcon={<Add />} component="label">
                 <input hidden accept="*" type="file" />
                 SIM DATA
               </Button>
@@ -102,7 +102,7 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
         </CardContent>
         <hr></hr>
         <CardActions sx={{ float: "right"}}>
-          <Button onClick={props.closeModal} >Cancel</Button>
+          <Button onClick={props.onClose} >Cancel</Button>
           <Button onClick={saveProfile}>Save</Button>
         </CardActions>
       </Card>
