@@ -7,7 +7,8 @@ The Ground Support application
 This section goes over instruction for the developer and non-software engineer installation process
 
 ### Developer installation
-This section will go over environment dependencies and setup. 
+
+This section will go over environment dependencies and setup.
 
 #### Requirements
 
@@ -15,30 +16,31 @@ This section will go over environment dependencies and setup.
 
 If you do not have Node please go to https://nodejs.org/en/download/ and install the latest stable version.
 
-you can test if the installation worked by typing the commands 
+you can test if the installation worked by typing the commands
 
-```bash 
+```bash
 npm -v
-``` 
+```
 
 ```bash
 node -version
 ```
 
-If they don't give you errors then installation of node was successful.
-
-**Yarn** 
+If they don't give you errors then installation of node was successful. **TypeScript**
 
 ```bash
-npm install yarn
+npm i -g typescript
+```
+
+verify installation
+
+```bash
+tsc --version
 ```
 
 **Python**
 
 Go to [python](https://www.python.org/downloads/release/python-3100/) and install python >3.9
-
-```bash
-```
 
 **Docker**
 
@@ -48,29 +50,40 @@ Go to there website and install ... (finish once docker is up and runner on loca
 
 **MongoDB Atlas**
 
-We will be cloud hosting for our development environment. Our database will be hosted by MongoDB itself on MongoDB Atlas. 
+We will be cloud hosting for our development environment. Our database will be hosted by MongoDB itself on MongoDB Atlas.
 
 First go to [Atlas sign in](https://account.mongodb.com/account/login) and sign up for an account.
 
 #### Dev Environment Setup
 
-Now if you haven't already you can clone the repository 
+Now if you haven't already you can clone the repository
 
 ```bash
 git clone https://github.com/UVicRocketry/Ground-Support.git
 ```
 
-**Node Installation**
+**Dependencies**
 
 Next to get everything set up all node module dependencies must be installed.
 
 To do this run
 
 ```bash
-npm install && cd client && npm install
+npm install && cd client && npm i && cd services/server-service && npm i
 ```
 
-This will install and update all dependencies
+in the `/services/server-service` directory create a `.env` file
+
+and paste
+
+```ts
+MONGO_USERNAME = '';
+MONGO_PASSWORD = '';
+
+SERVER_PORT = '';
+```
+
+This will install and update all dependencies and setup the environment variables
 
 **Create Database**
 
@@ -89,9 +102,12 @@ Select the free option
 Select the AWS hosting service with a North american Server. And Name your cluster `GroundSupport`
 
 Create an Admin User with the credentials
+
 > Username: SupportAdmin
 
 > Password: UVR2015
+
+In the `.env` file fill in the password and username with the credentials above
 
 <p align="center">
     <img src="./assets/admin-user-creation.png" width=300/>
@@ -99,7 +115,7 @@ Create an Admin User with the credentials
 
 **Network Access**
 
-In Here you can setup which IP adresses can access your database. For now click add new IP address and select `add current ip address` button. 
+In Here you can setup which IP adresses can access your database. For now click add new IP address and select `add current ip address` button.
 
 ⚠️ Do not click allow access anywhere. That is reserved for he production version.
 
@@ -115,23 +131,30 @@ A popup will appear, click `connect your application`. This will give you a **Co
     <img src="./assets/connect-database.png" width=300/>
 </p>
 
-Paste that in `./services/server-service/src/index.js` on line 5
+Paste that in `./services/server-service/src/config/config.ts` on line 5
 
 ```ts
-mongoose.connect("{here}");
+const MONGO_URL = ``;
 ```
 
-***
+replace with environment variables
+
+```ts
+`mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@groundsupport.{}.mongodb.net/`;
+```
+
+---
 
 Depending on what type of development your doing you can either transpile just the backend, the frontend or both concurrently.
-
 
 **Backend**
 
 `Navigate` to ./services/server-service
+
 ```bash
-npm run devStart
+npm run server
 ```
+
 **Frontend**
 
 `Navigate` to ./client/src
@@ -143,6 +166,7 @@ npm start
 **Both**
 
 `Navigate` to ./client/src
+
 ```bash
 npm run both
 ```
@@ -157,9 +181,9 @@ python3 ...(finish when setup)
 
 download the newest release ... (update when there is a release)
 
-## Usage 
+## Usage
 
-The app contains 
+The app contains
 
 ### API
 
@@ -171,4 +195,4 @@ All the user would need to do is make a request in the console or through a serv
 GET .. (finish after MVP)
 ```
 
-## Maintenance and Upkeep  
+## Maintenance and Upkeep

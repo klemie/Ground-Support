@@ -1,0 +1,67 @@
+Rocket: {
+    _id: id_of_this_doc,
+    name: String,
+    Date: Date,
+    Coordinates: [
+        Float, 
+        Float
+    ]
+    Mission(refs): [
+        id_to_other_doc, ...
+    ],
+    RocketProfile: {
+        _id: id,
+        rocketName: String, 
+        Height: String,
+        Class: String,
+        MotorType: String,
+        Motor: String
+    },
+    DataConfig: id_to_other_doc
+}
+
+Mission: {
+    _id: id,
+    IsTest: Bool,
+    lastUpdated: Date,
+    Data: {
+        <fieldId: fieldDataId>,
+        ...
+    }
+}
+
+DataConfig: {
+    _id: id_of_this_doc,
+    fieldGroups: [
+        id_to_other_doc, ...
+    ],
+    fields: [
+        id_to_other_doc, ...
+    ]
+}
+
+FieldData: {
+    [
+        {
+            Value: Number,
+            Timestamp: Date,
+        }
+    ]
+
+}
+
+Field: {
+    _id: id_of_this_doc,
+    name: String,
+    Range: [Number(min), Number(max)],
+}
+
+FieldGroup: {
+   _id:  id_of_this_doc,
+    name: String,
+    FieldsId: [
+        id_to_other_doc, ...
+    ]
+}
+
+// might want to store UI settings
