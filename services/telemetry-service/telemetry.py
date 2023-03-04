@@ -4,18 +4,29 @@ import sys
 import shutil
 from subprocess import Popen, PIPE, run
 
-a = Popen(["C:/Users/jackw/uvic/rocketry/Ground-Support/services/telemetry-service/rtl-sdr/rtl_fm.exe", "-f", "194.3M", "-d", "1", "-g", "49.6", "-r", "48k", "-p", "93", "-"], shell = True)
-b = Popen(["C:/Users/jackw/uvic/rocketry/Ground-Support/services/telemetry-service/rtl-sdr/rtl_fm.exe", "-f", "194.3M", "-g", "49.6", "-r", "48k", "-p", "93", "-"], shell = True)
+# a = Popen(["C:/Users/jackw/uvic/rocketry/Ground-Support/services/telemetry-service/rtl-sdr/rtl_fm.exe", "-f", "441.35M", "-d", "0", "-g", "49.6", "-r", "48k", "-p", "93", "-"], shell = True)
+# b = Popen(["C:/Users/jackw/uvic/rocketry/Ground-Support/services/telemetry-service/rtl-sdr/rtl_fm.exe", "-f", "194.3M", "-d", "0", "-g", "49.6", "-r", "48k", "-p", "93"], shell = True)
 # stdout, stderr = a.communicate()
-# c = Popen(["rtl-sdr/rtl_fm", "-f", "250.3M"], stdout=PIPE, stderr=PIPE)
 # print(stdout)
 # print(c.stdin)
-# b = Popen(["./direwolf-1.6.0-413855e_x86_64/direwolf"], stdin=a.stdout)
-# while True:
-#     out = a.stdout.read(1)
-#     if out == "b''" and a.poll() != None:
-#         break
-#     if out != "b''":
-#         # sys.stdout.write(str(out))
-#         # sys.stdout.flush()
-#         print(out.decode())
+# b = Popen(["./direwolf-1.6.0-413855e_x86_64/direwolf"], shell=True, stdin=a.stdout)
+currentData = {
+    "Position": "",
+    "N": "",
+    "W": "",
+    "alt": ""
+}
+while True:
+    for line in sys.stdin:
+        if "Position" in line:
+            currentData["Position"] = line[10:]
+            currentData["Position"] = currentData["Position"][0:-1]
+        if "N " in line:
+            currentData["N"] = line[2:12]
+        if "W " in line:
+            currentData["W"] = line[14:25]
+        if "alt " in line:
+            currentData["alt"] = line[33:]
+            currentData["alt"] = currentData["alt"][0:-4]
+        # API CALL (Yay!)
+#   print(currentData)
