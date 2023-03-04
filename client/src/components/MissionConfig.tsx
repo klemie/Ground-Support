@@ -5,6 +5,7 @@ interface MissionConfigProps {
     missionName: string;
     location: [number, number];
     date: Date;
+    launchAltitude: Number;
     rocketProfile: string;
     isOpen: boolean;
     onClose: () => void
@@ -45,6 +46,15 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         fullWidth
                         size="small"
                         helperText="Launch Date"
+                    />
+                    <TextField 
+                        required
+                        variant="outlined" 
+                        type="Launch Altitude"
+                        placeholder={props.launchAltitude.toString()}
+                        fullWidth
+                        size="small"
+                        helperText="Launch Altitude"
                     />
 
                     <Stack direction="row" spacing={2} alignItems="center">
