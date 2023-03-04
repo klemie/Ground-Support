@@ -106,9 +106,9 @@ The Telemetry Service is an iteration of UVic Rocketry's [groundstation](https:/
 > rtl-sdr/rtl_fm.exe -f 441.35M -r 24k -s 260k -o 4 -p 93 -g 49.6 - | direwolf-1.6.0-413855e_x86_64/direwolf.exe -n 1 -r 24000 -b 16 -
 9. Go outside and wait for telemetry lock (~3mins). When Telemetry is locked on output will look like what is seen on the right terminal. When Telemetry is not locked on, output will resemble the left terminal.
 ![image](https://user-images.githubusercontent.com/79673714/222917125-9d559bdc-36c3-4ad0-939d-dfd5df27c956.png)
-9. Once Telemetry is locked, quit the previous command with ^C and input the full command:
+10. Once Telemetry is locked, quit the previous command with ^C and input the full command:
 > rtl-sdr/rtl_fm.exe -f 441.35M -r 24k -s 260k -o 4 -p 93 -g 49.6 - | direwolf-1.6.0-413855e_x86_64/direwolf.exe -n 1 -r 24000 -b 16 - | python telemetry.py
-10. Smile! "No way it's working perfectly!"
+11. Smile! "No way it's working perfectly!"
 
 
 ### Packets
