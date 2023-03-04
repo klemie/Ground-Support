@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import { Button, Select, MenuItem,  FormControl, Dialog, TextField, Stack, DialogContent, InputLabel } from "@mui/material";
+import React from "react";
+import { Button, Select, MenuItem,  FormControl, Dialog, TextField, Stack, DialogContent, InputLabel, Typography } from "@mui/material";
 
 interface MissionConfigProps {
     missionName: string;
@@ -7,7 +7,7 @@ interface MissionConfigProps {
     date: Date;
     rocketProfile: string;
     isOpen: boolean;
-    handleClose: () => void
+    onClose: () => void
 }
 
 const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) => {
@@ -17,12 +17,15 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
             <DialogContent>
                 <Stack direction="column" spacing={2} alignItems="left">
 
+                    <Typography variant="h4" align="left"> Mission Configuration </Typography>
+
                     <TextField 
                         required
                         variant="outlined" 
                         type="String"
                         placeholder={props.missionName}
                         fullWidth
+                        size="small"
                         helperText="Mission Name"
                     />
                     <TextField 
@@ -31,6 +34,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         type="String"
                         placeholder={props.location[0] + ", " + props.location[1]}
                         fullWidth
+                        size="small"
                         helperText="Mission Location"
                     />
                     <TextField 
@@ -39,11 +43,14 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         type="Date"
                         placeholder={props.date.toLocaleDateString()}
                         fullWidth
+                        size="small"
                         helperText="Launch Date"
                     />
 
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormControl variant="outlined" sx={{ minWidth: "85%" }}>
+                        <FormControl variant="outlined" size="small" sx={{ 
+                            minWidth: "85%"
+                        }}>
                             <InputLabel id="rocketProfile">Rocket Profile</InputLabel>
                             <Select 
                             defaultValue=""
@@ -69,7 +76,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
 
                         <Button variant={"contained"} sx={{ minWidth: "48.5%"}}>Save</Button>
 
-                        <Button variant={"contained"} color={"error"} sx={{ minWidth: "48.5%"}} onClick={props.handleClose}>Cancel</Button>
+                        <Button variant={"contained"} color={"error"} sx={{ minWidth: "48.5%"}} onClick={props.onClose}>Cancel</Button>
 
                     </Stack>
 
