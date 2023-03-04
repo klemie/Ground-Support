@@ -85,6 +85,14 @@ SERVER_PORT = '';
 
 This will install and update all dependencies and setup the environment variables
 
+Now for telemetry 
+
+First navigate to `/services/telemetry-service/` and install all python dependencies with 
+
+```bash
+pip install requirements.txt
+```
+
 **Create Database**
 
 To use the app you must first create a local database for your environment to do this go to mongoBD Atlas and create a new dataBase.
@@ -115,7 +123,7 @@ In the `.env` file fill in the password and username with the credentials above
 
 **Network Access**
 
-In Here you can setup which IP adresses can access your database. For now click add new IP address and select `add current ip address` button.
+In Here you can setup which IP addresses can access your database. For now click add new IP address and select `add current ip address` button.
 
 ⚠️ Do not click allow access anywhere. That is reserved for he production version.
 
@@ -174,7 +182,7 @@ npm run both
 **Telemetry Backend**
 
 ```bash
-python3 ...(finish when setup)
+python3 gateway.py
 ```
 
 ### Non-technical installation
@@ -185,14 +193,5 @@ download the newest release ... (update when there is a release)
 
 The app contains
 
-### API
-
-The ground support system comes with an API for anyone to easily get flight data from the platform. The API is HTTP based.
-
-All the user would need to do is make a request in the console or through a service like postman https://www.postman.com/
-
-```JSON
-GET .. (finish after MVP)
-```
 
 ## Maintenance and Upkeep
