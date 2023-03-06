@@ -93,22 +93,39 @@ Entity's from the database are updated to the database through mongoose queries,
 
 The Telemetry Service is an iteration of UVic Rocketry's [groundstation](https://github.com/UVicRocketry/groundstation) proof of concept. Based on a deep dive into the old code we have determined ...
 
+### SDR Windows Configuration
+1. Go to that guide
+2. Download rtlsharp from the website
+3. Run the install-rtlsdr.bat file
+4. Run zadig and install the winusb driver (see the guide linked)
+5. Open rtlsharp and select RTLSDR in devices
+6. Hit play and you should see the waterfall graph thing and if you have a device transmitting you should see spikes when it transmits.
+7. Then run the script (currently having issues with it complaining about device permissions).
+
+https://www.rtl-sdr.com/rtl-sdr-quick-start-guide/
+
 ### How to Run Telemetry service for testing:
 
 1. Have a Windows PC.
 2. Plug in RTL-SDR to The PC.
 3. Edit telemtry.py to make desired API call.
 4. Set up Big Red Bee to transmit on a certain frequency.
-5. Make sure Big Red Bee is tansmitting using a receiving software on the PC. I used [SDR Sharp](https://airspy.com/download/) and that worked well. Just download the program and run both .bat files, then start the application.
+5. Make sure Big Red Bee is transmitting using a receiving software on the PC. I used [SDR Sharp](https://airspy.com/download/) and that worked well. Just download the program and run both .bat files, then start the application.
 6. Open Git Bash or similar Bash terminal
 7. Navigate to services/telemetry-service
 8. Run following command. This will receive and decode signals and print output to terminal, so debugging can be done.
-> rtl-sdr/rtl_fm.exe -f 441.35M -r 24k -s 260k -o 4 -p 93 -g 49.6 - | direwolf-1.6.0-413855e_x86_64/direwolf.exe -n 1 -r 24000 -b 16 -
+
+```bash 
+rtl-sdr/rtl_fm.exe -f 441.35M -r 24k -s 260k -o 4 -p 93 -g 49.6 - | direwolf-1.6.0-413855e_x86_64/direwolf.exe -n 1 -r 24000 -b 16 -
+```
+
 9. Go outside and wait for telemetry lock (~3mins). When Telemetry is locked on output will look like what is seen on the right terminal. When Telemetry is not locked on, output will resemble the left terminal.
 ![image](https://user-images.githubusercontent.com/79673714/222917125-9d559bdc-36c3-4ad0-939d-dfd5df27c956.png)
 10. Once Telemetry is locked, quit the previous command with ^C and input the full command:
-> rtl-sdr/rtl_fm.exe -f 441.35M -r 24k -s 260k -o 4 -p 93 -g 49.6 - | direwolf-1.6.0-413855e_x86_64/direwolf.exe -n 1 -r 24000 -b 16 - | python telemetry.py
-11. Smile! "No way it's working perfectly!"
+```bash
+ rtl-sdr/rtl_fm.exe -f 441.35M -r 24k -s 260k -o 4 -p 93 -g 49.6 - | direwolf-1.6.0-413855e_x86_64/direwolf.exe -n 1 -r 24000 -b 16 - | python telemetry.py
+ ```
+11. **smiles*\*! "No way it's working perfectly!"
 
 
 ### Packets
