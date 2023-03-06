@@ -5,7 +5,7 @@ import { Add } from "@mui/icons-material";
 
 import "../styles/missionSelect.css";
 
-import addRocket from "../static/images/AddRocket.png";
+import addRocket from "../static/images/AddRocket.svg";
 
 interface Mission {
   id: number;
@@ -24,19 +24,19 @@ export default function MissionSelectionView(props: MissionSelectProps) {
     {
       id: 1,
       name: "MVP-1",
-      image: "MVP-1.png",
+      image: "Mvp1.svg",
       active: true,
     },
     {
       id: 2,
       name: "MVP-2",
-      image: "MVP-2.png",
+      image: "Mvp2.svg",
       active: false,
     },
     {
       id: 3,
       name: "XENIA-1",
-      image: "XENIA-1.png",
+      image: "Xenia1.svg",
       active: true,
     }
   ];
@@ -59,9 +59,11 @@ export default function MissionSelectionView(props: MissionSelectProps) {
   }
 
   const missions = missionData.map((data: Mission)=>{
+    const rocketImageURL = require('../static/images/' + data.image);
     return <div key={data.id.toString()}>
       <Stack direction="column" spacing={1} onClick={() => setMission(data)}>
-        <img src={addRocket} alt="Mission" width={40}></img>
+
+        <img src={rocketImageURL} alt="Mission" width={40}></img>
         <Chip label={data.name} color={ data.active ? "primary" : "warning" } sx={{ fontWeight: "bold" }}/> 
       </Stack>
     </div>
@@ -83,14 +85,18 @@ export default function MissionSelectionView(props: MissionSelectProps) {
           container 
           justifyContent="center" 
           alignItems="center"
-          style={{ height: "10%" }}
         >
           <Typography variant="h3">Mission Selection</Typography>
         </Grid>
 
         {/* Mission Selection */}
-        <Grid item>
-          <Stack direction="row" justifyContent="center" spacing={8} >
+        <Grid
+          container 
+          justifyContent="center" 
+          alignItems="center"
+          style={{ height: "80%" }}
+        >
+          <Stack direction="row" justifyContent="center" spacing={8} alignItems="flex-end">
             { missions }
             <Stack direction="column" spacing={1} onClick={addNewMission}>
               <img src={addRocket} alt="Add Rocket" width={40}></img>
