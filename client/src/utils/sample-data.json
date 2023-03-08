@@ -1,0 +1,74 @@
+[
+     {
+        "module": "BME280",
+        "Altitude": [
+            { "field": "Altitude", "range": [2 , 3] }
+        ],
+        "Temperature": [
+            { "field": "Temperature", "range": [2 , 3] }
+        ],
+        "Humidity": [
+            { "field": "Humidity", "range": [2 , 3] }
+        ],
+        "Pressure": [
+            { "field": "Pressure", "range": [2 , 3] }
+        ]
+    },
+    {
+        "module": " LSM9DS1",
+        "acceleration": [
+            { "field": "x", "range": [2 , 3] } ,
+            { "field": "y", "range": [10 , 19] },
+            { "field": "z", "range": [16 , 19] }
+        ],
+        "gyroscope": [
+            { "field": "x", "range": [2 , 3] } ,
+            { "field": "y", "range": [10 , 19] },
+            { "field": "z", "range": [16 , 19] }
+        ],
+        "magnetometer": [
+            { "field": "x", "range": [2 , 3] } ,
+            { "field": "y", "range": [10 , 19] },
+            { "field": "z", "range": [16 , 19] }
+        ]
+    },
+    {
+        "module": "MAGP-I",
+        "acceleration": [
+            { "field": "x", "range": [-200 , 200] } ,
+            { "field": "y", "range": [-200 , 200] },
+            { "field": "z", "range": [-200 , 200] }
+        ]
+    },
+    {
+        "module": "Rocket Status",
+        "Battery": [
+            { "field": "Percent", "range": [0, 100] }
+        ],
+        "coordinates": [
+            { "field": "Latitude", "range": [-90, 90] },
+            { "field": "Longitude", "range": [-180, 180] }
+
+        ],
+        "Altitude": [
+            { "field": "Altitude", "range": [0, 100000] }
+        ]
+    },
+    {
+        "module": "Strain Gauges",
+        "Fields": [
+            { "field": "1", "range": [-12 , 12] },
+            { "field": "2", "range": [-12 , 12] },
+            { "field": "3", "range": [-12 , 12] },
+            { "field": "4", "range": [-12 , 12] },
+            { "field": "5", "range": [-12 , 12] },
+            { "field": "6", "range": [-12 , 12] },
+            { "field": "7", "range": [-12 , 12] },
+            { "field": "8", "range": [-12 , 12] },
+            { "field": "9", "range": [-12 , 12] },
+            { "field": "10", "range": [-12 , 12] },
+            { "field": "11", "range": [-12 , 12] },
+            { "field": "12", "range": [-12 , 12] }
+        ]
+    }
+]
