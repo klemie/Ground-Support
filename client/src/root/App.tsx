@@ -80,7 +80,7 @@ function App() {
             </Grid>
 
             {/* Page change stepper */}
-            <Grid item>
+            <Grid container justifyContent="center">
               <Stepper
                 nonLinear
                 activeStep={activeStep}
