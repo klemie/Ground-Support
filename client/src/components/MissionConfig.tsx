@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Select, MenuItem,  FormControl, Dialog, TextField, Stack, DialogContent, InputLabel, Typography } from "@mui/material";
+import { Add, Upload } from "@mui/icons-material"; 
 
 interface MissionConfigProps {
     missionName: string;
@@ -17,7 +18,6 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
         <Dialog open={props.isOpen} fullWidth>
             <DialogContent>
                 <Stack direction="column" spacing={2} alignItems="left">
-
                     <Typography variant="h4" align="left"> Mission Configuration </Typography>
 
                     <TextField 
@@ -74,13 +74,17 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                                 <MenuItem value="Xenia-2">Xenia-2</MenuItem>
                             </Select>
                         </FormControl>
-                        <Button variant={"contained"} color={"error"} component="label">
-                            +
+                        <Button variant={"contained"} color={"error"} component="label"> 
+                            <Add />
                             <input hidden type="file" />
                         </Button>
                     </Stack>
-
-                    <Button variant={"contained"} component="label">Data Configuration <input hidden type="file" /></Button>
+                    <Button variant={"contained"} component="label"
+                        startIcon={<Upload/>}
+                    >
+                        Data Configuration 
+                        <input hidden type="file" />
+                    </Button>
 
                     <Stack direction="row" spacing={2} alignItems="center">
 

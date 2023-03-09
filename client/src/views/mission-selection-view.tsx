@@ -4,6 +4,7 @@ import Header, { Breadcrumb } from "../components/Header";
 import addRocket from "../static/images/AddRocket.svg";
 
 import "../styles/missionSelect.css";
+import MissionConfig from "../components/MissionConfig";
 
 interface Mission {
   id: number;
@@ -23,6 +24,8 @@ export default function MissionSelectionView(props: MissionSelectProps) {
     "rgba(0, 94, 184, 1)",
     "rgba(69, 136, 201, 1)"
   ];
+
+  const [isOpen, setIsOpen] = useState(true);
 
   const breadCrumbs: Breadcrumb[] = [
 		{ name: "Mission Selection", path: "/", active: true }
@@ -133,6 +136,7 @@ export default function MissionSelectionView(props: MissionSelectProps) {
           return <div style={{ backgroundColor: color, width: "25%", height: "1vh", float: "left" }} />;
         })}
     </div>
+    <MissionConfig missionName="Name" location={[0.000, 0.000]} date={new Date()} rocketProfile="Rocket" isOpen={isOpen} onClose={()=>setIsOpen(false)} launchAltitude={100} />
     </div>
   );
 
