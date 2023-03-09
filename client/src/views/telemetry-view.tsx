@@ -4,6 +4,7 @@ import { Grid, Card, Stack, TextField, Typography, CardContent } from '@mui/mate
 import SatelliteCount from '../components/SatelliteCount';
 import getTelemetryData from '../utils/fetchPacket';
 import Header, { Breadcrumb } from "../components/Header";
+import goat from "../static/images/goat.jpg";
 
 export default function TelemetryView() {
 	const [frequency, setFrequency] = useState<number>(100);
@@ -121,6 +122,10 @@ export default function TelemetryView() {
 						</CardContent>
 					</Card>
 				</Grid>
+				<Grid container justifyContent="space-evenly">
+					<img src={goat} style={{borderRadius:"10px"}} />
+				</Grid>
+
 			</Grid>
 		</>
 	);
