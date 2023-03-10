@@ -1,0 +1,19 @@
+{
+    "root": true,
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "array-bracket-spacing": "error",
+        "no-console": "error",
+        "no-duplicate-imports": "warn",
+        "no-ternary": "warn"
+    },
+    "ignorePatterns": ["documentation/**/*"]
+}
