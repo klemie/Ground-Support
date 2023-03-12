@@ -50,7 +50,8 @@ Go to there website and install ... (finish once docker is up and runner on loca
 
 **MongoDB Atlas**
 
-We will be cloud hosting for our development environment. Our database will be hosted by MongoDB itself on MongoDB Atlas.
+We will be cloud hosting for our development environment. Our database will be hosted by MongoDB itself on MongoDB
+Atlas.
 
 First go to [Atlas sign in](https://account.mongodb.com/account/login) and sign up for an account.
 
@@ -85,9 +86,18 @@ SERVER_PORT = '';
 
 This will install and update all dependencies and setup the environment variables
 
-**Create Database Remote**
+Now for telemetry
 
-To use the app you must first create a remote database for your environment to do this go to mongoBD Atlas and create a new dataBase.
+First navigate to `/services/telemetry-service/` and install all python dependencies with
+
+```bash
+pip install requirements.txt
+```
+
+**Create Database**
+
+To use the app you must first create a remote database for your environment to do this go to mongoBD Atlas and create a
+new dataBase.
 
 <p align="center">
     <img src="./assets/Create%20a%20database.png" width="300"/>
@@ -115,7 +125,8 @@ In the `.env` file fill in the password and username with the credentials above
 
 **Network Access**
 
-In Here you can setup which IP adresses can access your database. For now click add new IP address and select `add current ip address` button.
+In Here you can setup which IP addresses can access your database. For now click add new IP address and select
+`add current ip address` button.
 
 ⚠️ Do not click allow access anywhere. That is reserved for he production version.
 
@@ -125,7 +136,8 @@ In Here you can setup which IP adresses can access your database. For now click 
 
 Next click on the database tab on the left and click the `Connect` button for the `GroundSupport` database.
 
-A popup will appear, click `connect your application`. This will give you a **Connection String**. All connection strings are different.
+A popup will appear, click `connect your application`. This will give you a **Connection String**. All connection
+strings are different.
 
 <p align="center">
     <img src="./assets/connect-database.png" width=300/>
@@ -145,13 +157,15 @@ replace with environment variables
 
 ---
 
-Depending on what type of development your doing you can either transpile just the backend, the frontend or both concurrently.
+Depending on what type of development your doing you can either transpile just the backend, the frontend or both
+concurrently.
 
 **Create Database Local**
 
 If you are JJ and scared of Hosting your data you can install a local database for development
 
-To do that you will need mongo DBs data management application `Compass` to get it go to: [Download](https://www.mongodb.com/try/download/community) and install the newest community addition.
+To do that you will need mongo DBs data management application `Compass` to get it go to:
+[Download](https://www.mongodb.com/try/download/community) and install the newest community addition.
 
 Go through the installer. Choose the `Complete` option
 
@@ -198,7 +212,7 @@ npm run both
 **Telemetry Backend**
 
 ```bash
-python3 ...(finish when setup)
+python3 gateway.py
 ```
 
 ### Non-technical installation
@@ -208,15 +222,5 @@ download the newest release ... (update when there is a release)
 ## Usage
 
 The app contains
-
-### API
-
-The ground support system comes with an API for anyone to easily get flight data from the platform. The API is HTTP based.
-
-All the user would need to do is make a request in the console or through a service like postman https://www.postman.com/
-
-```JSON
-GET .. (finish after MVP)
-```
 
 ## Maintenance and Upkeep
