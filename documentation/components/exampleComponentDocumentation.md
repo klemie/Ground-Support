@@ -1,15 +1,24 @@
-# Component Name
+# { Component Name }
 
-{Description}
+{ High level description }
+## Importing
 
+```tsx
+import {componentName} from "../components/{componentName}" 
+```
 ## Props
-
 ```ts
-interface {Name}Props {
-
+interface ModuleProps {
+    {Property}: {Type}
 }
 ```
 
-Prop
+>`{ PopertyName }` 
 
-## 
+{ description }
+
+
+```tsx
+//{usecase of component}
+<{ComponentName} { PropertyName }="Module Title" />
+```
