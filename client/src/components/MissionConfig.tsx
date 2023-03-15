@@ -33,7 +33,16 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         placeholder={""}
                         fullWidth
                         size="small"
-                        label="Mission Location"
+                        label="Mission Location (Latitude)"
+                    />
+                    <TextField 
+                        required
+                        variant="outlined" 
+                        type="String"
+                        placeholder={""}
+                        fullWidth
+                        size="small"
+                        label="Mission Location (Longitude)"
                     />
                     <TextField 
                         required
