@@ -9,7 +9,8 @@ interface MissionConfigProps {
     launchAltitude: Number;
     rocketProfile: string;
     isOpen: boolean;
-    onClose: () => void
+    onClose: () => void;
+    onSave: () => void;
 }
 
 const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) => {
@@ -17,7 +18,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
     return(
         <Dialog open={props.isOpen} fullWidth>
             <DialogContent>
-                <Stack direction="column" spacing={2} alignItems="left">
+                <Stack direction="column" spacing={3} alignItems="left">
                     <Typography variant="h4" align="left"> Mission Configuration </Typography>
 
                     <TextField 
@@ -27,7 +28,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         placeholder={props.missionName}
                         fullWidth
                         size="small"
-                        helperText="Mission Name"
+                        label="Mission Name"
                     />
                     <TextField 
                         required
@@ -36,7 +37,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         placeholder={props.location[0] + ", " + props.location[1]}
                         fullWidth
                         size="small"
-                        helperText="Mission Location"
+                        label="Mission Location"
                     />
                     <TextField 
                         required
@@ -45,16 +46,17 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         placeholder={props.date.toLocaleDateString()}
                         fullWidth
                         size="small"
-                        helperText="Launch Date"
+                        label="Launch Date"
+                        InputLabelProps={{ shrink: true }}
                     />
                     <TextField 
                         required
                         variant="outlined" 
-                        type="Launch Altitude"
+                        type="Number"
                         placeholder={props.launchAltitude.toString()}
                         fullWidth
                         size="small"
-                        helperText="Launch Altitude"
+                        label="Launch Altitude"
                     />
 
                     <Stack direction="row" spacing={2} alignItems="center">
@@ -88,7 +90,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
 
                     <Stack direction="row" spacing={2} alignItems="center">
 
-                        <Button variant={"contained"} sx={{ minWidth: "48.5%"}}>Save</Button>
+                        <Button variant={"contained"} sx={{ minWidth: "48.5%"}} onClick={props.onClose}>Save</Button>
 
                         <Button variant={"contained"} color={"error"} sx={{ minWidth: "48.5%"}} onClick={props.onClose}>Cancel</Button>
 
