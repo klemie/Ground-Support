@@ -1,18 +1,19 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import './App.css';
 import { Button, Grid } from '@mui/material';
-import { Stepper, Step, StepButton, StepLabel } from "@mui/material";
-
+import { Stepper, Step, StepButton } from "@mui/material";
+// Components
 import SettingsDialog from '../components/SettingsDialog';
-
-import TelemetryView from '../views/telemetry-view';
-
-import ModulesView from '../views/modules-view';
 import DataLog from '../components/DataLog';
+// Views
+import TelemetryView from '../views/telemetry-view';
+import MissionSelectionView from "../views/mission-selection-view";
+import ModulesView from '../views/modules-view';
 
 function App() {
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [completed, setCompleted] = React.useState<{
+  const [activeStep, setActiveStep] = useState(0);
+  const [completed, setCompleted] = useState<{
     [k: number]: boolean;
   }>({});
 
@@ -22,23 +23,26 @@ function App() {
     // check step number and handle view change here
     setActiveStep(step);
   };
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handleSettingsDialog = () => {
     setIsSettingsOpen(!isSettingsOpen);
   };
 
+  const [currentView, setCurrentView]=useState("Mission_Selection")
+
+  const updateView = (viewName: string) => {
+    setCurrentView(viewName)
+  }
+
   function returnView(view: number){
     switch(view) {
       case 0:
         return <TelemetryView />
-        break;
       case 1:
         return <TelemetryView />;
-        break
       case 2:
         return <ModulesView />;
-        break
       default:
         return <DataLog />;
     }
@@ -51,6 +55,8 @@ function App() {
 
 	return (
 		<div className="App">
+      { currentView === "Mission_Selection" && <MissionSelectionView setCurrentView={updateView}/> }
+      { currentView === "Active_Mission" &&
 			<Grid container spacing={2} direction="row">
 				{/* Any views should be rendered within this grid item */}
 				<Grid item xs={10}>
@@ -74,7 +80,7 @@ function App() {
             </Grid>
 
             {/* Page change stepper */}
-            <Grid item>
+            <Grid container justifyContent="center">
               <Stepper
                 nonLinear
                 activeStep={activeStep}
@@ -102,6 +108,7 @@ function App() {
                 fullWidth={true}
                 variant="contained"
                 color="error"
+                onClick={() => setCurrentView("Mission_Selection")}
               >
                 End Mission
               </Button>
@@ -109,6 +116,7 @@ function App() {
           </Grid>
 				</Grid>
 			</Grid>
+    }
 		</div>
 	);
 }
