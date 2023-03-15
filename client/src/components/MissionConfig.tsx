@@ -3,11 +3,7 @@ import { Button, Select, MenuItem,  FormControl, Dialog, TextField, Stack, Dialo
 import { Add, Upload } from "@mui/icons-material"; 
 
 interface MissionConfigProps {
-    missionName: string;
-    location: [number, number];
-    date: Date;
-    launchAltitude: Number;
-    rocketProfile: string;
+    missionId?: string;
     isOpen: boolean;
     onClose: () => void;
     onSave: () => void;
@@ -25,7 +21,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         required
                         variant="outlined" 
                         type="String"
-                        placeholder={props.missionName}
+                        placeholder={""}
                         fullWidth
                         size="small"
                         label="Mission Name"
@@ -34,7 +30,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         required
                         variant="outlined" 
                         type="String"
-                        placeholder={props.location[0] + ", " + props.location[1]}
+                        placeholder={""}
                         fullWidth
                         size="small"
                         label="Mission Location"
@@ -43,7 +39,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         required
                         variant="outlined" 
                         type="Date"
-                        placeholder={props.date.toLocaleDateString()}
+                        placeholder={""}
                         fullWidth
                         size="small"
                         label="Launch Date"
@@ -53,7 +49,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         required
                         variant="outlined" 
                         type="Number"
-                        placeholder={props.launchAltitude.toString()}
+                        placeholder={""}
                         fullWidth
                         size="small"
                         label="Launch Altitude"
@@ -90,7 +86,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
 
                     <Stack direction="row" spacing={2} alignItems="center">
 
-                        <Button variant={"contained"} sx={{ minWidth: "48.5%"}} onClick={props.onClose}>Save</Button>
+                        <Button variant={"contained"} sx={{ minWidth: "48.5%"}} onClick={props.onSave}>Save</Button>
 
                         <Button variant={"contained"} color={"error"} sx={{ minWidth: "48.5%"}} onClick={props.onClose}>Cancel</Button>
 

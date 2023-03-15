@@ -10,30 +10,16 @@ import MissionConfig from "../components/MissionConfig"
 ## Props
 ```tsx
 interface MissionConfigProps {
-    missionName: string;
-    location: [number, number];
-    date: Date;
-    rocketProfile: string;
+    missionId?: string;
     isOpen: boolean;
-    onClose: () => void
+    onClose: () => void;
+    onSave: () => void;
 }
 ```
 
->`missionName` ⭐ required
+>`missionId` 
+The id of the mission.
 
-The mission name.
-
->`location` ⭐ required
-
-Coordinates of the launch site.
-
->`date` ⭐ required
-
-Date of the launch.
-
->`rocketProfile` ⭐ required
-
-The rocket profile associated with the mission.
 
 >`isOpen` ⭐ required
 
@@ -47,6 +33,12 @@ const [isOpen, setIsOpen] = useState(false);
 A function to close the dialog. 
 ```tsx
 onClose={()=> setIsOpen(false)}
+```
+
+>`onSave` ⭐ required
+A function to save the inputs. 
+```tsx
+onSave={()=> handleSave()}
 ```
 
 
