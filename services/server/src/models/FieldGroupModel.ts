@@ -1,9 +1,9 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
-import FieldModel from "./FieldModel";
+import { FieldSchema } from "./FieldModel";
 
 export interface IFieldGroup {
     Name: String;
-    FieldIds: [];
+    Fields: [];
 };
 
 export interface IFieldGroupModel extends IFieldGroup, Document { };
@@ -14,7 +14,7 @@ export const FieldGroupSchema: Schema = new Schema(
             type: String,
             required: true
         },
-        FieldIds: [FieldModel]
+        Fields: [FieldSchema]
     },
     {
         versionKey: false,

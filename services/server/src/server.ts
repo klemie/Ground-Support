@@ -8,6 +8,7 @@ import genericRoute from './routes/genericRoute';
 import gatewayRoute from './routes/telemetryDataRoute';
 import RocketRoute from './routes/RocketRoute';
 import MissionRoute from './routes/MissionRoute';
+import DataConfigRoute from './routes/DataConfigRoute';
 
 const router = express();
 
@@ -56,6 +57,7 @@ const StartServer = () => {
     /** Routes */
     router.use('/generic', genericRoute);
     router.use('/rocket', RocketRoute);
+    router.use('/dataConfig', DataConfigRoute);
     router.use('/mission', MissionRoute);
     router.use('/gateway', gatewayRoute);
 

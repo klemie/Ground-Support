@@ -10,7 +10,8 @@ const FieldDataSchema: Schema = new Schema(
     {
         Value: {
             type: Number,
-            required: true
+            required: true,
+            immutable: true
         }
     },
     {
