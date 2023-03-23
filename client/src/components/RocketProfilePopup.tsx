@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {Button, InputAdornment, TextField, FormControl, MenuItem, Stack, DialogTitle, Dialog, DialogActions, DialogContent} from '@mui/material';
-
-import {FileUpload, Add} from '@mui/icons-material';
+import { FileUpload } from '@mui/icons-material';
 
 interface RocketProfileProps {
 	rocketProfileId?: string;
@@ -24,16 +23,12 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 			<DialogTitle sx={{typography: 'h4'}}>Rocket Profile</DialogTitle>
 			<DialogContent>
 				<FormControl fullWidth>
-					<Stack direction="column" spacing={3} alignItems="left">
+					<Stack sx={{ paddingTop: "5px" }} direction="column" spacing={3} alignItems="left">
 						<Stack direction="row" spacing={3}>
-							<TextField type="String" fullWidth size="small" id="profile-name" label="Profile Name" variant="outlined" />
+							<TextField type="String" fullWidth size="small" id="profile-name" label="Profile Name" variant="outlined"/>
 							<Button sx={{minWidth: '80px'}} size="small" variant="contained" startIcon={<FileUpload />} component="label">
 								<input hidden accept="*" type="file" />
 								SVG
-							</Button>
-							<Button sx={{minWidth: '110px'}} size="small" variant="contained" startIcon={<FileUpload />} component="label">
-								<input hidden accept="*" type="file" />
-								SIM DATA
 							</Button>
 						</Stack>
 						<TextField
