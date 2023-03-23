@@ -1,7 +1,8 @@
 {
-  "git.ignoreLimitWarning": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnPaste": false,
-  "editor.formatOnSave": true,
-  "editor.wordWrap": "on"
+	"git.ignoreLimitWarning": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnPaste": false,
+	"editor.formatOnSave": true,
+	"editor.wordWrap": "on",
+	"cSpell.words": ["Hyak"]
 }

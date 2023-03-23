@@ -1,12 +1,7 @@
 Rocket: {
     _id: id_of_this_doc,
     name: String,
-    Date: Date,
-    Coordinates: [
-        Float, 
-        Float
-    ]
-    Mission(refs): [
+    Missions(refs): [
         id_to_other_doc, ...
     ],
     RocketProfile: {
@@ -15,15 +10,30 @@ Rocket: {
         Height: String,
         Class: String,
         MotorType: String,
-        Motor: String
+        Motor: String,
     },
     DataConfig: id_to_other_doc
 }
 
+RocketProfile: {
+    _id: id,
+    rocketName: String, 
+    Height: String,
+    Class: String,
+    MotorType: String,
+    Motor: String,
+}
+
 Mission: {
     _id: id,
+    Name: String
     IsTest: Bool,
-    lastUpdated: Date,
+    published: Bool,
+    Coordinates: [
+        Float, 
+        Float
+    ],
+    Date: Date,
     Data: {
         <fieldId: fieldDataId>,
         ...
@@ -41,13 +51,14 @@ DataConfig: {
 }
 
 FieldData: {
-    [
-        {
-            Value: Number,
-            Timestamp: Date,
-        }
+    Data: [
+        
     ]
+}
 
+DataPoint: {
+    Value: Number,
+    Timestamp: Date,
 }
 
 Field: {
@@ -57,7 +68,7 @@ Field: {
 }
 
 FieldGroup: {
-   _id:  id_of_this_doc,
+    _id:  id_of_this_doc,
     name: String,
     FieldsId: [
         id_to_other_doc, ...

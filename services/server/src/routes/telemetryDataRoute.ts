@@ -1,8 +1,14 @@
 import express from 'express';
 import request from 'request';
+import axios from 'axios';
 
 const ENDPOINT = 'http://127.0.0.1:5000/gateway';
 const router = express.Router();
+
+const getData = async () => {
+    const telemetryResponse = await axios.get(ENDPOINT);
+    return telemetryResponse;
+};
 
 router.get('/', (req, res) => {
     console.log(ENDPOINT);
