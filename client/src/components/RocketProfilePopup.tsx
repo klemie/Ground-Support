@@ -6,7 +6,6 @@ interface RocketProfileProps {
 	rocketProfileId?: string;
 	isOpen: boolean;
 	onClose: () => void;
-	onSave?: () => void;
 }
 
 const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfileProps) => {
@@ -14,7 +13,7 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 	const [motorType, setMotorType] = useState('');
 
 	const saveProfile = () => {
-		console.log('Saving profile');
+		// TODO: POST request to rocket endpoint
 		props.onClose();
 	};
 

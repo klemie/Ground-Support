@@ -129,7 +129,7 @@ export default function MissionSelectionView(props: MissionSelectProps) {
           return <div style={{ backgroundColor: color, width: "25%", height: "1vh", float: "left" }} />;
         })}
     </div>
-		<RocketProfilePopup isOpen onClose={() => {}} />
+		<RocketProfilePopup isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </div>
   );
 
