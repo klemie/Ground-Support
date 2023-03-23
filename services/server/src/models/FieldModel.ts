@@ -1,13 +1,14 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 
 export interface IField {
-    Name: String;
-    Range: Array<Number>
+    Name: string;
+    Range: Array<number>;
+    Data: [];
 };
 
 export interface IGenericModel extends IField, Document { };
 
-const FieldSchema: Schema = new Schema(
+export const FieldSchema: Schema = new Schema(
     {
         Name: {
             type: String,
@@ -15,11 +16,12 @@ const FieldSchema: Schema = new Schema(
         },
         Range: {
             type: Array<Number>,
-            required: true,
-            validator: (r: Array<Number>) => {
-
-            }
-        }
+            required: true
+        },
+        Data: [{
+            type: Types.ObjectId,
+            ref: "DataPoint"
+        }]
     },
     {
         versionKey: false,
@@ -27,4 +29,4 @@ const FieldSchema: Schema = new Schema(
     }
 );
 
-export default mongoose.model<IField>('Generic', FieldSchema);
+export default mongoose.model<IField>('Field', FieldSchema);

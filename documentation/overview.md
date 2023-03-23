@@ -70,25 +70,26 @@ Next to get everything set up all node module dependencies must be installed.
 To do this run
 
 ```bash
-npm install && cd client && npm i && cd services/server-service && npm i
+npm install && cd client && npm i && cd services/server && npm i
 ```
 
-in the `/services/server-service` directory create a `.env` file
+in the `/services/server` directory create a `.env` file
 
 and paste
 
 ```ts
-MONGO_USERNAME = '';
-MONGO_PASSWORD = '';
+MONGO_USERNAME =
+MONGO_PASSWORD =
+MONGO_DB_STRING =
 
-SERVER_PORT = '';
+SERVER_PORT =
 ```
 
 This will install and update all dependencies and setup the environment variables
 
 Now for telemetry
 
-First navigate to `/services/telemetry-service/` and install all python dependencies with
+First navigate to `/services/telemetry/` and install all python dependencies with
 
 ```bash
 pip install requirements.txt
@@ -152,7 +153,7 @@ const MONGO_URL = ``;
 replace with environment variables
 
 ```ts
-`mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@groundsupport.{}.mongodb.net/`;
+`mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@groundsupport.${MONGO_DB_STRING}.mongodb.net/`;
 ```
 
 ---

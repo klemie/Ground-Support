@@ -1,22 +1,20 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
+import FieldModel from "./FieldModel";
 
 export interface IFieldGroup {
     Name: String;
-    FieldIds: Array<mongoose.ObjectId>
+    FieldIds: [];
 };
 
 export interface IFieldGroupModel extends IFieldGroup, Document { };
 
-const FieldGroupSchema: Schema = new Schema(
+export const FieldGroupSchema: Schema = new Schema(
     {
         Name: {
             type: String,
             required: true
         },
-        FieldIds: {
-            types: Array<mongoose.ObjectId>,
-            required: true
-        }
+        FieldIds: [FieldModel]
     },
     {
         versionKey: false,

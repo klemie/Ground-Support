@@ -1,17 +1,14 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 
 export interface IDataConfig {
-    Name: String;
+    FieldGroups: []
 };
 
 export interface IDataConfigModel extends IDataConfig, Document { };
 
 const DataConfigSchema: Schema = new Schema(
     {
-        name: {
-            type: String,
-            required: true
-        }
+        FieldGroups: [{ type: Types.ObjectId, ref: "FieldGroup" }]
     },
     {
         versionKey: false,

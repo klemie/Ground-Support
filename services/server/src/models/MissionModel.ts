@@ -1,10 +1,13 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
+import { isValidCoordinates } from "../library/CoordinateValidation";
 
 export interface IMission {
-    Name: String;
-    IsTest: Boolean;
-    LastUpdated: Date;
-    Data: [mongoose.ObjectId, mongoose.ObjectId]
+    Name: string;
+    DataConfig: [];
+    Published: boolean;
+    IsTest: boolean;
+    Date: Date
+    Coordinates: [];
 };
 
 export interface IMissionModel extends IMission, Document { };
@@ -19,13 +22,25 @@ const MissionSchema: Schema = new Schema(
             type: Boolean,
             required: true
         },
-        LastUpdated: {
-            type: Date
-        },
-        Data: {
-            type: [mongoose.ObjectId, mongoose.ObjectId],
+        Date: {
+            type: Date,
             required: true
-        }
+        },
+        Coordinates: {
+            type: [],
+            require: true,
+            validator: (cs: Array<number>) => {
+                return isValidCoordinates(cs[0], cs[1]);
+            }
+        },
+        Published: {
+            type: Boolean,
+            require: true
+        },
+        DataConfig: [{
+            type: Types.ObjectId,
+            required: true
+        }]
     },
     {
         versionKey: false,
@@ -33,4 +48,4 @@ const MissionSchema: Schema = new Schema(
     }
 );
 
-export default mongoose.model<IMission>('Generic', MissionSchema);
+export default mongoose.model<IMission>('Mission', MissionSchema);
