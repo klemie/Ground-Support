@@ -1,6 +1,6 @@
 import React from "react";
-import { Button, Select, MenuItem,  FormControl, Dialog, TextField, Stack, DialogContent, InputLabel, Typography } from "@mui/material";
-import { Add, Upload } from "@mui/icons-material"; 
+import { Button, Select, MenuItem,  FormControl, Dialog, TextField, Stack, DialogContent, InputLabel, Typography, Checkbox, FormControlLabel, InputAdornment, Tooltip, IconButton  } from "@mui/material";
+import { Add, Upload, Info } from "@mui/icons-material"; 
 
 interface MissionConfigProps {
     missionId?: string;
@@ -16,34 +16,46 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
             <DialogContent>
                 <Stack direction="column" spacing={3} alignItems="left">
                     <Typography variant="h4" align="left"> Mission Configuration </Typography>
-
-                    <TextField 
-                        required
-                        variant="outlined" 
-                        type="String"
-                        placeholder={""}
-                        fullWidth
-                        size="small"
-                        label="Mission Name"
-                    />
-                    <TextField 
-                        required
-                        variant="outlined" 
-                        type="String"
-                        placeholder={""}
-                        fullWidth
-                        size="small"
-                        label="Mission Location (Latitude)"
-                    />
-                    <TextField 
-                        required
-                        variant="outlined" 
-                        type="String"
-                        placeholder={""}
-                        fullWidth
-                        size="small"
-                        label="Mission Location (Longitude)"
-                    />
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <TextField 
+                            required
+                            variant="outlined" 
+                            type="String"
+                            placeholder={""}
+                            fullWidth
+                            size="small"
+                            label="Mission Name"
+                        />
+                        <Tooltip title="Data Collected is for testing purposes">
+                            <FormControlLabel 
+                                value="Test" 
+                                control={<Checkbox color="error" defaultChecked />} 
+                                label="Test"
+                                labelPlacement="start"
+                            />
+                        </Tooltip>
+                        
+                    </Stack>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <TextField 
+                            required
+                            variant="outlined" 
+                            type="String"
+                            placeholder={""}
+                            fullWidth
+                            size="small"
+                            label="Mission Location (Latitude)"
+                        />
+                        <TextField 
+                            required
+                            variant="outlined" 
+                            type="String"
+                            placeholder={""}
+                            fullWidth
+                            size="small"
+                            label="Mission Location (Longitude)"
+                        />
+                    </Stack>
                     <TextField 
                         required
                         variant="outlined" 
@@ -62,10 +74,22 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         fullWidth
                         size="small"
                         label="Launch Altitude"
+                        InputProps={{
+                            endAdornment: <InputAdornment position="end">ft</InputAdornment>,
+                        }}
                     />
 
                     <Stack direction="row" spacing={2} alignItems="center">
-                        <FormControl variant="outlined" size="small" sx={{ 
+                        <Button fullWidth={true} variant={"contained"} component="label"
+                            startIcon={<Upload/>}
+                        >
+                            Data Configuration 
+                            <input hidden type="file" />
+                        </Button>
+                        <IconButton>
+                            <Info />
+                        </IconButton>
+                        {/* <FormControl variant="outlined" size="small" sx={{ 
                             minWidth: "85%"
                         }}>
                             <InputLabel id="rocketProfile">Rocket Profile</InputLabel>
@@ -84,14 +108,9 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         <Button variant={"contained"} color={"error"} component="label"> 
                             <Add />
                             <input hidden type="file" />
-                        </Button>
+                        </Button> */}
                     </Stack>
-                    <Button variant={"contained"} component="label"
-                        startIcon={<Upload/>}
-                    >
-                        Data Configuration 
-                        <input hidden type="file" />
-                    </Button>
+                    
 
                     <Stack direction="row" spacing={2} alignItems="center">
 

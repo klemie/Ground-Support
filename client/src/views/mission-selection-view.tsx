@@ -136,7 +136,7 @@ export default function MissionSelectionView(props: MissionSelectProps) {
           return <div style={{ backgroundColor: color, width: "25%", height: "1vh", float: "left" }} />;
         })}
     </div>
-    <MissionConfig missionName="Name" location={[0.000, 0.000]} date={new Date()} rocketProfile="Rocket" isOpen={isOpen} onClose={()=>setIsOpen(false)} launchAltitude={100} />
+    <MissionConfig isOpen={isOpen} onClose={()=>setIsOpen(false)} onSave={()=>setIsOpen(false)} />
     </div>
   );
 
