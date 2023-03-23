@@ -1,6 +1,6 @@
 import React from "react";
-import { Button, Select, MenuItem,  FormControl, Dialog, TextField, Stack, DialogContent, InputLabel, Typography, Checkbox, FormControlLabel, InputAdornment, Tooltip, IconButton  } from "@mui/material";
-import { Add, Upload, Info } from "@mui/icons-material"; 
+import { Button, Dialog, TextField, Stack, DialogContent, Typography, Checkbox, FormControlLabel, InputAdornment, Tooltip, IconButton  } from "@mui/material";
+import { Upload, Info } from "@mui/icons-material"; 
 
 interface MissionConfigProps {
     missionId?: string;
@@ -21,7 +21,6 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                             required
                             variant="outlined" 
                             type="String"
-                            placeholder={""}
                             fullWidth
                             size="small"
                             label="Mission Name"
@@ -41,7 +40,6 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                             required
                             variant="outlined" 
                             type="String"
-                            placeholder={""}
                             fullWidth
                             size="small"
                             label="Mission Location (Latitude)"
@@ -50,7 +48,6 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                             required
                             variant="outlined" 
                             type="String"
-                            placeholder={""}
                             fullWidth
                             size="small"
                             label="Mission Location (Longitude)"
@@ -60,7 +57,6 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         required
                         variant="outlined" 
                         type="Date"
-                        placeholder={""}
                         fullWidth
                         size="small"
                         label="Launch Date"
@@ -70,7 +66,6 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         required
                         variant="outlined" 
                         type="Number"
-                        placeholder={""}
                         fullWidth
                         size="small"
                         label="Launch Altitude"
@@ -89,29 +84,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         <IconButton>
                             <Info />
                         </IconButton>
-                        {/* <FormControl variant="outlined" size="small" sx={{ 
-                            minWidth: "85%"
-                        }}>
-                            <InputLabel id="rocketProfile">Rocket Profile</InputLabel>
-                            <Select 
-                            defaultValue=""
-                            labelId="rocketProfile"
-                            label="Rocket Profile"
-                            >
-                                <MenuItem value=""></MenuItem>
-                                <MenuItem value="MVP-1">MVP-1</MenuItem>
-                                <MenuItem value="MVP-2">MVP-2</MenuItem>
-                                <MenuItem value="Xenia-1">Xenia-1</MenuItem>
-                                <MenuItem value="Xenia-2">Xenia-2</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <Button variant={"contained"} color={"error"} component="label"> 
-                            <Add />
-                            <input hidden type="file" />
-                        </Button> */}
                     </Stack>
-                    
-
                     <Stack direction="row" spacing={2} alignItems="center">
 
                         <Button variant={"contained"} sx={{ minWidth: "48.5%"}} onClick={props.onSave}>Save</Button>
