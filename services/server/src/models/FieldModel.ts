@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
-
+import { DataPointSchema } from "./DataPointModel";
 export interface IField {
     Name: string;
     Range: Array<number>;
@@ -18,10 +18,12 @@ export const FieldSchema: Schema = new Schema(
             type: Array<Number>,
             required: true
         },
-        Data: [{
-            type: Types.ObjectId,
-            ref: "DataPoint"
-        }]
+        Units: {
+            type: String,
+            required: true,
+
+        },
+        Data: [DataPointSchema]
     },
     {
         versionKey: false,

@@ -2,12 +2,10 @@ import mongoose, { Document, Types, Schema } from "mongoose";
 
 export interface IRocket {
     Name: string;
-    Date: Date;
     Height: number;
     Class: string;
     MotorType: string;
     Motor: string;
-    Coordinates: Array<number>;
     Missions: [];
 };
 

@@ -1,15 +1,15 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
-import { FieldGroupSchema } from "./FieldGroupModel";
+import { ModuleSchema } from "./ModuleModel";
 
 export interface IDataConfig {
-    FieldGroups: []
+    Modules: []
 };
 
 export interface IDataConfigModel extends IDataConfig, Document { };
 
-const DataConfigSchema: Schema = new Schema(
+export const DataConfigSchema: Schema = new Schema(
     {
-        FieldGroups: [FieldGroupSchema]
+        Modules: [ModuleSchema]
     },
     {
         versionKey: false,

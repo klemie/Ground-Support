@@ -1,12 +1,12 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-export interface IFieldData {
+export interface IDataPoint {
     Value: Number;
 };
 
-export interface IFieldDataModel extends IFieldData, Document { };
+export interface IDataPointModel extends IDataPoint, Document { };
 
-const FieldDataSchema: Schema = new Schema(
+export const DataPointSchema: Schema = new Schema(
     {
         Value: {
             type: Number,
@@ -20,4 +20,4 @@ const FieldDataSchema: Schema = new Schema(
     }
 );
 
-export default mongoose.model<IFieldData>('Generic', FieldDataSchema);
+export default mongoose.model<IDataPoint>('DataPoint', DataPointSchema);

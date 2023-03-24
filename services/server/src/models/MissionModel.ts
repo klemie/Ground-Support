@@ -1,16 +1,42 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
-import { isValidCoordinates } from "../library/CoordinateValidation";
+import { isValidLongitude, isValidLatitude } from "../library/CoordinateValidation";
+import { DataConfigSchema } from "./DataConfigModel";
+
+interface ICoordinates {
+    Latitude: number;
+    Longitude: number;
+};
 
 export interface IMission {
     Name: string;
+    IsTest: boolean;
+    Date: Date;
+    Coordinates: ICoordinates;
+    LaunchAltitude: number;
     DataConfig: [];
     Published: boolean;
-    IsTest: boolean;
-    Date: Date
-    Coordinates: [];
 };
 
 export interface IMissionModel extends IMission, Document { };
+
+const CoordinatesSchema: Schema = new Schema(
+    {
+        Latitude: {
+            type: Number,
+            required: true,
+            validator: (lat: number) => {
+                return isValidLatitude(lat);
+            }
+        },
+        Longitude: {
+            type: Number,
+            required: true,
+            validator: (long: number) => {
+                return isValidLongitude(long);
+            }
+        }
+    }
+);
 
 const MissionSchema: Schema = new Schema(
     {
@@ -22,25 +48,19 @@ const MissionSchema: Schema = new Schema(
             type: Boolean,
             required: true
         },
+        LaunchAltitude: {
+            type: Number,
+            required: true
+        },
         Date: {
             type: Date,
             required: true
         },
-        Coordinates: {
-            type: [],
-            require: true,
-            validator: (cs: Array<number>) => {
-                return isValidCoordinates(cs[0], cs[1]);
-            }
-        },
+        Coordinates: CoordinatesSchema,
+        DataConfig: [DataConfigSchema],
         Published: {
-            type: Boolean,
-            require: true
-        },
-        DataConfig: [{
-            type: Types.ObjectId,
-            required: true
-        }]
+            type: Boolean
+        }
     },
     {
         versionKey: false,

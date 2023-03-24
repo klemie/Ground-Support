@@ -7,18 +7,18 @@ const countDecimals = (n: number) => {
     return 0;
 };
 
-const validLongitude = (lon: number): boolean => {
+export const isValidLongitude = (lon: number): boolean => {
     return checkLength(lon) && _.inRange(lon, -180, 180);
 };
 
-const validLatitude = (lat: number): boolean => {
+export const isValidLatitude = (lat: number): boolean => {
     return checkLength(lat) && _.inRange(lat, -90, 90);
 };
 
 const checkLength = (n: number): boolean => {
-    return countDecimals(n) === 6;
+    return countDecimals(n) >= 6;
 };
 
 export const isValidCoordinates = (lon: number, lat: number): boolean => {
-    return validLatitude(lat) && validLongitude(lon);
+    return isValidLatitude(lat) && isValidLongitude(lon);
 };
