@@ -2,31 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Chip, Stack } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import addRocket from '../static/images/AddRocket.svg';
+import RocketProfilePopup from '../components/RocketProfilePopup';
 
 import '../styles/rocketSelection.css';
 
-interface Rocket {
+interface Mission {
 	id: number;
 	name: string;
 	image: string;
 	active: boolean;
 }
 
-interface RocketSelectProps {
+interface MissionSelectProps {
 	setCurrentView: (viewName: string) => void;
 }
 
-export default function RocketSelectionView(props: RocketSelectProps) {
+export default function MissionSelectionView(props: MissionSelectProps) {
 	const colors: string[] = [
 		'rgba(255, 197, 87, 1)',
 		'rgba(214, 91, 79, 1)',
 		'rgba(0, 94, 184, 1)',
 		'rgba(69, 136, 201, 1)'
 	];
+	const breadCrumbs: Breadcrumb[] = [{ name: 'Mission Selection', path: '/', active: true }];
 
-	const breadCrumbs: Breadcrumb[] = [{ name: 'Rocket Selection', path: '/', active: true }];
-
-	const dummyRocketData: Rocket[] = [
+	const dummyMissionData: Mission[] = [
 		{
 			id: 1,
 			name: 'MVP-1',
@@ -65,38 +65,31 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 		}
 	];
 
-	const [rocketData, setRocketData] = useState(dummyRocketData);
+	const [isOpen, setIsOpen] = useState(true);
+	const [missionData, setMissionData] = useState(dummyMissionData);
 
 	useEffect(() => {
-		//make an API call when component first mounts and setrocketData with response
-		setRocketData(dummyRocketData);
+		//make an API call when component first mounts and setMissionData with response
+		setMissionData(dummyMissionData);
 	}, []);
 
-	const addNewRocket = () => {
-		props.setCurrentView('Active_Rocket');
-		console.log('Adding new rocket...');
+	const addNewMission = () => {
+		props.setCurrentView('Active_Mission');
+		console.log('Adding new mission...');
 	};
 
-	const setRocket = (data: Rocket) => {
-		props.setCurrentView('Active_Rocket');
-		console.log('Setting Rocket to:', data);
+	const setMission = (data: Mission) => {
+		props.setCurrentView('Active_Mission');
+		console.log('Setting Mission to:', data);
 	};
 
-	const rockets = rocketData.map((data: Rocket) => {
+	const missions = missionData.map((data: Mission) => {
 		const rocketImageURL = require('../static/images/' + data.image);
 		return (
 			<div key={data.id.toString()}>
-				<Stack
-					direction="column"
-					spacing={1}
-					onClick={data.active ? () => setRocket(data) : () => {}}
-				>
-					<img src={rocketImageURL} alt="Rocket" width={40}></img>
-					<Chip
-						label={data.name}
-						color={data.active ? 'primary' : 'default'}
-						sx={{ fontWeight: 'bold' }}
-					/>
+				<Stack direction="column" spacing={1} onClick={data.active ? () => setMission(data) : () => {}}>
+					<img src={rocketImageURL} alt="Mission" width={40}></img>
+					<Chip label={data.name} color={data.active ? 'primary' : 'default'} sx={{ fontWeight: 'bold' }} />
 				</Stack>
 			</div>
 		);
@@ -117,40 +110,23 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 					<Header breadCrumbs={breadCrumbs} />
 				</Grid>
 
-				{/* Rocket Selection */}
+				{/* Mission Selection */}
 				<Grid container justifyContent="center" alignItems="center" style={{ height: '80%' }}>
-					<Stack
-						direction="row"
-						justifyContent="center"
-						spacing={8}
-						alignItems="flex-end"
-					>
-						{rockets}
-						<Stack direction="column" spacing={1} onClick={addNewRocket}>
+					<Stack direction="row" justifyContent="center" spacing={8} alignItems="flex-end">
+						{missions}
+						<Stack direction="column" spacing={1} onClick={addNewMission}>
 							<img src={addRocket} alt="Add Rocket" width={40}></img>
-							<Chip
-								label="New Rocket"
-								color="primary"
-								sx={{ fontWeight: 'bold' }}
-							/>
+							<Chip label="New Mission" color="primary" sx={{ fontWeight: 'bold' }} />
 						</Stack>
 					</Stack>
 				</Grid>
 			</Grid>
 			<div>
 				{colors.map((color) => {
-					return (
-						<div
-							style={{
-								backgroundColor: color,
-								width: '25%',
-								height: '1vh',
-								float: 'left'
-							}}
-						/>
-					);
+					return <div style={{ backgroundColor: color, width: '25%', height: '1vh', float: 'left' }} />;
 				})}
 			</div>
+			<RocketProfilePopup isOpen={isOpen} onClose={() => setIsOpen(false)} />
 		</div>
 	);
 }
