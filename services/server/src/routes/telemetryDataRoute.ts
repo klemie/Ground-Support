@@ -12,13 +12,13 @@ const getData = async () => {
 
 router.get('/', (req, res) => {
     console.log(ENDPOINT);
-    request(ENDPOINT, (err, response, body) => {
-        console.log('error', err);
-        console.log('Response:', response);
-        console.log('Status Code:', response.statusCode);
-        console.log('body:', body);
-        res.send(body);
-    })
+    // request(ENDPOINT, (err, response, body) => {
+    //     console.log('error', err);
+    //     console.log('Response:', response);
+    //     console.log('Status Code:', response.statusCode);
+    //     console.log('body:', body);
+    //     res.send(body);
+    // })
 });
 
 export = router;

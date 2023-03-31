@@ -47,6 +47,10 @@ const RocketSchema: Schema = new Schema(
             type: String,
             required: true
         },
+        Mass: {
+            type: String,
+            required: true
+        },
         Missions: [{
             type: Types.ObjectId,
             ref: 'Mission',
