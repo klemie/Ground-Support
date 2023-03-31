@@ -171,6 +171,7 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 								value={motor}
 								onChange={(e) => setMotor(e.target.value)}
 								label="Motor"
+								disabled={motorType !== 'Solid'}
 								variant="outlined"
 							/>
 						</Stack>
