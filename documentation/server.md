@@ -92,6 +92,12 @@ preferred method for private (in app) communication between the server and is ..
 
 ### Entities
 
+The Core entities relationship are as follows. Each entity has a corresponding document in the Database.
+
+<p align="center">
+<img src="./assets/ER Diagram.png" width="500"/>
+</p>
+
 ## Telemetry
 
 The Telemetry Service is an iteration of UVic Rocketry's [groundstation](https://github.com/UVicRocketry/groundstation)

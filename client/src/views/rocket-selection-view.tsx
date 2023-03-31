@@ -68,7 +68,7 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 	const [rocketData, setRocketData] = useState(dummyRocketData);
 
 	useEffect(() => {
-		//make an API call when component first mounts and setrocketData with response
+		//make an API call when component first mounts and setRocketData with response
 		setRocketData(dummyRocketData);
 	}, []);
 
@@ -86,17 +86,9 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 		const rocketImageURL = require('../static/images/' + data.image);
 		return (
 			<div key={data.id.toString()}>
-				<Stack
-					direction="column"
-					spacing={1}
-					onClick={data.active ? () => setRocket(data) : () => {}}
-				>
+				<Stack direction="column" spacing={1} onClick={data.active ? () => setRocket(data) : () => {}}>
 					<img src={rocketImageURL} alt="Rocket" width={40}></img>
-					<Chip
-						label={data.name}
-						color={data.active ? 'primary' : 'default'}
-						sx={{ fontWeight: 'bold' }}
-					/>
+					<Chip label={data.name} color={data.active ? 'primary' : 'default'} sx={{ fontWeight: 'bold' }} />
 				</Stack>
 			</div>
 		);
@@ -119,20 +111,11 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 
 				{/* Rocket Selection */}
 				<Grid container justifyContent="center" alignItems="center" style={{ height: '80%' }}>
-					<Stack
-						direction="row"
-						justifyContent="center"
-						spacing={8}
-						alignItems="flex-end"
-					>
+					<Stack direction="row" justifyContent="center" spacing={8} alignItems="flex-end">
 						{rockets}
 						<Stack direction="column" spacing={1} onClick={addNewRocket}>
 							<img src={addRocket} alt="Add Rocket" width={40}></img>
-							<Chip
-								label="New Rocket"
-								color="primary"
-								sx={{ fontWeight: 'bold' }}
-							/>
+							<Chip label="New Rocket" color="primary" sx={{ fontWeight: 'bold' }} />
 						</Stack>
 					</Stack>
 				</Grid>
