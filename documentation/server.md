@@ -98,6 +98,13 @@ The Core entities relationship are as follows. Each entity has a corresponding d
 <img src="./assets/ER Diagram.png" width="500"/>
 </p>
 
+### Data Constructor
+
+After a mission is created the structure for the data is also created. This structure is composed of an array of Field
+like models called field data. The data constructor uses DataConfig as a prototyping tool to generate the structure for
+how the data is stored. This function creates copies of the fields from the component data configs and appends on a few
+extra fields to help Identify the data.
+
 ## Telemetry
 
 The Telemetry Service is an iteration of UVic Rocketry's [groundstation](https://github.com/UVicRocketry/groundstation)

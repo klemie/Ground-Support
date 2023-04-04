@@ -1,12 +1,20 @@
 import mongoose, { Document, Types, Schema } from "mongoose";
 
+enum MotorType {
+    solid = "Solid",
+    liquid = "Liquid",
+    hybrid = "Hybrid"
+};
+
 export interface IRocket {
     Name: string;
+    Missions: [];
+    Components: [];
+    Mass: number;
     Height: number;
     Class: string;
     MotorType: string;
     Motor: string;
-    Missions: [];
 };
 
 export interface IRocketModel extends IRocket, Document { };
@@ -41,6 +49,7 @@ const RocketSchema: Schema = new Schema(
                 },
                 message: "Must be of type solid, hybrid or liquid"
             },
+            enum: MotorType,
             required: true
         },
         Motor: {
@@ -50,6 +59,10 @@ const RocketSchema: Schema = new Schema(
         Missions: [{
             type: Types.ObjectId,
             ref: 'Mission',
+        }],
+        Components: [{
+            type: Types.ObjectId,
+            ref: 'Component',
         }]
     },
     {

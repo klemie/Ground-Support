@@ -1,12 +1,14 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
-import { DataPointSchema } from "./DataPointModel";
+
+import ModuleModel from "./ModuleModel";
+
 export interface IField {
     Name: string;
-    Range: Array<number>;
-    Data: [];
+    Range: [number];
+    Units: string;
 };
 
-export interface IGenericModel extends IField, Document { };
+export interface IFieldModel extends IField, Document { };
 
 export const FieldSchema: Schema = new Schema(
     {
@@ -15,19 +17,18 @@ export const FieldSchema: Schema = new Schema(
             required: true
         },
         Range: {
-            type: Array<Number>,
+            type: [Number],
             required: true
         },
         Units: {
             type: String,
             required: true,
 
-        },
-        Data: [DataPointSchema]
+        }
     },
     {
         versionKey: false,
-        timestamps: true
+        timestamps: false
     }
 );
 

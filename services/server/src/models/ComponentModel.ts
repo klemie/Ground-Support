@@ -1,15 +1,16 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
+import { DataConfigSchema } from "./DataConfigModel";
 
 enum TelemetrySource {
     lora = "LORA",
     aprs = "APRS"
-}
+};
 
 export interface IComponent {
-    Name: String;
+    Name: string;
     TelemetrySource: TelemetrySource;
-    Details: String;
-    DataConfig: Object;
+    Details: string;
+    DataConfig: typeof DataConfigSchema;
 };
 
 export interface IComponentModel extends IComponent, Document { };
@@ -20,15 +21,16 @@ const ComponentModel: Schema = new Schema(
             type: String,
             required: true
         },
+        Details: {
+            type: String,
+            required: true
+        },
         TelemetrySource: {
             type: String,
             enum: ['LoRa', 'APRS']
         },
         DataConfig: {
-            type: Object
-        },
-        Details: {
-            type: String
+            type: Types.ObjectId, ref: 'DataConfig'
         }
     },
     {
