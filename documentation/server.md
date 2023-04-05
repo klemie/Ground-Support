@@ -1,6 +1,6 @@
 # Backend Documentation
 
-## Architecture
+# Architecture
 
 **Considerations**
 
@@ -11,7 +11,7 @@
 The general flow for the system goes as follows below
 
 <p align="center">
-<img src="./assets/system-flow-diagram.png" width="300"/>
+<img src="./assets/system-flow-diagram.png" />
 </p>
 
 Based on the considerations above the backend is to containerized into two services, one for telemetry and one for the
@@ -43,7 +43,7 @@ communicate between each other through protocols. In our case we have two servic
 can communicate with each other through a gateway. In our case this is an API gateway.
 
 <p align="center">
-<img src="./assets/mirco-services-diagram.png" width="300"/>
+<img src="./assets/mirco-services-diagram.png" />
 </p>
 
 ### Entity Based Design
@@ -85,25 +85,169 @@ export const EntityName = mongoose.model('entity', entitySchema);
 
 ⚠️ When calling entities only use `Entity.findById().save()` so the validator will run on it.
 
-## Server Backend
+# Server Backend
 
 Entity's from the database are updated to the database through mongoose queries, the private API or the public API. The
 preferred method for private (in app) communication between the server and is ...
 
-### Entities
+## Entities
 
-The Core entities relationship are as follows. Each entity has a corresponding document in the Database.
+The Core entities relationship are as follows. Each entity has a corresponding document in the Database. Some documents
+are nested as sub documents and might not populate there collection
 
 <p align="center">
-<img src="./assets/ER Diagram.png" width="500"/>
+<img src="./assets/ER Diagram.png" />
 </p>
 
-### Data Constructor
+### Rocket
 
-After a mission is created the structure for the data is also created. This structure is composed of an array of Field
-like models called field data. The data constructor uses DataConfig as a prototyping tool to generate the structure for
-how the data is stored. This function creates copies of the fields from the component data configs and appends on a few
-extra fields to help Identify the data.
+`Attributes`
+
+| Attribute  | Required | Type        | Details                                                  |
+| ---------- | -------- | ----------- | -------------------------------------------------------- |
+| Name       | ✅       | string      | Name of the Rocket                                       |
+| Mass       | ✅       | number      | Dry Mass of the Rocket                                   |
+| Class      | ✅       | string      | Apogee class                                             |
+| Motor Type | ✅       | string      | Specific weather the motor is a liquid, hybrid, or solid |
+| Motor      |          | string      | Name of the motor used                                   |
+| Missions   |          | [documents] | List of missions used this rocket has done               |
+| Components |          | [documents] | Individual payloads of the rocket                        |
+
+`Description`
+
+This entity stores all the important details of the rocket and stores references to the rockets child documents missions
+and components.
+
+`API ✅`
+
+### Components
+
+`Attributes`
+
+| Attributes       | Required | Type     | Details                                            |
+| ---------------- | -------- | -------- | -------------------------------------------------- |
+| Name             | ✅       | string   | Name of Mission                                    |
+| DataConfig       | ✅       | document | Configuration of this payload                      |
+| Telemetry Source |          | enum     | Currently only supported sources are APRS and LoRa |
+| Details          | ✅       | string   | description of the payload and its purpose         |
+
+`Description`
+
+This entity creates allow the rocket to be compartmentalized into smaller pieces. Due to the experimental structure of
+UVRs rockets there maybe may be different payloads with unique modules. For example a flight computer with a sensor bay
+and a deployable payload may have different telemetry systems and modules therefore they will be stored and structured
+differently in the application.
+
+`API ✅`
+
+### Mission
+
+`Attributes`
+
+| Attributes      | Required | Type        | Details                     |
+| --------------- | -------- | ----------- | --------------------------- |
+| Name            | ✅       | string      |                             |
+| Coordinate      | ✅       | document    |                             |
+| IsTest          | ✅       | boolean     |                             |
+| Date            | ✅       | string      |                             |
+| Publish         |          | boolean     |                             |
+| Launch Altitude | ✅       | number      |                             |
+| Components      | ✅       | [documents] | Need at least one component |
+| Data            |          | [document]  | list of field datas         |
+
+`Description`
+
+The mission entity
+
+### Data Config
+
+`Attributes`
+
+| Attributes | Required | Type        | Details |
+| ---------- | -------- | ----------- | ------- |
+| Modules    | ✅       | [documents] |         |
+
+`Description`
+
+This document is a made up of sub documents
+
+<p align="center">
+<img src="./assets/Data Config.png" />
+</p>
+
+`API ✅`
+
+### Modules
+
+`Attributes`
+
+| Attributes   | Required | Types     | Details |
+| ------------ | -------- | --------- | ------- |
+| Name         |          | string    |         |
+| Field Groups |          | documents |         |
+
+`Description`
+
+`API ❌`
+
+### Groups Fields
+
+`Attributes`
+
+| Attributes | Required | Types       | Details |
+| ---------- | -------- | ----------- | ------- |
+| Name       |          | string      |         |
+| Fields     |          | [documents] |         |
+
+`Description`
+
+`API ❌`
+
+### Fields
+
+`Attributes`
+
+| Attributes | Required | Types | Details |
+| ---------- | -------- | ----- | ------- |
+| Field Name | ✅       |       |         |
+| Units      | ✅       |       |         |
+| Range      | ✅       |       |         |
+
+`Description`
+
+`API ❌`
+
+### Field Data
+
+`Attributes`
+
+| Attributes            | Required | Types     | Details |
+| --------------------- | -------- | --------- | ------- |
+| Parent Module Id      | ✅       | Id        |         |
+| Parent Field Group Id | ✅       | Id        |         |
+| Field Name            | ✅       | string    |         |
+| Field Id              | ✅       | id        |         |
+| Units                 | ✅       | String    |         |
+| Data                  | ✅       | [numbers] |         |
+
+`Description`
+
+A field data uses dataConfig as a model for
+
+`API ❌`
+
+## Data Constructor
+
+After a mission is created the structure for the data is also created. This structure is composed of an array of
+dataConfig like models. The data constructor uses DataConfig as a prototype to generate the structure for how the data
+is stored.
+
+This process is ran when ever a new mission is created. The process works by calling all dataConfigs configured to the
+mission calling the configured mission .
+
+<p align="center">
+<img src="./assets/Data Constructor.png" width="500"/>
+</p>
 
 ## Telemetry
 
