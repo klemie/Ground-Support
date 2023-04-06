@@ -62,7 +62,9 @@ const MissionSchema: Schema = new Schema(
             ref: 'Component'
         }],
         Published: {
-            type: Boolean
+            type: Boolean,
+            default: false,
+            required: true
         }
     },
     {

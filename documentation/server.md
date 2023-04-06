@@ -93,11 +93,14 @@ preferred method for private (in app) communication between the server and is ..
 ## Entities
 
 The Core entities relationship are as follows. Each entity has a corresponding document in the Database. Some documents
-are nested as sub documents and might not populate there collection
+are nested as sub documents and might not populate there collection.
 
 <p align="center">
 <img src="./assets/ER Diagram.png" />
 </p>
+
+This structure has the `Rocket` Entity at the top of the hierarchy where all other entities an childeren and
+grandchildern of it. The two main entities off of Rocket entity is the `Component` and `Mission`. The
 
 ### Rocket
 
@@ -144,32 +147,35 @@ differently in the application.
 
 `Attributes`
 
-| Attributes      | Required | Type        | Details                     |
-| --------------- | -------- | ----------- | --------------------------- |
-| Name            | ✅       | string      |                             |
-| Coordinate      | ✅       | document    |                             |
-| IsTest          | ✅       | boolean     |                             |
-| Date            | ✅       | string      |                             |
-| Publish         |          | boolean     |                             |
-| Launch Altitude | ✅       | number      |                             |
-| Components      | ✅       | [documents] | Need at least one component |
-| Data            |          | [document]  | list of field datas         |
+| Attributes      | Required | Type        | Details                                                                     |
+| --------------- | -------- | ----------- | --------------------------------------------------------------------------- |
+| Name            | ✅       | string      | Name of the mission                                                         |
+| Coordinate      | ✅       | document    | Longitude and Latitude of Launch location                                   |
+| IsTest          | ✅       | boolean     | Weather the mission is used for test purposes or an actual mission          |
+| Date            | ✅       | string      | Date of the mission                                                         |
+| Publish         |          | boolean     | Publish flags that this mission is good to be pushed to production database |
+| Launch Altitude | ✅       | number      | Altitude in meters                                                          |
+| Components      | ✅       | [documents] | Which components to be used in this mission. Need at least one component    |
+| Data            |          | [document]  | list of field data entities                                                 |
 
 `Description`
 
-The mission entity
+The mission entity contains information relevant to a launch and or test of the rocket. Each Mission can be configured
+with. Mission only exist as a child of a rocket they cannot exist on there own. The components attribute configures
+which components from the rocket are active for this mission. ie which components are to be recorded.
 
 ### Data Config
 
 `Attributes`
 
-| Attributes | Required | Type        | Details |
-| ---------- | -------- | ----------- | ------- |
-| Modules    | ✅       | [documents] |         |
+| Attributes | Required | Type        | Details                                                              |
+| ---------- | -------- | ----------- | -------------------------------------------------------------------- |
+| Modules    | ✅       | [documents] | List of Modules. Break down of specific components in the dataConfig |
 
 `Description`
 
-This document is a made up of sub documents
+This document is a made up of sub documents. Structure is below. You can learn more about dataConfigs in
+[Dataconfig.md](/documentation/data-config.md)
 
 <p align="center">
 <img src="./assets/Data Config.png" />
@@ -181,12 +187,15 @@ This document is a made up of sub documents
 
 `Attributes`
 
-| Attributes   | Required | Types     | Details |
-| ------------ | -------- | --------- | ------- |
-| Name         |          | string    |         |
-| Field Groups |          | documents |         |
+| Attributes   | Required | Type      | Details               |
+| ------------ | -------- | --------- | --------------------- |
+| Name         | ✅       | string    | name of module        |
+| Field Groups | ✅       | documents | List of module groups |
 
 `Description`
+
+Modules are used to break up group fields that come from one source. For example if you have a sensor that can read
+multiple values you would create a module for that component.
 
 `API ❌`
 
@@ -194,12 +203,15 @@ This document is a made up of sub documents
 
 `Attributes`
 
-| Attributes | Required | Types       | Details |
-| ---------- | -------- | ----------- | ------- |
-| Name       |          | string      |         |
-| Fields     |          | [documents] |         |
+| Attributes | Required | Type        | Details          |
+| ---------- | -------- | ----------- | ---------------- |
+| Name       | ✅       | string      | Field Group Name |
+| Fields     | ✅       | [documents] | List of fields   |
 
 `Description`
+
+Field Groups are used to group fields that fall under one reading. for example a sensor reading can have 3 axis of data.
+each of quite would be a single field hence grouping like fields.
 
 `API ❌`
 
@@ -207,13 +219,17 @@ This document is a made up of sub documents
 
 `Attributes`
 
-| Attributes | Required | Types | Details |
-| ---------- | -------- | ----- | ------- |
-| Field Name | ✅       |       |         |
-| Units      | ✅       |       |         |
-| Range      | ✅       |       |         |
+| Attributes   | Required | Type     | Details                                                           |
+| ------------ | -------- | -------- | ----------------------------------------------------------------- |
+| Field Name   | ✅       | string   | Field Name                                                        |
+| Units        |          | string   | Units of the measured field                                       |
+| Telemetry Id | ✅       | BinData  | 8 bit identification to map raw telemetry data to server entities |
+| Range        | ✅       | [number] | The maximum and minimum expectable values                         |
 
 `Description`
+
+Fields are the lowest object in the data config hierarchy. These entities are used to define the information for a
+single data type (data point).
 
 `API ❌`
 
@@ -221,18 +237,34 @@ This document is a made up of sub documents
 
 `Attributes`
 
-| Attributes            | Required | Types     | Details |
-| --------------------- | -------- | --------- | ------- |
-| Parent Module Id      | ✅       | Id        |         |
-| Parent Field Group Id | ✅       | Id        |         |
-| Field Name            | ✅       | string    |         |
-| Field Id              | ✅       | id        |         |
-| Units                 | ✅       | String    |         |
-| Data                  | ✅       | [numbers] |         |
+| Attributes            | Required | Type       | Details                                                           |
+| --------------------- | -------- | ---------- | ----------------------------------------------------------------- |
+| Parent Module Id      | ✅       | Id         | inherited from parent module                                      |
+| Parent Field Group Id | ✅       | Id         | Inherited from field group module                                 |
+| Field Name            | ✅       | string     | Name field. Inherited from the dataConfig counter part            |
+| TelemetryId           | ✅       | BinData    | 8 bit identification to map raw telemetry data to server entities |
+| Units                 | ✅       | String     | Units of the measured data value                                  |
+| Data                  | ✅       | [document] | List of Data points                                               |
 
 `Description`
 
-A field data uses dataConfig as a model for
+A field data uses fields a constructor for the type. All of these attributes except for data is inherited from a sub
+document of data config. These attributes are only created by the data constructor function.
+
+`API ❌`
+
+### Data Point
+
+`Attributes`
+
+| Attributes | Required | Type       | Details                 |
+| ---------- | -------- | ---------- | ----------------------- |
+| Value      | ✅       | Decimal128 | Data point value        |
+| Timestamp  | ✅       | Date       | Timestamp since turn on |
+
+`Description`
+
+This allows for time stamps on data
 
 `API ❌`
 

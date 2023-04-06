@@ -1,14 +1,33 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
-import { DataPointSchema } from "./DataPointModel";
 
 export interface IFieldData {
     Name: string;
     Range: [number];
+    Units: string;
     ParentModuleName: Types.ObjectId;
     ParentFieldGroupName: Types.ObjectId;
-    Units: string;
-    Data: [typeof DataPointSchema];
+    TelemetryId: Buffer;
+    Data: [typeof DataPoint];
 };
+
+const DataPoint: Schema = new Schema(
+    {
+        Value: {
+            type: Types.Decimal128,
+            required: true,
+            immutable: true
+        },
+        timeStamp: {
+            type: Date,
+            required: true,
+            immutable: true
+        }
+    },
+    {
+        versionKey: false,
+        timestamps: true
+    }
+);
 
 export interface IFieldModel extends IFieldData, Document { };
 
@@ -20,11 +39,13 @@ export const FieldDataSchema: Schema = new Schema(
         },
         ParentModuleName: {
             type: Types.ObjectId,
-            ref: 'Module'
+            ref: 'Module',
+            required: true
         },
         ParentFieldGroupName: {
             type: Types.ObjectId,
-            ref: 'FieldGroup'
+            ref: 'FieldGroup',
+            required: true
         },
         Range: {
             type: [Number],
@@ -34,7 +55,11 @@ export const FieldDataSchema: Schema = new Schema(
             type: String,
             required: true
         },
-        Data: [DataPointSchema]
+        TelemetryId: {
+            type: Buffer,
+            required: true
+        },
+        Data: [DataPoint]
     },
     {
         versionKey: false,
