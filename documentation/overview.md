@@ -78,11 +78,10 @@ in the `/services/server` directory create a `.env` file
 and paste
 
 ```ts
-MONGO_USERNAME =
-MONGO_PASSWORD =
-MONGO_DB_STRING =
-
-SERVER_PORT =
+MONGO_USERNAME = '<mongo username>'
+MONGO_PASSWORD = '<password>'
+MONGO_DB_STRING = '<db name>'
+SERVER_PORT = '<server port>'
 ```
 
 This will install and update all dependencies and setup the environment variables

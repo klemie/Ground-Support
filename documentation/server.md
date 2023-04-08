@@ -164,6 +164,8 @@ The mission entity contains information relevant to a launch and or test of the 
 with. Mission only exist as a child of a rocket they cannot exist on there own. The components attribute configures
 which components from the rocket are active for this mission. ie which components are to be recorded.
 
+`API ✅`
+
 ### Data Config
 
 `Attributes`
