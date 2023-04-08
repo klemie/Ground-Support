@@ -130,7 +130,7 @@ and components.
 | Attributes       | Required | Type     | Details                                            |
 | ---------------- | -------- | -------- | -------------------------------------------------- |
 | Name             | ✅       | string   | Name of Mission                                    |
-| DataConfig       | ✅       | document | Configuration of this payload                      |
+| DataConfigId       | ✅       | document | Configuration of this payload                      |
 | Telemetry Source |          | enum     | Currently only supported sources are APRS and LoRa |
 | Details          | ✅       | string   | description of the payload and its purpose         |
 

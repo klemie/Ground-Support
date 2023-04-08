@@ -29,7 +29,7 @@ const ComponentModel: Schema = new Schema(
             type: String,
             enum: ['LoRa', 'APRS']
         },
-        DataConfig: {
+        DataConfigId: {
             type: Types.ObjectId, ref: 'DataConfig'
         }
     },
