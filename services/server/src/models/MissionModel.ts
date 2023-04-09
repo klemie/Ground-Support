@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 import { isValidLongitude, isValidLatitude } from "../library/CoordinateValidation";
-import { DataConfigSchema } from "./DataConfigModel";
+
 
 interface ICoordinates {
     Latitude: number;
@@ -13,7 +13,7 @@ export interface IMission {
     Date: Date;
     Coordinates: ICoordinates;
     LaunchAltitude: number;
-    DataConfig: [];
+    Components: [Types.ObjectId];
     Published: boolean;
 };
 
@@ -57,9 +57,14 @@ const MissionSchema: Schema = new Schema(
             required: true
         },
         Coordinates: CoordinatesSchema,
-        DataConfig: [DataConfigSchema],
+        Components: [{
+            type: Types.ObjectId,
+            ref: 'Component'
+        }],
         Published: {
-            type: Boolean
+            type: Boolean,
+            default: false,
+            required: true
         }
     },
     {

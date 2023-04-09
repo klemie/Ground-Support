@@ -2,7 +2,7 @@ import mongoose, { Document, Schema, Types } from "mongoose";
 import { ModuleSchema } from "./ModuleModel";
 
 export interface IDataConfig {
-    Modules: []
+    Modules: [typeof ModuleSchema]
 };
 
 export interface IDataConfigModel extends IDataConfig, Document { };

@@ -28,7 +28,7 @@ function App() {
 		setIsSettingsOpen(!isSettingsOpen);
 	};
 
-	const [currentView, setCurrentView] = useState('Mission_Selection');
+	const [currentView, setCurrentView] = useState('Rocket_Selection');
 
 	const updateView = (viewName: string) => {
 		setCurrentView(viewName);
@@ -54,8 +54,8 @@ function App() {
 
 	return (
 		<div className="App">
-			{currentView === 'Mission_Selection' && <RocketSelectionView setCurrentView={updateView} />}
-			{currentView === 'Active_Mission' && (
+			{currentView === 'Rocket_Selection' && <RocketSelectionView setCurrentView={updateView} />}
+			{currentView === 'Active_Rocket' && (
 				<Grid container spacing={2} direction="row">
 					{/* Any views should be rendered within this grid item */}
 					<Grid item xs={10}>
@@ -99,7 +99,7 @@ function App() {
 									fullWidth={true}
 									variant="contained"
 									color="error"
-									onClick={() => setCurrentView('Mission_Selection')}
+									onClick={() => setCurrentView('Rocket_Selection')}
 								>
 									End Mission
 								</Button>

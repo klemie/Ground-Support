@@ -23,7 +23,6 @@
 		"web-vitals": "^2.1.4"
 	},
 	"scripts": {
-		"both": "concurrently \"react-scripts start\" \"cd services/server-service/src/ && nodemon index\"",
 		"start": "concurrently \"react-scripts start\"",
 		"build": "react-scripts build",
 		"test": "react-scripts test",

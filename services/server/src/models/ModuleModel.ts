@@ -2,8 +2,8 @@ import mongoose, { Document, Schema } from "mongoose";
 import { FieldGroupSchema } from "./FieldGroupModel";
 
 export interface IModule {
-    name: String;
-
+    Name: string;
+    FieldGroups: [];
 };
 
 export interface IModuleModel extends IModule, Document { };
@@ -18,7 +18,7 @@ export const ModuleSchema: Schema = new Schema(
     },
     {
         versionKey: false,
-        timestamps: true
+        timestamps: false
     }
 );
 
