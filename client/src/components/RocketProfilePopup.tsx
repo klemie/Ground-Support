@@ -10,6 +10,7 @@ import {
 	Dialog,
 	DialogActions,
 	DialogContent
+	
 } from '@mui/material';
 import { FileUpload } from '@mui/icons-material';
 import axios from 'axios';
@@ -17,6 +18,7 @@ import axios from 'axios';
 interface RocketProfileProps {
 	rocketProfileId?: string;
 	isOpen: boolean;
+	onSave: () => void;
 	onClose: () => void;
 }
 
@@ -35,10 +37,9 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 	const [name, setName] = useState<string>();
 	const [motor, setMotor] = useState<string>();
 	const [mass, setMass] = useState<number>();
-	const [motorType, setMotorType] = useState<string>();
-	const [rocketClass, setRocketClass] = useState<string>();
+	const [motorType, setMotorType] = useState<string>('');
+	const [rocketClass, setRocketClass] = useState<string>('');
 	const [height, setHeight] = useState<number>();
-
 	// POST or PATCH data depending on if were creating a new rocket or editing a old one
 	const save = async () => {
 		const payload = {
@@ -49,17 +50,24 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 			Name: name,
 			Mass: mass
 		};
-		console.log(payload);
 		if (props.rocketProfileId) {
-			console.log(`rocket Id: ${props.rocketProfileId}`);
 			await axios.patch(`http://127.0.0.1:9090/rocket/${props.rocketProfileId}`, payload);
 		} else {
 			await axios.post(`http://127.0.0.1:9090/rocket`, payload);
 		}
 	};
 
+	const [editMode, setEditMode] = useState<boolean>(props.rocketProfileId !== '-1');
+
 	useEffect(() => {
-		// Load data from server with rocket id
+		setEditMode(props.rocketProfileId !== '')
+		// Reset State
+		setHeight(NaN);
+		setMass(NaN);
+		setRocketClass('');
+		setMotor('');
+		setName('');
+		setMotorType('');
 		async function getRocketDetails() {
 			if (props.rocketProfileId) {
 				const response = await axios.get<IRocketDetails>(
@@ -75,13 +83,19 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 				return response.data;
 			}
 		}
-		const data = getRocketDetails();
-		console.log(data);
+		getRocketDetails();
 	}, [props.rocketProfileId]);
+
+	const handleChange = (e: any, setState: Function) => {
+		if (!editMode) {
+			setEditMode(true);
+		}
+		setState(e.target.value as string);
+	};
 
 	const saveProfile = () => {
 		save();
-		props.onClose();
+		props.onSave();
 	};
 
 	return (
@@ -92,9 +106,10 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 					<Stack sx={{ paddingTop: '5px' }} direction="column" spacing={3} alignItems="left">
 						<Stack direction="row" spacing={3}>
 							<TextField
+								InputLabelProps={{ shrink: editMode }}
 								type="String"
 								value={name}
-								onChange={(e) => setName(e.target.value)}
+								onChange={(e) => handleChange(e, setName)}
 								fullWidth
 								size="small"
 								id="profile-name"
@@ -117,10 +132,11 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 							id="mass"
 							size="small"
 							value={mass}
-							onChange={(e) => setMass(Number(e.target.value))}
+							onChange={(e) => handleChange(e, setMass)}
 							label="Mass"
 							type="Number"
 							variant="outlined"
+							InputLabelProps={{ shrink: editMode }}
 							InputProps={{
 								endAdornment: <InputAdornment position="start">kg</InputAdornment>
 							}}
@@ -131,9 +147,10 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 							size="small"
 							type="Number"
 							value={height}
-							onChange={(e) => setHeight(Number(e.target.value))}
+							onChange={(e) => handleChange(e, setHeight)}
 							label="Height"
 							variant="outlined"
+							InputLabelProps={{ shrink: editMode }}
 							InputProps={{
 								endAdornment: <InputAdornment position="start">m</InputAdornment>
 							}}
@@ -142,35 +159,40 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 							size="small"
 							sx={{ minWidth: '100%' }}
 							value={rocketClass}
-							onChange={(e) => setRocketClass(e.target.value)}
+							defaultValue={rocketClass}
+							onChange={(e) => handleChange(e, setRocketClass)}
 							select
+							InputLabelProps={{ shrink: editMode }}
 							label="Class"
 						>
-							<MenuItem value={'10K'}>10K</MenuItem>
-							<MenuItem value={'30K'}>30K</MenuItem>
-							<MenuItem value={'60K'}>60K</MenuItem>
-							<MenuItem value={'100K'}>100K+</MenuItem>
+							<MenuItem key='10K' value='10K'>10K</MenuItem>
+							<MenuItem key='30K' value='30K'>30K</MenuItem>
+							<MenuItem key='60K' value='60K'>60K</MenuItem>
+							<MenuItem key='100K' value='100K'>100K+</MenuItem>
 						</TextField>
 						<Stack direction="row" spacing={2}>
 							<TextField
 								size="small"
-								sx={{ minWidth: '40%' }}
-								value={motorType}
-								onChange={(e) => setMotorType(e.target.value)}
 								select
 								label="Motor Type"
+								sx={{ minWidth: '40%' }}
+								InputLabelProps={{ shrink: editMode }}
+								value={motorType}
+								defaultValue={motorType}
+								onChange={(e) => handleChange(e, setMotorType)}
 							>
-								<MenuItem value={'Solid'}>Solid</MenuItem>
-								<MenuItem value={'Liquid'}>Liquid</MenuItem>
-								<MenuItem value={'Hybrid'}>Hybrid</MenuItem>
+								<MenuItem key='Solid' value='Solid'>Solid</MenuItem>
+								<MenuItem key='Liquid' value='Liquid'>Liquid</MenuItem>
+								<MenuItem key='Hybrid' value='Hybrid'>Hybrid</MenuItem>
 							</TextField>
 							<TextField
 								size="small"
 								sx={{ minWidth: '58%' }}
 								id="motor-name"
 								value={motor}
-								onChange={(e) => setMotor(e.target.value)}
+								onChange={(e) => handleChange(e, setMotor)}
 								label="Motor"
+								InputLabelProps={{ shrink: editMode }}
 								disabled={motorType !== 'Solid'}
 								variant="outlined"
 							/>

@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Chip, Stack } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import addRocket from '../static/images/AddRocket.svg';
+import axios from 'axios';
 
 import '../styles/rocketSelection.css';
 import RocketProfilePopup from '../components/RocketProfilePopup';
 
 interface Rocket {
-	id: number;
+	id: string;
 	name: string;
-	image: string;
+	image?: string;
 	active: boolean;
 }
 
@@ -27,64 +28,40 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 
 	const breadCrumbs: Breadcrumb[] = [{ name: 'Rocket Selection', path: '/', active: true }];
 
-	const dummyRocketData: Rocket[] = [
-		{
-			id: 1,
-			name: 'MVP-1',
-			image: 'Mvp1.svg',
-			active: false
-		},
-		{
-			id: 2,
-			name: 'MVP-2',
-			image: 'Mvp2.svg',
-			active: false
-		},
-		{
-			id: 3,
-			name: 'Skookum-1',
-			image: 'Skookum1.svg',
-			active: false
-		},
-		{
-			id: 4,
-			name: 'Hyak-1',
-			image: 'Hyak1.svg',
-			active: false
-		},
-		{
-			id: 5,
-			name: 'Hyak-2',
-			image: 'Hyak2.svg',
-			active: false
-		},
-		{
-			id: 6,
-			name: 'XENIA-1',
-			image: 'Xenia1.svg',
-			active: false
-		}
-	];
-
-	const [isOpen, setIsOpen] = useState(true);
-	const [rocketData, setRocketData] = useState(dummyRocketData);
-
+	const [isOpen, setIsOpen] = useState(false);
+	const [rocketData, setRocketData] = useState<Rocket[]>([]);
+	const [rocketProfileId, setRocketProfileId] =  useState<string>('');
 	useEffect(() => {
-		//make an API call when component first mounts and setRocketData with response
-		setRocketData(dummyRocketData);
+		async function getMissionData() {
+			//make an API call when component first mounts and setRocketData with response
+			const response = await axios.get(`http://127.0.0.1:9090/rocket/`);
+			// const data = response.data.result;
+			const rockets: Rocket[] = response.data.results.map((rocket: any) => {
+				return {
+					id: rocket._id,
+					image: 'Xenia1.svg',
+					name: rocket.Name,
+					active: true
+				} as Rocket
+			});
+			setRocketData(rockets);
+		}
+		getMissionData();
 	}, []);
 
 	const addNewRocket = () => {
-		props.setCurrentView('Active_Rocket');
-		console.log('Adding new rocket...');
+		setRocketProfileId('');
+		setIsOpen(true);
 	};
 
 	const setRocket = (data: Rocket) => {
-		props.setCurrentView('Active_Rocket');
-		console.log('Setting Rocket to:', data);
+		setRocketProfileId(data.id);
+		// console.log(`Parent:${rocketProfileId}`)
+		setIsOpen(true);
 	};
+
 	const rockets = rocketData.map((data: Rocket) => {
-		const rocketImageURL = require('../static/images/' + data.image);
+		const rocketImageURL = require(`../static/images/${data.image}`);
 		return (
 			<div key={data.id.toString()}>
 				<Stack direction="column" spacing={1} onClick={data.active ? () => setRocket(data) : () => {}}>
@@ -136,8 +113,12 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 				})}
 			</div>
 			<RocketProfilePopup
-				rocketProfileId="641be3d9a6688a5c14950890"
+				rocketProfileId={rocketProfileId}
 				isOpen={isOpen}
+				onSave={() => { 
+					props.setCurrentView('Active_Rocket');
+					setIsOpen(false);
+				}}
 				onClose={() => setIsOpen(false)}
 			/>
 		</div>
