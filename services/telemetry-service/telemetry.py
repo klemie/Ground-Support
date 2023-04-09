@@ -4,12 +4,6 @@ import sys
 import shutil
 from subprocess import Popen, PIPE, run
 
-# a = Popen(["C:/Users/jackw/uvic/rocketry/Ground-Support/services/telemetry-service/rtl-sdr/rtl_fm.exe", "-f", "441.35M", "-d", "0", "-g", "49.6", "-r", "48k", "-p", "93", "-"], shell = True)
-# b = Popen(["C:/Users/jackw/uvic/rocketry/Ground-Support/services/telemetry-service/rtl-sdr/rtl_fm.exe", "-f", "194.3M", "-d", "0", "-g", "49.6", "-r", "48k", "-p", "93"], shell = True)
-# stdout, stderr = a.communicate()
-# print(stdout)
-# print(c.stdin)
-# b = Popen(["./direwolf-1.6.0-413855e_x86_64/direwolf"], shell=True, stdin=a.stdout)
 currentData = {
     "Position": "",
     "N": "",
@@ -28,5 +22,6 @@ while True:
         if "alt " in line:
             currentData["alt"] = line[33:]
             currentData["alt"] = currentData["alt"][0:-4]
+        if "Invalid character in compressed longitude" in line:
+            print("error: GPS is not locked")
         # API CALL (Yay!)
-#   print(currentData)
