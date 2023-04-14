@@ -14,6 +14,13 @@ LENGTH_LSM = 18
 LENGTH_BME = 6
 LENGTH_STRAIN = 24
 
+ACCEL_STEP = 0.000489
+MAG_STEP = 0.000489
+ANG_STEP = 0.061
+TEMP_STEP = 0.0013
+PRESSURE_STEP = 0.0122
+HUMIDITY_STEP = 0.0015
+
 class lora_message: 
     timestamp = None,
     status = None,
@@ -75,37 +82,37 @@ while byte_index < len(packet):
         byte_index += 2
     elif current_byte == LSM_ID and current_message is not None and (len(packet) - byte_index - LENGTH_LSM> 0):
         byte_index += 1
-        accel_x = packet[byte_index]<<8 | packet[byte_index+1]
+        accel_x = float(packet[byte_index]<<8 | packet[byte_index+1]) * ACCEL_STEP
         byte_index += 2
-        accel_y = packet[byte_index]<<8 | packet[byte_index+1]
+        accel_y = int(packet[byte_index]<<8 | packet[byte_index+1]) * ACCEL_STEP
         byte_index += 2
-        accel_z = packet[byte_index]<<8 | packet[byte_index+1]
+        accel_z = int(packet[byte_index]<<8 | packet[byte_index+1]) * ACCEL_STEP
         byte_index += 2
         lsm_acceleration = [accel_x, accel_y, accel_z]
 
-        mag_x = packet[byte_index]<<8 | packet[byte_index+1]
+        mag_x = int(packet[byte_index]<<8 | packet[byte_index+1]) * MAG_STEP
         byte_index += 2
-        mag_y = packet[byte_index]<<8 | packet[byte_index+1]
+        mag_y = int(packet[byte_index]<<8 | packet[byte_index+1]) * MAG_STEP
         byte_index += 2
-        mag_z = packet[byte_index]<<8 | packet[byte_index+1]
+        mag_z = int(packet[byte_index]<<8 | packet[byte_index+1]) * MAG_STEP
         byte_index += 2
         lsm_magnetic_field = [mag_x, mag_y, mag_z]
 
-        rot_x = packet[byte_index]<<8 | packet[byte_index+1]
+        rot_x = int(packet[byte_index]<<8 | packet[byte_index+1]) * ANG_STEP
         byte_index += 2
-        rot_y = packet[byte_index]<<8 | packet[byte_index+1]
+        rot_y = int(packet[byte_index]<<8 | packet[byte_index+1]) * ANG_STEP
         byte_index += 2
-        rot_z = packet[byte_index]<<8 | packet[byte_index+1]
+        rot_z = int(packet[byte_index]<<8 | packet[byte_index+1]) * ANG_STEP
         byte_index += 1
         lsm_rotation= [rot_x, rot_y, rot_z]
         current_message.set_lsm(lsm_acceleration, lsm_magnetic_field, lsm_rotation)
     elif current_byte == BME_ID and current_message is not None and (len(packet) - byte_index - LENGTH_BME > 0):
         byte_index += 1
-        bme_humidity = packet[byte_index] << 8 | packet[byte_index+1]
+        bme_humidity = float(packet[byte_index] << 8 | packet[byte_index+1]) * HUMIDITY_STEP
         byte_index += 2
-        bme_temperature = packet[byte_index] << 8 | packet[byte_index+1]
+        bme_temperature = float(packet[byte_index] << 8 | packet[byte_index+1]) * TEMP_STEP
         byte_index += 2
-        bme_pressure = packet[byte_index] << 8 | packet[byte_index+1]
+        bme_pressure = float(packet[byte_index] << 8 | packet[byte_index+1]) * PRESSURE_STEP
         byte_index += 1
         current_message.set_bme(bme_humidity, bme_temperature, bme_pressure)
     elif current_byte == STRAIN_ID and current_message is not None and (len(packet) - byte_index - LENGTH_STRAIN > 0):
@@ -136,6 +143,7 @@ while byte_index < len(packet):
         byte_index += 2
         current_message.set_strain([sg1, sg2, sg3, sg4, sg5, sg6, sg7, sg8, sg9, sg10, sg11, sg12])
     else:
+        print(str(current_message.lsm))
         print(str(current_message.bme))
-        print("ERROR")
+        print(str(current_message.strain_gauges))
     byte_index += 1
