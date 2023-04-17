@@ -65,6 +65,15 @@ class lora_message:
     def set_strain(self, strain_data:list):
         self.strain_gauges = strain_data
 
+def bytes_to_int(upper, lower):
+    total = upper << 8 | lower
+    if (1<<8 | upper != 0):
+        #first bit is set and therefore is positive
+        upper = upper & ~(1<<8)
+        return int(total & ~(1<<15) )
+    else:
+        #first bit is not set and therefore is negative
+        return -1* int(total & ~(1<<15))
 
 messages_in_packet = []
 
@@ -82,64 +91,64 @@ while byte_index < len(packet):
         byte_index += 2
     elif current_byte == LSM_ID and current_message is not None and (len(packet) - byte_index - LENGTH_LSM> 0):
         byte_index += 1
-        accel_x = float(packet[byte_index]<<8 | packet[byte_index+1]) * ACCEL_STEP
+        accel_x = bytes_to_int(packet[byte_index], packet[byte_index+1]) * ACCEL_STEP
         byte_index += 2
-        accel_y = int(packet[byte_index]<<8 | packet[byte_index+1]) * ACCEL_STEP
+        accel_y = bytes_to_int(packet[byte_index], packet[byte_index+1]) * ACCEL_STEP
         byte_index += 2
-        accel_z = int(packet[byte_index]<<8 | packet[byte_index+1]) * ACCEL_STEP
+        accel_z = bytes_to_int(packet[byte_index], packet[byte_index+1]) * ACCEL_STEP
         byte_index += 2
         lsm_acceleration = [accel_x, accel_y, accel_z]
 
-        mag_x = int(packet[byte_index]<<8 | packet[byte_index+1]) * MAG_STEP
+        mag_x = bytes_to_int(packet[byte_index], packet[byte_index+1]) * MAG_STEP
         byte_index += 2
-        mag_y = int(packet[byte_index]<<8 | packet[byte_index+1]) * MAG_STEP
+        mag_y = bytes_to_int(packet[byte_index], packet[byte_index+1]) * MAG_STEP
         byte_index += 2
-        mag_z = int(packet[byte_index]<<8 | packet[byte_index+1]) * MAG_STEP
+        mag_z = bytes_to_int(packet[byte_index], packet[byte_index+1]) * MAG_STEP
         byte_index += 2
         lsm_magnetic_field = [mag_x, mag_y, mag_z]
 
-        rot_x = int(packet[byte_index]<<8 | packet[byte_index+1]) * ANG_STEP
+        rot_x = bytes_to_int(packet[byte_index], packet[byte_index+1]) * ANG_STEP
         byte_index += 2
-        rot_y = int(packet[byte_index]<<8 | packet[byte_index+1]) * ANG_STEP
+        rot_y = bytes_to_int(packet[byte_index], packet[byte_index+1]) * ANG_STEP
         byte_index += 2
-        rot_z = int(packet[byte_index]<<8 | packet[byte_index+1]) * ANG_STEP
+        rot_z = bytes_to_int(packet[byte_index], packet[byte_index+1]) * ANG_STEP
         byte_index += 1
         lsm_rotation= [rot_x, rot_y, rot_z]
         current_message.set_lsm(lsm_acceleration, lsm_magnetic_field, lsm_rotation)
     elif current_byte == BME_ID and current_message is not None and (len(packet) - byte_index - LENGTH_BME > 0):
         byte_index += 1
-        bme_humidity = float(packet[byte_index] << 8 | packet[byte_index+1]) * HUMIDITY_STEP
+        bme_humidity = bytes_to_int(packet[byte_index], packet[byte_index+1]) * HUMIDITY_STEP
         byte_index += 2
-        bme_temperature = float(packet[byte_index] << 8 | packet[byte_index+1]) * TEMP_STEP
+        bme_temperature = bytes_to_int(packet[byte_index], packet[byte_index+1]) * TEMP_STEP
         byte_index += 2
-        bme_pressure = float(packet[byte_index] << 8 | packet[byte_index+1]) * PRESSURE_STEP
+        bme_pressure = bytes_to_int(packet[byte_index], packet[byte_index+1]) * PRESSURE_STEP
         byte_index += 1
         current_message.set_bme(bme_humidity, bme_temperature, bme_pressure)
     elif current_byte == STRAIN_ID and current_message is not None and (len(packet) - byte_index - LENGTH_STRAIN > 0):
         byte_index += 1
-        sg1 = packet[byte_index] << 8 + packet[byte_index+1]
+        sg1 = bytes_to_int(packet[byte_index], packet[byte_index+1])
         byte_index += 2
-        sg2 = packet[byte_index] << 8 + packet[byte_index+1]
+        sg2 = bytes_to_int(packet[byte_index], packet[byte_index+1])
         byte_index += 2
-        sg3 = packet[byte_index] << 8 + packet[byte_index+1]
+        sg3 = bytes_to_int(packet[byte_index], packet[byte_index+1])
         byte_index += 2
-        sg4 = packet[byte_index] << 8 + packet[byte_index+1]
+        sg4 = bytes_to_int(packet[byte_index], packet[byte_index+1])
         byte_index += 2
-        sg5 = packet[byte_index] << 8 + packet[byte_index+1]
+        sg5 = bytes_to_int(packet[byte_index], packet[byte_index+1])
         byte_index += 2
-        sg6 = packet[byte_index] << 8 + packet[byte_index+1]
+        sg6 = bytes_to_int(packet[byte_index], packet[byte_index+1])
         byte_index += 2
-        sg7 = packet[byte_index] << 8 + packet[byte_index+1]
+        sg7 = bytes_to_int(packet[byte_index], packet[byte_index+1])
         byte_index += 2
-        sg8 = packet[byte_index] << 8 + packet[byte_index+1]
+        sg8 = bytes_to_int(packet[byte_index], packet[byte_index+1])
         byte_index += 2
-        sg9 = packet[byte_index] << 8 + packet[byte_index+1]
+        sg9 = bytes_to_int(packet[byte_index], packet[byte_index+1])
         byte_index += 2
-        sg10 = packet[byte_index] << 8 + packet[byte_index+1]
+        sg10 = bytes_to_int(packet[byte_index], packet[byte_index+1])
         byte_index += 2
-        sg11 = packet[byte_index] << 8 + packet[byte_index+1]
+        sg11 = bytes_to_int(packet[byte_index], packet[byte_index+1])
         byte_index += 2
-        sg12 = packet[byte_index] << 8 + packet[byte_index+1]
+        sg12 = bytes_to_int(packet[byte_index], packet[byte_index+1])
         byte_index += 2
         current_message.set_strain([sg1, sg2, sg3, sg4, sg5, sg6, sg7, sg8, sg9, sg10, sg11, sg12])
     else:
@@ -147,3 +156,6 @@ while byte_index < len(packet):
         print(str(current_message.bme))
         print(str(current_message.strain_gauges))
     byte_index += 1
+print(str(current_message.lsm))
+print(str(current_message.bme))
+print(str(current_message.strain_gauges))
