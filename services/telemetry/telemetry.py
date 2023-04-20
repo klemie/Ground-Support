@@ -4,12 +4,23 @@ import sys
 import shutil
 from subprocess import Popen, PIPE, run
 
+FREQUENCY_ONE = "441.35M"
+FREQUENCY_TWO = "194.3M"
+TEST = False
+
+if TEST:
+    a = Popen(["./rtl-sdr/rtl_fm.exe", "-f", FREQUENCY_ONE, "-d", "0", "-g", "49.6", "-r", "48k", "-p", "93", "-"], shell = True)
+    b = Popen(["./rtl-sdr/rtl_fm.exe", "-f", FREQUENCY_TWO, "-d", "0", "-g", "49.6", "-r", "48k", "-p", "93"], shell = True)
+    stdout, stderr = a.communicate()
+    b = Popen(["./direwolf-1.6.0-413855e_x86_64/direwolf"], shell=True, stdin=a.stdout)
+
 currentData = {
     "Position": "",
     "N": "",
     "W": "",
     "alt": ""
 }
+
 while True:
     for line in sys.stdin:
         if "Position" in line:

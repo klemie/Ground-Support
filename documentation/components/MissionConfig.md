@@ -46,5 +46,5 @@ onSave={()=> handleSave()}
 //{usecase of component}
 const [isOpen, setIsOpen] = useState(false);
 
-<MissionConfig  missionName="Name" location={[0.000, 0.000]} date={new Date()} rocketProfile="Rocket" isOpen={isOpen} onClose={()=>setIsOpen(false)} />
+<MissionConfig isOpen={isOpen} onClose={()=>setIsOpen(false)} onSave={()=>handleSave()} />
 ```
