@@ -10,50 +10,6 @@ LENGTH_TIMESTAMP = 4
 LENGTH_STATUS = 2
 
 
-# class lora_message: 
-#     timestamp = None,
-#     status = None,
-#    # {
-        
-#         # "apogee_detected": None,
-#         # "lsm_error": None,
-#         # "bme_error": None,
-#         # "strain_gauge_error": None,
-#     # },
-#     lsm = None
-#     # {
-#     #     "acceleration": [],
-#     #     "magnetic_field": [],
-#     #     "rotation": [],
-#     # },
-#     bme = None
-#     # {
-#     #     "humidity": None,
-#     #     "temperature": None,
-#     #     "pressure": None,
-#     # },
-#     strain_gauges = []
-
-#     def set_status(self, code):
-#         self.status = {"code":code}
-    
-#     def set_lsm(self, acc, mag, rot):
-#         self.lsm = {
-#             "acceleration":acc,
-#             "magnetic_field":mag,
-#             "rotation":rot
-#         }
-        
-#     def set_bme(self, hum, tmp, psr):
-#         self.bme = {
-#             "humidity": hum,
-#             "temperature": tmp,
-#             "pressure": psr
-#         },
-    
-#     def set_strain(self, strain_data:list):
-#         self.strain_gauges = strain_data
-
 config = lora_config.config
 
 def bytes_to_int_unsigned(data):
@@ -68,37 +24,42 @@ def bytes_to_int_unsigned(data):
             shift_amount -= 1
         final = final | cur_data
         i += 1
-    print(type(final))
-    print(final)
+    # print(type(final))
+    # print(final)
     return final
 
 messages_in_packet = []
 
 current_message = None
 packet = sys.stdin.buffer.read()
+print(len(packet))
 byte_index = 0;
 while byte_index < len(packet):
     current_byte = packet[byte_index]
     if current_byte == TIMESTAMP_ID and (len(packet) - byte_index - LENGTH_TIMESTAMP > 0):
         current_message = {}
         messages_in_packet.append(current_message)
-        current_message["timestamp"] = packet[byte_index:byte_index+4]
-        byte_index += 4
-    elif current_byte == STATUS_ID and current_message is not None and (len(packet) - byte_index - LENGTH_STATUS > 0):
-        current_message["status"] = (packet[byte_index:byte_index+2])
+        current_message["timestamp"] = packet[byte_index:byte_index+5]
+        byte_index += 5
+    elif lora_config.config["status"]["code"] == current_byte and current_message is not None and (len(packet) - byte_index - LENGTH_STATUS > 0):
+        byte_index += 1
+        print("b4 status " + str(byte_index) + str(packet[byte_index]))
+        sys.stdout.buffer.write(bytes([packet[byte_index]]))
+        current_message["status"] = lora_config.get_status_from_byte(packet[current_byte])
+        current_message["flag"] = lora_config.get_flag_from_byte(packet[current_byte+1])
         byte_index += 2
     else:
         current_sensor = lora_config.get_sensor_from_code(current_byte)
         if current_sensor is not None:
-            print("byte index" + str(byte_index))
+            # print("byte index" + str(byte_index))
             keys = list(current_sensor["values"].keys())
             byte_index += 1
             q = 0
             for value in current_sensor["values"].values():
-                print(value)
+                # print(value)
                 # print(byte_index)
                 current_data = packet[byte_index:(byte_index+value["byte_length"])]
-                print("current data" + str(current_data))
+                # print("current data" + str(current_data))
                 byte_index += value["byte_length"]
                 current_data_int = bytes_to_int_unsigned(current_data)
                 step = (value["max"] - value["min"]) / 65537
@@ -172,5 +133,5 @@ while byte_index < len(packet):
     #     sg12 = bytes_to_int_signed(packet[byte_index], packet[byte_index+1])
     #     byte_index += 2
     #     current_message.set_strain([sg1, sg2, sg3, sg4, sg5, sg6, sg7, sg8, sg9, sg10, sg11, sg12])
-print(str(current_message))
+# print(str(current_message))
 print(messages_in_packet)

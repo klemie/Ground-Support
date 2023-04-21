@@ -39,12 +39,43 @@ config = {
 				"sg12": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 }
 			}
 		}
+	},
+	"status": {
+		"code": 1,
+		"values": {
+			"status": {
+				0: "OK",
+                1: "Starting",
+                255: "Unrecoverable Error"
+			},
+            "flag": {
+				1<<7: "Apogee Detected",
+                1<<6: "LSM Error",
+                1<<5: "BME Error",
+                1<<4: "Strain Gauge Error"
+			}
+		} 
 	}
 }
 
 def get_sensor_from_code(code):
     for sensorvalue in config["sensors"].values():
-        print(code)
+        # print(code)
         if sensorvalue["code"] == code:
             return sensorvalue
     return None
+
+def get_status_from_byte(bt):
+    # print("flag" + str(bt))
+    for key in config["status"]["values"]["status"]:
+        if key == bt:
+            return config["status"]["values"]["status"][key]
+    return None
+
+def get_flag_from_byte(bt):
+    returnable_list = []
+    # print("flag" + str(bt))
+    for key in config["status"]["values"]["flag"]:
+        if ((key & bt) != 0):
+            returnable_list.append(config["status"]["values"]["flag"][key])
+    return returnable_list
