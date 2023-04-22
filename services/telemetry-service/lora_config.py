@@ -12,7 +12,8 @@ config = {
 				"rotationx": { "byte_length": 2, "min": -2000, "max":2000, "step":0.00489 },
 				"rotationy": { "byte_length": 2, "min":-2000, "max":2000, "step":0.00489 },
 				"rotationz": { "byte_length": 2, "min":-2000, "max":2000, "step":0.00489 }
-			}
+			},
+            "length": 18
 		},
 		"BME": {
 			"code": 3,
@@ -20,7 +21,8 @@ config = {
 				"humidity": { "byte_length": 2, "min":0, "max":100, "step":0.00489 },
 				"temperature": { "byte_length": 2, "min":0, "max":85, "step":0.00489 },
 				"pressure": { "byte_length": 2, "min":300, "max":1100, "step":0.00489 }
-			}
+			},
+            "length": 6
 		},
 		"STRAIN": {
 			"code": 4,
@@ -37,7 +39,8 @@ config = {
 				"sg10": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 },
 				"sg11": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 },
 				"sg12": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 }
-			}
+			},
+            "length": 24
 		}
 	},
 	"status": {
@@ -54,7 +57,12 @@ config = {
                 1<<5: "BME Error",
                 1<<4: "Strain Gauge Error"
 			}
-		} 
+		} ,
+        "length": 2
+	},
+    "timestamp": {
+		"code": 0,
+        "length": 4
 	}
 }
 

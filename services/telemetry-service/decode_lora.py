@@ -36,21 +36,22 @@ print(len(packet))
 byte_index = 0;
 while byte_index < len(packet):
     current_byte = packet[byte_index]
-    if current_byte == TIMESTAMP_ID and (len(packet) - byte_index - LENGTH_TIMESTAMP > 0):
+    if current_byte == config["timestamp"]["code"] and (len(packet) - byte_index - config["timestamp"]["length"] > 0):
+        byte_index += 1
         current_message = {}
         messages_in_packet.append(current_message)
-        current_message["timestamp"] = packet[byte_index:byte_index+5]
-        byte_index += 5
-    elif lora_config.config["status"]["code"] == current_byte and current_message is not None and (len(packet) - byte_index - LENGTH_STATUS > 0):
+        current_message["timestamp"] = bytes_to_int_unsigned(packet[byte_index:byte_index+config["timestamp"]["length"]])
+        byte_index += config["timestamp"]["length"]
+    elif lora_config.config["status"]["code"] == current_byte and current_message is not None and (len(packet) - byte_index - lora_config.config["status"]["length"] > 0):
         byte_index += 1
         print("b4 status " + str(byte_index) + str(packet[byte_index]))
         sys.stdout.buffer.write(bytes([packet[byte_index]]))
         current_message["status"] = lora_config.get_status_from_byte(packet[current_byte])
         current_message["flag"] = lora_config.get_flag_from_byte(packet[current_byte+1])
-        byte_index += 2
+        byte_index += lora_config.config["status"]["length"]
     else:
         current_sensor = lora_config.get_sensor_from_code(current_byte)
-        if current_sensor is not None:
+        if current_sensor is not None and current_message is not None and (len(packet) - byte_index - current_sensor["length"] > 0):
             # print("byte index" + str(byte_index))
             keys = list(current_sensor["values"].keys())
             byte_index += 1
