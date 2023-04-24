@@ -68,13 +68,11 @@ config = {
 
 def get_sensor_from_code(code):
     for sensorvalue in config["sensors"].values():
-        # print(code)
         if sensorvalue["code"] == code:
             return sensorvalue
     return None
 
 def get_status_from_byte(bt):
-    # print("flag" + str(bt))
     for key in config["status"]["values"]["status"]:
         if key == bt:
             return config["status"]["values"]["status"][key]
@@ -82,7 +80,6 @@ def get_status_from_byte(bt):
 
 def get_flag_from_byte(bt):
     returnable_list = []
-    # print("flag" + str(bt))
     for key in config["status"]["values"]["flag"]:
         if ((key & bt) != 0):
             returnable_list.append(config["status"]["values"]["flag"][key])
