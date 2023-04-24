@@ -3,42 +3,41 @@ config = {
 		"LSM": {
 			"code": 2,
 			"values": {
-				"accelerationx": { "byte_length": 2, "min":-16, "max":16, "step":0.00489 },
-				"accelerationy": { "byte_length": 2, "min":-16, "max":16, "step":0.00489 },
-				"accelerationz": { "byte_length": 2, "min":-16, "max":16, "step":0.00489 },
-				"magnetometerx": { "byte_length": 2, "min":-16, "max":16, "step":0.00489 },
-				"magnetometery": { "byte_length": 2, "min":-16, "max":16, "step":0.00489 },
-				"magnetometerz": { "byte_length": 2, "min":-16, "max":16, "step":0.00489 },
-				"rotationx": { "byte_length": 2, "min": -2000, "max":2000, "step":0.00489 },
-				"rotationy": { "byte_length": 2, "min":-2000, "max":2000, "step":0.00489 },
-				"rotationz": { "byte_length": 2, "min":-2000, "max":2000, "step":0.00489 }
+				"accelerationx": { "byte_length": 2, "min":-16, "max":16 },
+				"accelerationy": { "byte_length": 2, "min":-16, "max":16 },
+				"accelerationz": { "byte_length": 2, "min":-16, "max":16 },
+				"magnetometerx": { "byte_length": 2, "min":-16, "max":16 },
+				"magnetometery": { "byte_length": 2, "min":-16, "max":16 },
+				"magnetometerz": { "byte_length": 2, "min":-16, "max":16 },
+				"rotationx": { "byte_length": 2, "min": -2000, "max":2000 },
+				"rotationy": { "byte_length": 2, "min":-2000, "max":2000 },
+				"rotationz": { "byte_length": 2, "min":-2000, "max":2000 }
 			},
             "length": 18
 		},
 		"BME": {
 			"code": 3,
 			"values": {
-				"humidity": { "byte_length": 2, "min":0, "max":100, "step":0.00489 },
-				"temperature": { "byte_length": 2, "min":0, "max":85, "step":0.00489 },
-				"pressure": { "byte_length": 2, "min":300, "max":1100, "step":0.00489 }
+				"humidity": { "byte_length": 2, "min":0, "max":100 },
+				"temperature": { "byte_length": 2, "min":0, "max":85 },
+				"pressure": { "byte_length": 2, "min":300, "max":1100 }
 			},
             "length": 6
 		},
 		"STRAIN": {
 			"code": 4,
 			"values": {
-				"sg1": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 },
-				"sg2": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 },
-				"sg3": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 },
-				"sg4": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 },
-				"sg5": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 },
-				"sg6": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 },
-				"sg7": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 },
-				"sg8": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 },
-				"sg9": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 },
-				"sg10": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 },
-				"sg11": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 },
-				"sg12": { "byte_length": 2, "min":-4194304, "max":4194304, "step":0.00489 }
+				"sg1": { "byte_length": 2, "min":-4194304, "max":4194304 },
+				"sg2": { "byte_length": 2, "min":-4194304, "max":4194304 },
+				"sg3": { "byte_length": 2, "min":-4194304, "max":4194304 },
+				"sg4": { "byte_length": 2, "min":-4194304, "max":4194304 },
+				"sg5": { "byte_length": 2, "min":-4194304, "max":4194304 },
+				"sg6": { "byte_length": 2, "min":-4194304, "max":4194304 },
+				"sg7": { "byte_length": 2, "min":-4194304, "max":4194304 },
+				"sg8": { "byte_length": 2, "min":-4194304, "max":4194304 },
+				"sg10": { "byte_length": 2, "min":-4194304, "max":4194304 },
+				"sg11": { "byte_length": 2, "min":-4194304, "max":4194304 },
+				"sg12": { "byte_length": 2, "min":-4194304, "max":4194304 }
 			},
             "length": 24
 		}

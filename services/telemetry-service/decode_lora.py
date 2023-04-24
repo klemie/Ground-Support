@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import os
 import sys
 import lora_config
 
@@ -31,7 +30,6 @@ while byte_index < len(packet):
         byte_index += lora_config.config["timestamp"]["length"]
     elif lora_config.config["status"]["code"] == current_byte and current_message is not None and (len(packet) - byte_index - lora_config.config["status"]["length"] > 0):
         byte_index += 1
-        sys.stdout.buffer.write(bytes([packet[byte_index]]))
         current_message["status"] = lora_config.get_status_from_byte(packet[byte_index])
         current_message["flag"] = lora_config.get_flag_from_byte(packet[byte_index+1])
         byte_index += lora_config.config["status"]["length"]
