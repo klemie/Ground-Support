@@ -91,7 +91,7 @@ Now for telemetry
 First navigate to `/services/telemetry/` and install all python dependencies with
 
 ```bash
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 **Create Database**
