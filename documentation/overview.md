@@ -70,7 +70,7 @@ Next to get everything set up all node module dependencies must be installed.
 To do this run
 
 ```bash
-npm install && cd client && npm i && cd services/server && npm i
+npm install && cd client && npm i && cd ../services/server && npm i
 ```
 
 in the `/services/server` directory create a `.env` file
