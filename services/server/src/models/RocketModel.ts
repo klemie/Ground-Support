@@ -53,8 +53,7 @@ const RocketSchema: Schema = new Schema(
             required: true
         },
         Motor: {
-            type: String,
-            required: true
+            type: String
         },
         Mass: {
             type: String,
