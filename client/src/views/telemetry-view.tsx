@@ -21,9 +21,11 @@ export default function TelemetryView() {
 		{ name: 'New Mission', path: '/', active: false },
 		{ name: 'Telemetry View', path: '/', active: true }
 	];
+	let frequencySet: Boolean = true;
 
 	const updateFrequency = (newValue: number) => {
 		setFrequency(newValue);
+		frequencySet = !frequencySet;
 	};
 
 	const updateSatelliteCount = (newValue: number) => {
@@ -35,19 +37,21 @@ export default function TelemetryView() {
 	}, [frequency]);
 
 	useEffect(() => {
-		const interval = setInterval(async () => {
-			const data = await getTelemetryData();
-			console.log(data.header);
-			const { altitude, latitude, longitude, satellites, timeStamp } = data.header;
-			console.log(altitude, latitude, longitude, satellites, timeStamp);
-			setLongitude(longitude);
-			setLatitude(latitude);
-			setAltitude(altitude);
-			setSatelliteCount(satellites);
-			setTimeStamp(timeStamp);
-			setTelemetryData(data);
-		}, 1000);
-		return () => clearInterval(interval);
+		if (frequencySet) {
+			const interval = setInterval(async () => {
+				const data = await getTelemetryData();
+				console.log(data.header);
+				const { altitude, latitude, longitude, satellites, timeStamp } = data.header;
+				console.log(altitude, latitude, longitude, satellites, timeStamp);
+				setLongitude(longitude);
+				setLatitude(latitude);
+				setAltitude(altitude);
+				setSatelliteCount(satellites);
+				setTimeStamp(timeStamp);
+				setTelemetryData(data);
+			}, 1000);
+			return () => clearInterval(interval);
+		}
 	}, [timeStamp]);
 
 	return (
