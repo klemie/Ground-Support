@@ -9,6 +9,7 @@ import DataLog from '../components/DataLog';
 import TelemetryView from '../views/telemetry-view';
 import RocketSelectionView from '../views/rocket-selection-view';
 import ModulesView from '../views/modules-view';
+import ComponentDocs from '../views/component-docs';
 
 function App() {
 	const [activeStep, setActiveStep] = useState(0);
@@ -28,7 +29,7 @@ function App() {
 		setIsSettingsOpen(!isSettingsOpen);
 	};
 
-	const [currentView, setCurrentView] = useState('Rocket_Selection');
+	const [currentView, setCurrentView] = useState('Component_Docs');
 
 	const updateView = (viewName: string) => {
 		setCurrentView(viewName);
@@ -55,6 +56,7 @@ function App() {
 	return (
 		<div className="App">
 			{currentView === 'Rocket_Selection' && <RocketSelectionView setCurrentView={updateView} />}
+			{currentView === 'Component_Docs' && <ComponentDocs />}
 			{currentView === 'Active_Rocket' && (
 				<Grid container spacing={2} direction="row">
 					{/* Any views should be rendered within this grid item */}
