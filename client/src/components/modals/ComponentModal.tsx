@@ -1,3 +1,4 @@
+import { CloudUpload, Info } from '@mui/icons-material';
 import {
 	Box,
 	Button,
@@ -7,6 +8,8 @@ import {
 	DialogContent,
 	DialogTitle,
 	FormControl,
+	IconButton,
+	InputLabel,
 	MenuItem,
 	OutlinedInput,
 	Select,
@@ -26,7 +29,13 @@ const MenuProps = {
 	}
 };
 
-const ComponentModal = () => {
+interface ComponentModalProps {
+	isOpen: boolean;
+	onSave: () => void;
+	onClose: () => void;
+}
+
+const ComponentModal = (props: ComponentModalProps) => {
 	const [name, setName] = useState<string>('');
 	const [details, setDetails] = useState<string>('');
 	const [sourceType, setSourceType] = useState<string[]>([]);
@@ -38,8 +47,29 @@ const ComponentModal = () => {
 		setState(e.target.value as string);
 	};
 	console.log(name);
+	const save = async () => {
+		// const payload = {
+		// 	Height: height,
+		// 	Class: rocketClass,
+		// 	Motor: motor,
+		// 	MotorType: motorType,
+		// 	Name: name,
+		// 	Mass: mass
+		// };
+		// if (props.rocketProfileId) {
+		// 	await axios.patch(`http://127.0.0.1:9090/rocket/${props.rocketProfileId}`, payload);
+		// } else {
+		// 	await axios.post(`http://127.0.0.1:9090/rocket`, payload);
+		// }
+	};
+
+	const saveAndClose = () => {
+		save();
+		props.onSave();
+	};
+
 	return (
-		<Dialog open={true} fullWidth>
+		<Dialog open={props.isOpen} fullWidth>
 			<DialogTitle sx={{ typography: 'h4' }}>Component</DialogTitle>
 			<DialogContent>
 				<FormControl fullWidth>
@@ -71,36 +101,50 @@ const ComponentModal = () => {
 							/>
 						</Stack>
 						<Stack direction="row" spacing={2}>
-							<Select
-								label="Telemetry Source"
-								id="component-source"
-								multiple
-								fullWidth
-								value={sourceType}
-								onChange={(e) => handleChange(e, setSourceType)}
-								input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-								renderValue={(selected: string[]) => (
-									<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-										{selected.map((value: string) => (
-											<Chip key={value} label={value} />
-										))}
-									</Box>
-								)}
-								MenuProps={MenuProps}
-							>
-								<MenuItem key="LORA" value="LORA">
-									LORA
-								</MenuItem>
-								<MenuItem key="APRS" value="APRS">
-									APRS
-								</MenuItem>
-							</Select>
+							<FormControl fullWidth variant="filled">
+								<InputLabel id="component-source-label">Telemetry Source</InputLabel>
+								<Select
+									id="component-source"
+									variant="filled"
+									multiple
+									fullWidth
+									value={sourceType}
+									onChange={(e) => handleChange(e, setSourceType)}
+									input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+									renderValue={(selected: string[]) => (
+										<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+											{selected.map((value: string) => (
+												<Chip key={value} label={value} />
+											))}
+										</Box>
+									)}
+									MenuProps={MenuProps}
+									labelId="component-source-label"
+									label=""
+								>
+									<MenuItem key="LORA" value="LORA">
+										LORA
+									</MenuItem>
+									<MenuItem key="APRS" value="APRS">
+										APRS
+									</MenuItem>
+								</Select>
+							</FormControl>
+						</Stack>
+						<Stack direction="row" spacing={1}>
+							<Button variant="contained" size="large" startIcon={<CloudUpload />} sx={{ width: '95%' }}>
+								Data Configuration
+							</Button>
+							<IconButton size="medium">
+								<Info />
+							</IconButton>
 						</Stack>
 					</Stack>
 				</FormControl>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={(e) => setEditMode(false)}>Data Configuration </Button>
+				<Button onClick={props.onClose}>Cancel</Button>
+				<Button onClick={saveAndClose}>Save</Button>
 			</DialogActions>
 		</Dialog>
 	);
