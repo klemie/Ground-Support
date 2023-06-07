@@ -1,3 +1,5 @@
+decode = True 
+# Nice
 #!/usr/bin/env python
 import os
 import sys
