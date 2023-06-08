@@ -1,24 +1,16 @@
 import express from 'express';
-import request from 'request';
-import axios from 'axios';
+import controller from '../controllers/Generic';
+import TelemetryData from '../models/TelemetryData';
 
-const ENDPOINT = 'http://127.0.0.1:5000/gateway';
 const router = express.Router();
 
-const getData = async () => {
-    const telemetryResponse = await axios.get(ENDPOINT);
-    return telemetryResponse;
-};
+// GET all data config 
+router.get('/', controller.getAll(TelemetryData));
 
-router.get('/', (req, res) => {
-    console.log(ENDPOINT);
-    // request(ENDPOINT, (err, response, body) => {
-    //     console.log('error', err);
-    //     console.log('Response:', response);
-    //     console.log('Status Code:', response.statusCode);
-    //     console.log('body:', body);
-    //     res.send(body);
-    // })
-});
+// GET single data config 
+router.get('/:id', controller.get(TelemetryData));
+
+// POST new data config
+router.post('/', controller.create(TelemetryData));
 
 export = router;

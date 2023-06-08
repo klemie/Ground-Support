@@ -1,10 +1,14 @@
-decode = True 
-# Nice
 #!/usr/bin/env python
 import os
 import sys
 import shutil
 from subprocess import Popen, PIPE, run
+import requests
+from utils.random_packet_generator import direwolf_mock
+import time
+
+
+url = 'http://127.0.0.1:9090/gateway'
 
 FREQUENCY_ONE = "441.35M"
 FREQUENCY_TWO = "194.3M"
@@ -24,7 +28,10 @@ currentData = {
 }
 
 while True:
-    for line in sys.stdin:
+    random_aprs_packet = direwolf_mock().splitlines()
+    # Create an event based listener to only call if there is updated telemetry data
+    time.sleep(2)
+    for line in random_aprs_packet: #sys.stdin:
         if "Position" in line:
             currentData["Position"] = line[10:]
             currentData["Position"] = currentData["Position"][0:-1]
@@ -33,8 +40,14 @@ while True:
         if "W " in line:
             currentData["W"] = line[14:25]
         if "alt " in line:
-            currentData["alt"] = line[33:]
-            currentData["alt"] = currentData["alt"][0:-4]
+            print('alt: ', line[29:])
+            currentData["alt"] = line[29:]
+            # currentData["alt"] = currentData["alt"][0:-4]
         if "Invalid character in compressed longitude" in line:
             print("error: GPS is not locked")
-        # API CALL (Yay!)
+        telemetry_packet = {
+            "Type": "APRS",
+            "Data": currentData
+        }
+    r = requests.post(url=url, json=telemetry_packet)
+    print(r.json())

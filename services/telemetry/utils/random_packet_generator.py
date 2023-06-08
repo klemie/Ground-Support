@@ -1,7 +1,7 @@
-from shapely.geometry import Polygon, Point
+# from shapely.geometry import Polygon, Point
 import random
 import datetime
-from gps_coordinate_conversion import degree_minute_second 
+from .gps_coordinate_conversion import degree_minute_second 
 
 '''
 This file is used for mocking data
@@ -13,15 +13,7 @@ def generate_random_coordinate():
     -------
         Generates a radom coordinate in the area of SAC
     """
-    coord_bounds = Polygon([
-        (32.97175827941012, -106.965486509431), 
-        (32.97636658833169, -106.92471693240464), 
-        (33.01113716305164, -106.93424413882553), 
-        (33.00699852735377, -106.97424123965561)
-    ])
-    min_x, min_y, max_x, max_y = coord_bounds.bounds
-    random_coordinate = Point([random.uniform(min_x, max_x), random.uniform(min_y, max_y)])
-    return random_coordinate
+    return (32.97175827941012, -106.965486509431)
 
 
 def direwolf_mock():
@@ -32,8 +24,8 @@ def direwolf_mock():
     """
     packet_number = f'{random.randint(34, 40)}({(random.randint(4,6), 6)})'
     coordinates = generate_random_coordinate()
-    latitude_DMS = degree_minute_second(True, coordinates.x)
-    longitude_DMS = degree_minute_second(False, coordinates.y)
+    latitude_DMS = degree_minute_second(True, coordinates[0])
+    longitude_DMS = degree_minute_second(False, coordinates[1])
     DMS_lat_encoded = f'{latitude_DMS["degrees"]}{latitude_DMS["minutes"]}.{latitude_DMS["seconds"]}{latitude_DMS["polarity"]}'
     DMS_long_encoded = f'{longitude_DMS["degrees"]}{longitude_DMS["minutes"]}.{longitude_DMS["seconds"]}{longitude_DMS["polarity"]}'
     DMS_lat_decoded = f'{latitude_DMS["polarity"]} {latitude_DMS["degrees"]} {latitude_DMS["minutes"]} {latitude_DMS["seconds"]}'
@@ -52,8 +44,8 @@ def generate_random_packet():
     coordinate = generate_random_coordinate()
     return {
         'header': {
-            'latitude': coordinate.x,
-            'longitude': coordinate.y, 
+            'latitude': coordinate[0],
+            'longitude': coordinate[1], 
             'altitude': random.uniform(0, 10000),
             'satellites': random.randint(0, 40),
             'timeStamp': datetime.datetime.now().timestamp(),
@@ -91,8 +83,8 @@ def generate_random_packet():
         },
         'rocketStatus': {
             'batteries': random.randint(0, 100),
-            'latitude': coordinate.x,
-            'longitude': coordinate.y,
+            'latitude': coordinate[0],
+            'longitude': coordinate[1],
             'altitude': random.randint(0, 100000)
         }
     }
