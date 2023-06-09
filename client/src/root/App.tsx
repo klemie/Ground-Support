@@ -9,7 +9,7 @@ import DataLog from '../components/DataLog';
 import TelemetryView from '../views/telemetry-view';
 import RocketSelectionView from '../views/rocket-selection-view';
 import ModulesView from '../views/modules-view';
-import ComponentDocs from '../views/component-docs';
+import ComponentDocs from '../views/component-docs-view';
 
 function App() {
 	const [activeStep, setActiveStep] = useState(0);
@@ -29,7 +29,7 @@ function App() {
 		setIsSettingsOpen(!isSettingsOpen);
 	};
 
-	const [currentView, setCurrentView] = useState('Component_Docs');
+	const [currentView, setCurrentView] = useState('Rocket_Selection');
 
 	const updateView = (viewName: string) => {
 		setCurrentView(viewName);

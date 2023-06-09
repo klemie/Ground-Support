@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { Stack } from '@mui/system';
 import _ from 'lodash';
+import RealTimeChart from './Graph';
 
 const CHUNK_SIZE = 3;
 
@@ -30,6 +31,7 @@ export interface Field {
 interface ModuleProps {
 	title: string;
 	fields: Array<Field>;
+	visualize: boolean;
 }
 
 const computeStatuses = (fields?: Array<Field>) => {
@@ -64,62 +66,72 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 
 	const fieldsMatrix = _.chunk(props.fields, CHUNK_SIZE);
 	
+	const fieldMatrixUI = (
+		<Stack 
+			spacing={3} 
+			direction="row" 
+			justifyContent="center"
+		>
+			{fieldsMatrix.map((cols: Array<any>) => {
+				return ( 
+					<Stack 
+						spacing={3} 
+						direction="column" 
+						alignItems="center"
+					> 
+					{
+						cols.map((field, i) => {
+							return (
+								<Tooltip 
+									key={i} 
+									title={field.fieldName} 
+									placement="bottom"
+								>
+									<TextField
+										key={i} 
+										id="value-text-field"
+										size="small" 
+										label={field.fieldName} 
+										value={field.fieldValue} 
+										defaultValue="NaNa" 
+										fullWidth
+										sx= {{
+											"min-width": 100,
+											"max-width": 150,
+											input: {
+												textAlign: "center"
+											}
+										}}
+									/>
+								</Tooltip>
+							)
+						})
+					}
+					</Stack>
+				)
+			})}
+		</Stack>
+	);
+
+	const graph = (
+		<>
+			<RealTimeChart />
+		</>
+	);
+
 	return (
 		<>
 			<Card variant="outlined">
 				<CardHeader 
 					title={props.title || 'Default'} 
-					titleTypographyProps={{ variant: 'subtitle1' }} 
+					titleTypographyProps={{ variant: 'h6' }} 
 					sx={{ padding: 2 }} 
 				/>
 				<CardContent sx={{ paddingBlockStart: 0, paddingBlockEnd: 0 }}>
 
 					<Divider variant="fullWidth" sx={{ mb: 2 }} />
 
-					<Stack 
-						spacing={3} 
-						direction="row" 
-						justifyContent="center"
-					>
-						{fieldsMatrix.map((cols: Array<any>) => {
-							return ( 
-								<Stack 
-									spacing={3} 
-									direction="column" 
-									alignItems="center"
-								> 
-								{
-									cols.map((field, i) => {
-										return (
-											<Tooltip 
-												key={i} 
-												title={field.fieldName} 
-												placement="bottom"
-											>
-												<TextField
-													key={i} 
-													id="value-text-field"
-													size="small" 
-													label={field.fieldName} 
-													value={field.fieldValue} 
-													defaultValue="NaNa" 
-													fullWidth
-													sx= {{
-														"min-width": 100,
-														"max-width": 150,
-														input: {
-															textAlign: "center"
-														}
-													}}
-												/>
-											</Tooltip>
-										)
-									})
-								}
-								</Stack>
-							)
-						})}
-					</Stack>
+					{ props.visualize ? graph : fieldMatrixUI }
 
 					<Divider variant="fullWidth" sx={{ my: 2 }} />
 

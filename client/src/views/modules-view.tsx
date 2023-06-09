@@ -64,6 +64,7 @@ export default function ModulesView() {
 							alignItems="stretch"
 						>
 							<Module 
+								visualize={true}
 								key={'module-' + module[0].module} 
 								title={module[0].module || 'Title'} 
 								fields={module} 
