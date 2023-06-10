@@ -16,7 +16,10 @@ import {
 	Stack,
 	TextField
 } from '@mui/material';
-import { useState } from 'react';
+import axios from 'axios';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { parseConfigFileTextToJson, readJsonConfigFile } from 'typescript';
+import { dataConfigParser } from '../../utils/data-parser';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -30,6 +33,7 @@ const MenuProps = {
 };
 
 interface ComponentModalProps {
+	rocketProfileId: 0;
 	isOpen: boolean;
 	onSave: () => void;
 	onClose: () => void;
@@ -40,33 +44,57 @@ const ComponentModal = (props: ComponentModalProps) => {
 	const [details, setDetails] = useState<string>('');
 	const [sourceType, setSourceType] = useState<string[]>([]);
 	const [editMode, setEditMode] = useState<boolean>(false);
+	const [configFile, setConfigFile] = useState<File | null>(null);
+	const parsedConfigFile = useRef<{ [key: string]: Object }[]>([]);
 	const handleChange = (e: any, setState: Function) => {
 		if (!editMode) {
 			setEditMode(true);
 		}
 		setState(e.target.value as string);
 	};
-	console.log(name);
 	const save = async () => {
-		// const payload = {
-		// 	Height: height,
-		// 	Class: rocketClass,
-		// 	Motor: motor,
-		// 	MotorType: motorType,
-		// 	Name: name,
-		// 	Mass: mass
-		// };
-		// if (props.rocketProfileId) {
-		// 	await axios.patch(`http://127.0.0.1:9090/rocket/${props.rocketProfileId}`, payload);
-		// } else {
-		// 	await axios.post(`http://127.0.0.1:9090/rocket`, payload);
-		// }
+		const payload = {
+			Name: name,
+			DataConfigId: 1,
+			TelemetrySource: sourceType,
+			Details: details
+		};
+		await axios.post(`http://127.0.0.1:9090/component`, payload);
 	};
 
 	const saveAndClose = () => {
 		save();
 		props.onSave();
 	};
+
+	const onUploadFile = (event: any): void => {
+		setConfigFile(event.target.files[0]);
+	};
+
+	async function parseJsonFile(file: File | null): Promise<{ [key: string]: Object }[]> {
+		if (file == null) return [];
+		return new Promise((resolve, reject) => {
+			const fileReader = new FileReader();
+			fileReader.onload = (event) =>
+				resolve(
+					event.target && event.target.result && !(event.target.result instanceof ArrayBuffer)
+						? JSON.parse(event.target.result)
+						: ''
+				);
+			fileReader.onerror = (error) => reject(error);
+			fileReader.readAsText(file);
+		});
+	}
+
+	const parseUploadedFileToJson = useCallback(async () => {
+		let response: { [key: string]: Object }[] = await parseJsonFile(configFile);
+		parsedConfigFile.current = response;
+		console.log(parsedConfigFile.current);
+	}, [configFile]);
+
+	useEffect(() => {
+		parseUploadedFileToJson();
+	}, [parseUploadedFileToJson]);
 
 	return (
 		<Dialog open={props.isOpen} fullWidth>
@@ -132,12 +160,35 @@ const ComponentModal = (props: ComponentModalProps) => {
 							</FormControl>
 						</Stack>
 						<Stack direction="row" spacing={1}>
-							<Button variant="contained" size="large" startIcon={<CloudUpload />} sx={{ width: '95%' }}>
-								Data Configuration
-							</Button>
+							<input
+								accept="json/*"
+								hidden
+								className={'button'}
+								id="contained-button-file"
+								onChange={onUploadFile}
+								type="file"
+							/>
+							<label style={{ width: '95%' }} htmlFor="contained-button-file">
+								<Button
+									variant="contained"
+									component="span"
+									className={'button'}
+									size="large"
+									startIcon={<CloudUpload />}
+									// sx={{ width: '95%' }}
+									fullWidth
+								>
+									Data Configuration
+								</Button>
+							</label>
 							<IconButton size="medium">
 								<Info />
 							</IconButton>
+							{/* <label htmlFor="contained-button-file">
+								<Button variant="contained" component="span" className={'but'}>
+									Upload
+								</Button>
+							</label> */}
 						</Stack>
 					</Stack>
 				</FormControl>

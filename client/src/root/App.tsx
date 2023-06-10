@@ -81,8 +81,6 @@ function App() {
 								</Button>
 							</Grid>
 
-							<ComponentModal></ComponentModal>
-
 							{/* Page change stepper */}
 							<Grid container justifyContent="center">
 								<Stepper nonLinear activeStep={activeStep} orientation="vertical">
