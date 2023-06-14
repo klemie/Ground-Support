@@ -7,12 +7,11 @@ import requests
 from utils.random_packet_generator import direwolf_mock
 import time
 
-
-url = 'http://127.0.0.1:9090/gateway'
-
+URL = 'http://127.0.0.1:9090/gateway'
 FREQUENCY_ONE = "441.35M"
 FREQUENCY_TWO = "194.3M"
 TEST = False
+MOCK = True
 
 if TEST:
     a = Popen(["./rtl-sdr/rtl_fm.exe", "-f", FREQUENCY_ONE, "-d", "0", "-g", "49.6", "-r", "48k", "-p", "93", "-"], shell = True)
@@ -20,18 +19,26 @@ if TEST:
     stdout, stderr = a.communicate()
     b = Popen(["./direwolf-1.6.0-413855e_x86_64/direwolf"], shell=True, stdin=a.stdout)
 
-currentData = {
+ARPS_PACKET = {
     "Position": "",
     "N": "",
     "W": "",
     "alt": ""
 }
 
+packet = direwolf_mock().splitlines() if MOCK else sys.stdin
+
 while True:
-    random_aprs_packet = direwolf_mock().splitlines()
-    # Create an event based listener to only call if there is updated telemetry data
-    time.sleep(2)
-    for line in random_aprs_packet: #sys.stdin:
+    currentData = {
+        "Position": "",
+        "N": "",
+        "W": "",
+        "alt": ""
+    }
+    if MOCK:
+        time.sleep(3)
+
+    for line in packet:
         if "Position" in line:
             currentData["Position"] = line[10:]
             currentData["Position"] = currentData["Position"][0:-1]
@@ -45,9 +52,12 @@ while True:
             # currentData["alt"] = currentData["alt"][0:-4]
         if "Invalid character in compressed longitude" in line:
             print("error: GPS is not locked")
+
+    if currentData != ARPS_PACKET:
         telemetry_packet = {
             "Type": "APRS",
             "Data": currentData
         }
-    r = requests.post(url=url, json=telemetry_packet)
-    print(r.json())
+        r = requests.post(url=URL, json=telemetry_packet)
+        
+        print(r.json())

@@ -1,21 +1,25 @@
 import flask
+from flask_socketio import SocketIO, send
 from utils.random_packet_generator import generate_random_packet
 
-
 app = flask.Flask(__name__)
-@app.route('/', methods=['GET'])
-def index():
-    return "/gateway for telemetry data"
+gateway = SocketIO(app, cors_allow_origins='*')
+
+@gateway.on("loRa_packet")
+def loRaPacket(packet):
+    print(f"LoRa Packet: {packet}")
+    send(packet, broadcast=True)
+
+@gateway.on("aprs_packet")
+def aprsPacket(packet):
+    print(f"APRS Packet: {packet}")
+    send(packet, broadcast=True)
+
+@gateway.on("logs")
+def aprsPacket(msg):
+    print(f"Log sent: {msg}")
+    send(msg, broadcast=True)
 
 
-@app.route('/gateway', methods=['GET'])
-def send_data():
-
-    data = generate_random_packet()
-    data = flask.jsonify(data)
-    data.headers.add('Access-Control-Allow-Origin', '*')
-    return data
-
-
-if __name__=='__main__': 
-    app.run(port=5000, debug=True)
+if __name__=='__main__':
+    gateway.run(app=app, port=8080) 
