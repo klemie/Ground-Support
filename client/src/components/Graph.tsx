@@ -8,7 +8,7 @@ interface DataPoint {
   acceleration_z: number;
 }
 
-const RealTimeChart: React.FC = () => {
+const Graph: React.FC = () => {
   const [data, setData] = useState<DataPoint[]>([]);
 
   useEffect(() => {
@@ -45,4 +45,4 @@ const RealTimeChart: React.FC = () => {
   );
 };
 
-export default RealTimeChart;
+export default Graph;

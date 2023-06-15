@@ -122,12 +122,13 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 	return (
 		<>
 			<Card variant="outlined">
-				<CardHeader 
+				<CardHeader
+					 
 					title={props.title || 'Default'} 
 					titleTypographyProps={{ variant: 'h6' }} 
-					sx={{ padding: 2 }} 
+					sx={{ padding: 2, textAlign: 'center' }} 
 				/>
-				<CardContent sx={{ paddingBlockStart: 0, paddingBlockEnd: 0 }}>
+				<CardContent sx={{ paddingBlockStart: 0, paddingBlockEnd: 0, textAlign: 'center' }}>
 
 					<Divider variant="fullWidth" sx={{ mb: 2 }} />
 
@@ -137,7 +138,7 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 
 					<Chip 
 						color="primary" 
-						style={{ backgroundColor: String(statusColor) }} 
+						sx={{ backgroundColor: String(statusColor) }} 
 						label={status} 
 					/>
 				</CardContent>
