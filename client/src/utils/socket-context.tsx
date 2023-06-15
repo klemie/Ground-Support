@@ -5,7 +5,7 @@ import {
     useEffect,
     useState
 } from 'react';
-import { socket } from './socket-port';
+import { socket } from './socket-config';
 
 export interface SocketContext {
     logs: string[];

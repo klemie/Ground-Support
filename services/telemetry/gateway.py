@@ -20,6 +20,15 @@ def aprsPacket(msg):
     print(f"Log sent: {msg}")
     send(msg, broadcast=True)
 
+@app.route('/gateway/lora/<packet>')
+def loraPacket(packet):
+    print(f'LoRa packet from server: {packet}')
+    gateway.emit('loRa_packet', packet)
+
+@app.route('/gateway/aprs/<packet>')
+def loraPacket(packet):
+    print(f'APRS packet from server: {packet}')
+    gateway.emit('aprs_packet', packet)
 
 if __name__=='__main__':
     gateway.run(app=app, port=8080) 
