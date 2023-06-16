@@ -13,6 +13,7 @@ import {
 	
 } from '@mui/material';
 import { FileUpload } from '@mui/icons-material';
+import { Rocket } from '../utils/entities';
 import axios from 'axios';
 
 interface RocketProfileProps {
@@ -23,14 +24,7 @@ interface RocketProfileProps {
 }
 
 interface IRocketDetails {
-	result: {
-		Name: string;
-		Motor: string;
-		MotorType: string;
-		Height: number;
-		Class: string;
-		Mass: number;
-	};
+	result: Rocket;
 }
 
 const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfileProps) => {
