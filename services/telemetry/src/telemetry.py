@@ -8,6 +8,8 @@ import requests
 from utils.random_packet_generator import direwolf_mock
 import time
 
+from gateway import trigger_aprs_route
+
 URL = 'http://127.0.0.1:8080/gateway/'
 FREQUENCY_ONE = "441.35M"
 FREQUENCY_TWO = "194.3M"
@@ -60,8 +62,9 @@ def aprs_loop():
                 "Type": "APRS",
                 "Data": currentData
             }
-            r = requests.post(url=f'{URL}aprs/', json=telemetry_packet)
-            print(r.json())
+            trigger_aprs_route(repr(telemetry_packet))
+            # r = requests.post(url=f'{URL}aprs/', json=telemetry_packet)
+            # print(r.json())
 if __name__ == "__main__":
     aprs_loop()
 # async def loRa_loop(): 

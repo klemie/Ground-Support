@@ -1,8 +1,8 @@
 import flask
 from flask_cors import cross_origin
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, emit
 app = flask.Flask(__name__)
-sio = SocketIO(app, cors_allow_origins='*')
+sio = SocketIO(app, cors_allow_origins='*', Debug=True)
 
 @sio.on("loRa_packet")
 @cross_origin()
@@ -11,10 +11,10 @@ def loRaPacket(packet):
     send(packet, broadcast=True)
 
 @sio.on("aprs_packet")
-@cross_origin()
+# @cross_origin()
 def aprsPacket(packet):
     print(f"APRS Packet: {packet}")
-    send(packet, broadcast=True)
+    emit(packet, broadcast=True)
 
 @sio.on("logs")
 @cross_origin()
@@ -42,6 +42,9 @@ def aprsRoute():
     payload = flask.request.get_json(force=True)
     sio.emit('aprs_packet', payload)
     return flask.jsonify(f'echo\n{payload}')
+
+def trigger_aprs_route(packet: str):
+    aprsPacket(packet)
 
 async def start_socket():
     try:

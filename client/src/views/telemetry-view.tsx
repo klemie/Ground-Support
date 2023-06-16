@@ -4,12 +4,14 @@ import { Grid, Card, Stack, TextField, Typography, CardContent } from '@mui/mate
 import SatelliteCount from '../components/SatelliteCount';
 import getTelemetryData from '../utils/fetchPacket';
 import Header, { Breadcrumb } from '../components/Header';
-import goat from '../static/images/goat.jpg';
+import { useSocketContext } from '../utils/socket-context';
 
 export default function TelemetryView() {
 	const [frequency, setFrequency] = useState<number>(100);
 	const [satelliteCount, setSatelliteCount] = useState<number>(50);
-
+	const {
+		aprsPacket
+	} = useSocketContext();
 	// Telemetry packet state
 	const [longitude, setLongitude] = useState<number>(0);
 	const [latitude, setLatitude] = useState<number>(0);
@@ -37,22 +39,23 @@ export default function TelemetryView() {
 	}, [frequency]);
 
 	useEffect(() => {
-		if (frequencySet) {
-			const interval = setInterval(async () => {
-				const data = await getTelemetryData();
-				console.log(data.header);
-				const { altitude, latitude, longitude, satellites, timeStamp } = data.header;
-				console.log(altitude, latitude, longitude, satellites, timeStamp);
-				setLongitude(longitude);
-				setLatitude(latitude);
-				setAltitude(altitude);
-				setSatelliteCount(satellites);
-				setTimeStamp(timeStamp);
-				setTelemetryData(data);
-			}, 1000);
-			return () => clearInterval(interval);
-		}
-	}, [timeStamp]);
+		// if (frequencySet) {
+		// 	const interval = setInterval(async () => {
+		// 		const data = await getTelemetryData();
+		// 		console.log(data.header);
+		// 		const { altitude, latitude, longitude, satellites, timeStamp } = data.header;
+		// 		console.log(altitude, latitude, longitude, satellites, timeStamp);
+		// 		setLongitude(longitude);
+		// 		setLatitude(latitude);
+		// 		setAltitude(altitude);
+		// 		setSatelliteCount(satellites);
+		// 		setTimeStamp(timeStamp);
+		// 		setTelemetryData(data);
+		// 	}, 1000);
+		// 	return () => clearInterval(interval);
+		// }
+		console.log(aprsPacket)
+	}, [timeStamp, aprsPacket]);
 
 	return (
 		<>
@@ -112,6 +115,7 @@ export default function TelemetryView() {
 									InputLabelProps={{ shrink: true }}
 								/>
 							</Stack>
+							{aprsPacket}
 						</CardContent>
 					</Card>
 				</Grid>
