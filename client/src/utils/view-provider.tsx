@@ -8,6 +8,7 @@ import RocketSelectionView from '../views/rocket-selection-view';
 import ModulesView from '../views/modules-view';
 import ComponentDocs from '../views/component-docs-view';
 import SettingsDialog from '../components/SettingsDialog';
+import FlightReportView from '../views/flight-report-view';
 
 const ROCKET_SELECT_KEY = 'ROCKET_SELECT';
 const COMPONENT_DOCUMENT_KEY = 'COMPONENT_DOCUMENT';
@@ -75,6 +76,8 @@ export default function ViewProvider(props: ViewProviderProps) {
                 return <ComponentDocs />;
             case TELEMETRY_KEY:
                 return <TelemetryView />;
+			case FLIGHT_REPORT_KEY:
+				return <FlightReportView missionId='6431f84f3e89bb6b6922534d' />
             case FLIGHT_KEY:
                 return <ModulesView />;
             default:

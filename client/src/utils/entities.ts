@@ -4,6 +4,7 @@ enum TelemetrySource {
 }
 
 export interface IField {
+    Id: string;
     Name: string,
     Range: number[],
     Units: string,
@@ -12,10 +13,11 @@ export interface IField {
 
 export interface IModule {
     Name: string;
-    FieldGroups: IField[];
+    FieldGroups: IFieldGroup[];
 }
 
 export interface IDataConfig {
+    Id: string;
     Modules: IModule[];
 }
 
@@ -25,6 +27,7 @@ interface ICoordinates {
 }
 
 export interface IMission {
+    Id: string;
     Name: string;
     IsTest: boolean
     Date: Date;
@@ -41,9 +44,10 @@ enum MotorType {
 };
 
 export interface IRocket{
+    Id: string;
     Name: string;
     Missions: [];
-    Components: [];
+    Components: IComponent[];
     Mass: number;
     Height: number;
     Class: string;
@@ -52,6 +56,7 @@ export interface IRocket{
 }
 
 export interface IComponent {
+    Id: string;
     Name: string;
     TelemetrySource: TelemetrySource;
     Details: string,
@@ -68,6 +73,7 @@ interface IDataPoint {
 }
 
 export interface IFieldData {
+    Id: string;
     Name: string;
     Range: number[];
     Units: string;
