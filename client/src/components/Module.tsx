@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { Stack } from '@mui/system';
 import _ from 'lodash';
-import RealTimeChart from './Graph';
+import RealTimeChart from './RealTimeGraph';
 
 const CHUNK_SIZE = 3;
 
@@ -115,7 +115,7 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 
 	const graph = (
 		<>
-			<RealTimeChart />
+			{/* <RealTimeChart module={mo}/> */}
 		</>
 	);
 

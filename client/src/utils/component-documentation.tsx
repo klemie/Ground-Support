@@ -1,11 +1,11 @@
 import { DocumentationProps } from "../components/ComponentDocumentation";
 import Header from "../components/Header";
 import Module, { Field } from "../components/Module";
-import RealTimeChart from "../components/Graph";
+import RealTimeChart from "../components/RealTimeGraph";
 
 const header = <Header breadCrumbs={[{ name: "breadCrumb", path: "/", active: false }]}/>;
 const module = <Module visualize={true} title="Module Demo" fields={[{ module: "Module Demo", fieldName: 'Field 1', fieldRange: [0,2], fieldValue: 3 } ]} />;
-const graph = <RealTimeChart />;
+// const graph = <RealTimeChart />;
 
 const codeBlocks = [
 `import { Breadcrumb } from "../components/Header"; 

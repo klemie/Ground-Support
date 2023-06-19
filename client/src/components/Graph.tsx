@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend 
+} from 'recharts';
 
 interface DataPoint {
   time: string;
@@ -32,7 +40,7 @@ const Graph: React.FC = () => {
   }, []);
 
   return (
-    <LineChart width={350} height={150} data={data}>
+    <LineChart width={600} height={240} data={data}>
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="time" />
       <YAxis />

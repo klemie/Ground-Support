@@ -30,14 +30,16 @@ export default function RocketSelectionView(props: FlightReportProps) {
 		{ name: "Flight Report", path: "/", active: true }
 	];
     useEffect(()=> {
+        // reset state 
+        setMissionData(undefined);
+        setDataConfigs([]);
+
+        // get mission data
         const getMissionData = async () => {
-            console.log('mission id:', missionId)
             const response = await axios.get<IMissionResponse>(`http://127.0.0.1:9090/mission/${missionId}`);
-            console.log('Mission response:', response.data.result)
             setMissionData(response.data.result);
-            response.data.result.Components.map(async(component) => {
-                console.log('component:', component)
-                const componentResponse = await axios.get<IComponentResponse>(`http://127.0.0.1:9090/component/${component}`);
+            response.data.result.Components.map(async(componentId) => {
+                const componentResponse = await axios.get<IComponentResponse>(`http://127.0.0.1:9090/component/${componentId}`);
                 const response = await axios.get<IDataConfigResponse>(`http://127.0.0.1:9090/dataConfig/${componentResponse.data.result.DataConfig}`);
                 setDataConfigs((prev) => [...prev, response.data.result]);
                 return componentResponse.data.result;
@@ -52,7 +54,7 @@ export default function RocketSelectionView(props: FlightReportProps) {
         console.log('Mission Data:', missionData);
 
         getDataConfig();
-    }, []);
+    }, [missionId]);
 
     // Module Summaries
     const moduleSummaries = () => {
@@ -74,17 +76,16 @@ export default function RocketSelectionView(props: FlightReportProps) {
 			<Grid container>
 				<Header breadCrumbs={breadCrumbs} />
 			</Grid>
-            <Grid container>
-                <Typography variant='h2'>{missionData?.Name} Flight Report</Typography>
-                <Stack spacing={5}>
-                    {dataConfigs.map((dataConfig: IDataConfig) => {
-                        return dataConfig.Modules.map((module) => {
-                            return <ModuleSummary Module={module} />
-                        });
-                    })}
-                </Stack>
+            <Grid item >
+                <Typography variant='h4'>{missionData?.Name} Flight Report</Typography>
             </Grid>
-
+            <Grid container style={{ height: '80vh', overflowY: 'scroll' }}>
+                {dataConfigs.map((dataConfig: IDataConfig) => {
+                    return dataConfig.Modules.map((module) => {
+                        return <ModuleSummary Module={module} />
+                    });
+                })}
+            </Grid>
         </Grid>
     );
 }
