@@ -17,12 +17,12 @@ import {
 	Select,
 	Stack,
 	TextField,
-	Tooltip
+	Tooltip,
+	InputAdornment
 } from '@mui/material';
 import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { parseConfigFileTextToJson, readJsonConfigFile } from 'typescript';
-import { dataConfigParser } from '../../utils/data-parser';
+import { parseJsonFile } from '../../utils/data-parser';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -36,7 +36,6 @@ const MenuProps = {
 };
 
 interface ComponentModalProps {
-	rocketProfileId: 0;
 	isOpen: boolean;
 	onSave: () => void;
 	onClose: () => void;
@@ -74,7 +73,7 @@ const ComponentModal = (props: ComponentModalProps) => {
 			`http://127.0.0.1:9090/DataConfig`,
 			parsedConfigFile.current
 		);
-		let dataConfigId;
+		let dataConfigId: string;
 		if (response['status'] === 201) {
 			if ('data' in response) {
 				dataConfigId = response['data']['results']['_id'];
@@ -86,7 +85,7 @@ const ComponentModal = (props: ComponentModalProps) => {
 			return false;
 		}
 
-		for (var sourceType in sourceTypes) {
+		sourceTypes.map(async (sourceType) => {
 			const payload = {
 				Name: name,
 				DataConfigId: dataConfigId,
@@ -101,7 +100,7 @@ const ComponentModal = (props: ComponentModalProps) => {
 				setErrorBar({ message: 'Component Upload Failed', show: true });
 				return false;
 			}
-		}
+		});
 		return true;
 	};
 
@@ -114,20 +113,9 @@ const ComponentModal = (props: ComponentModalProps) => {
 		setConfigFile(event.target.files[0]);
 	};
 
-	async function parseJsonFile(file: File | null): Promise<{ [key: string]: Object }> {
-		if (file == null) return {};
-		return new Promise((resolve, reject) => {
-			const fileReader = new FileReader();
-			fileReader.onload = (event) =>
-				resolve(
-					event.target && event.target.result && !(event.target.result instanceof ArrayBuffer)
-						? JSON.parse(event.target.result)
-						: ''
-				);
-			fileReader.onerror = (error) => reject(error);
-			fileReader.readAsText(file);
-		});
-	}
+	const clearUploadFile = (): void => {
+		setConfigFile(null);
+	};
 
 	const parseUploadedFileToJson = useCallback(async () => {
 		let response: { [key: string]: Object } = await parseJsonFile(configFile);
@@ -234,6 +222,22 @@ const ComponentModal = (props: ComponentModalProps) => {
 							</FormControl>
 						</Stack>
 						<Stack direction="row" spacing={1}>
+							{configFile && (
+								<TextField
+									size="small"
+									fullWidth
+									value={configFile?.name}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position="start">
+												<IconButton onClick={clearUploadFile}>
+													<CloseIcon />
+												</IconButton>
+											</InputAdornment>
+										)
+									}}
+								/>
+							)}
 							<input
 								accept="json/*"
 								hidden
@@ -251,7 +255,7 @@ const ComponentModal = (props: ComponentModalProps) => {
 									startIcon={<CloudUpload />}
 									fullWidth
 								>
-									Data Configuration
+									{!configFile && 'Data Configuration'}
 								</Button>
 							</label>
 							<Tooltip

@@ -9,7 +9,6 @@ import DataLog from '../components/DataLog';
 import TelemetryView from '../views/telemetry-view';
 import RocketSelectionView from '../views/rocket-selection-view';
 import ModulesView from '../views/modules-view';
-import ComponentModal from '../components/modals/ComponentModal';
 
 function App() {
 	const [activeStep, setActiveStep] = useState(0);
