@@ -1,4 +1,4 @@
-import { IModule, IField, IFieldGroup, IDataConfig } from "./entities";
+import { IModule, IField } from "./entities";
 import { IFieldData } from "./entities";
 
 interface IDataConstructor {
@@ -18,16 +18,13 @@ interface ITableCol {
 }
 
 class DataConstructor implements IDataConstructor {
-    table?: boolean | undefined;
-    graph?: boolean | undefined;
     module: IModule;
-    data?: IFieldData | undefined;
+    data?: IFieldData | any | undefined;
     private fieldNames?: string[][]
 
-    constructor(module: IModule, table?: boolean, graph?: boolean) {
+    constructor(module: IModule) {
         this.module = module;
-        this.table = table ? true : false;
-        this.graph = graph ? true : false;
+        this.fieldNames = this._getFieldNames();
     }
 
     _getFieldNames(): string[][] {
@@ -44,7 +41,17 @@ class DataConstructor implements IDataConstructor {
         return fieldGroupNames;
     } 
 
- 
+    _getData() {
+        return
+    }
+
+    _generateData(timestamp: boolean, random: boolean, numberOfDataPoints: number) {
+        this.fieldNames = this._getFieldNames();
+        if (random) {
+            return this.fieldNames.map((fieldGroup) => this._randomStaticData(numberOfDataPoints, fieldGroup.length, timestamp));
+        }
+        return;
+    }
 
     _randomStaticData(dataPoints: number, numberOfColumns: number, timestamp: boolean): string[][] {
         const data: string[][] = [];
@@ -62,22 +69,8 @@ class DataConstructor implements IDataConstructor {
         return data;
     }
 
-   _tableCols(): ITableCol[][] {
+    _tableCols(timestamp: boolean): ITableCol[][] {
         this.fieldNames = this._getFieldNames();
-        const cols: ITableCol[][] = this.fieldNames.map((fieldGroupNames) => {
-            return fieldGroupNames.map((n: string) => {
-                const col: ITableCol = {
-                    name: n,
-                    label: n,
-                    options: {
-                        filter: true,
-                        sort: true
-                    }
-                };
-                return col;
-            });
-        });
-        // add time stamp
         const timestampCol: ITableCol = {
             name: 'Time',
             label: 'Time',  
@@ -85,34 +78,89 @@ class DataConstructor implements IDataConstructor {
                 filter: true,
                 sort: true,
             } 
-        }
-        cols.unshift([timestampCol]);
+        };
+    
+        const cols: ITableCol[][] = []
+        this.fieldNames.forEach((fieldGroupNames) => {
+            const row: ITableCol[] = [];
+            fieldGroupNames.forEach((name: string) => {
+                const col: ITableCol = {
+                    name: name,
+                    label: name,
+                    options: {
+                        filter: true,
+                        sort: true
+                    }
+                };
+                row.push(col);
+                return col;
+            });
+            row.unshift(timestampCol);
+            cols.push(row);
+        });
         
         return cols;
     }
 
-    _tableData(random: boolean) {
-        this.fieldNames = this._getFieldNames();
-        let data;
-        if (random) {
-            data = this.fieldNames.map((fieldGroup) => this._randomStaticData(100, fieldGroup.length, true));
-        }
+    _tableData(data: any) {;
         return data;
     }
 
-    _dataKeys() {
+    _dataKeys(timestamp: boolean) {
+        const dataKeys: string[][] = [];
+        this.fieldNames = this._getFieldNames();
+        this.fieldNames.forEach((fieldGroup) => {
+            const currentFieldGroup = fieldGroup.map((field) => {
+                return field;
+            });
+
+      
+            dataKeys.push(currentFieldGroup);
+        });
+        return dataKeys;
     }
 
-    tableConstructor() {//: [ITableCols[], []] {
-        console.log('Table Cols');
-        console.log(this._tableCols());
-        console.log('Table Data')
-        console.log(this._tableData(true));
+    _graphData(timestamp: boolean, data: [][][]) {
+        const keys = this._dataKeys(timestamp);
+        this.fieldNames = this._getFieldNames();
+        const fieldGroupsData: [][][] = data;
+        const formattedData: any[] = [];
+        fieldGroupsData.forEach((dataPoints, index) => {
+            const fieldGroupData: any = [];
+            dataPoints.forEach((dps) => {
+                const dataPointObject: any = {};
+                for (const [i, dp] of dps.entries()) {
+                    Object.assign(dataPointObject, {[keys[index][i]]: dp });
+                }
+                fieldGroupData.push(dataPointObject);            
+            });
+            formattedData.push(fieldGroupData);
+        });
+        return formattedData;
     }
 
-    graphConstructor() {
-
+    tableConstructor(timestamp: boolean, data: [][][]) {
+        return {
+            cols: this._tableCols(timestamp),
+            data: this._tableData(data)
+        }
     }
+
+    graphConstructor(timestamp: boolean, data: [][][]) {
+        return {
+            keys: this._dataKeys(timestamp),
+            data: this._graphData(timestamp, data)
+        }
+    }
+
+    flightReportConstructor(timestamp: boolean, random: boolean, numberOfDataPoints: number) {
+        this.data = this._generateData(timestamp, random, numberOfDataPoints);
+        return {
+            table: this.tableConstructor(timestamp, this.data),
+            graph: this.graphConstructor(timestamp, this.data)
+        }
+    }
+
 }
 
 export default DataConstructor;

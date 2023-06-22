@@ -54,8 +54,9 @@ export default function TelemetryView() {
 			const runTest = async () => {
 				await getDataConfig('648d5fb2d3eb5ecf4a4cb164');
 				const modules = dataConfig.Modules;
-				const tableData = new DataConstructor(modules[1], true);
-				tableData.tableConstructor();
+				const tableData = new DataConstructor(modules[1]);
+				const flightReportData = tableData.flightReportConstructor(true, true, 100);
+				console.log(flightReportData);
 			}
 
 			runTest()
