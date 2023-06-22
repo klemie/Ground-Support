@@ -116,7 +116,7 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 				rocketProfileId={rocketProfileId}
 				isOpen={isOpen}
 				onSave={() => { 
-					props.setCurrentView('Active_Rocket');
+					props.setCurrentView('START_UP');
 					setIsOpen(false);
 				}}
 				onClose={() => setIsOpen(false)}
