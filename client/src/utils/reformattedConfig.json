@@ -1,0 +1,60 @@
+{
+    "Modules": [
+        {
+            "Name":"BME280",
+            "FieldGroups": [
+            {
+                "Name": "Temperature",
+                "Fields": [
+                    {
+                        "Name": "Temperature", "Range": [2 , 3], "Units": "K", "TelemetryId": "0001"
+                    }
+                ]
+            },
+            {
+                "Name": "Humidity",
+                "Fields": [{
+                    "Name": "Humidity", "Range": [2 , 3], "Units": "g/m^3", "TelemetryId": "0001"
+            }]
+            },
+            {
+                "Name": "Pressure",
+                "Fields": [
+                    {
+                        "Name": "Pressure", "Range": [2 , 3], "Units": "KPa", "TelemetryId": "0001"
+                    }
+                ]
+            }
+            ]
+        },
+        {
+            "Name":"LSM9DS1",
+            "TelemetryId":"0010",
+            "FieldGroups": [{
+                "Name":"acceleration",
+                "Fields":[
+                    { "Name": "x", "Range": [2 , 3], "Units": "G", "TelemetryId": "0001" } ,
+                    { "Name": "y", "Range": [10 , 19], "Units": "G", "TelemetryId": "0001" },
+                    { "Name": "z", "Range": [16 , 19], "Units": "G", "TelemetryId": "0001" }
+                ]
+            },
+            {
+                "Name":"gyroscope",
+                "Fields":[
+                    { "Name": "x", "Range": [2 , 3], "Units": "°/s", "TelemetryId": "0001" } ,
+                    { "Name": "y", "Range": [10 , 19], "Units": "°/s", "TelemetryId": "0001" },
+                    { "Name": "z", "Range": [16 , 19], "Units": "°/s", "TelemetryId": "0001" }
+                ]
+            },
+            {
+                "Name":"magnetometer",
+                "Fields":[
+                    { "Name": "x", "Range": [2 , 3], "Units": "gauss", "TelemetryId": "0001" } ,
+                    { "Name": "y", "Range": [10 , 19], "Units": "gauss", "TelemetryId": "0001" },
+                    { "Name": "z", "Range": [16 , 19], "Units": "gauss", "TelemetryId": "0001" }
+                ]
+            }
+            ]
+        }
+    ]
+}
