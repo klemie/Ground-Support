@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Container, Grid, Step, StepButton, Stepper } from '@mui/material';
+import { Button, Grid, Step, StepButton, Stepper } from '@mui/material';
 
 import '../root/App.css'
 // Views
@@ -8,13 +8,14 @@ import RocketSelectionView from '../views/rocket-selection-view';
 import ModulesView from '../views/modules-view';
 import ComponentDocs from '../views/component-docs-view';
 import SettingsDialog from '../components/SettingsDialog';
+import RocketDetailsView from '../views/rocket-details-view';
 
 const ROCKET_SELECT_KEY = 'ROCKET_SELECT';
 const COMPONENT_DOCUMENT_KEY = 'COMPONENT_DOCUMENT';
 // const MISSION_REPLAY_KEY = 'MISSION_REPLAY';
 
 // Rocket Details
-// const ROCKET_DETAILS_KEY = 'ROCKET_DETAILS';
+const ROCKET_DETAILS_KEY = 'ROCKET_DETAILS';
 // const COMPONENT_DETAILS_KEY = 'COMPONENT_DETAILS';
 // const MISSION_DETAILS_KEY = 'MISSION_DETAILS';
 // const DATA_CONFIG_KEY = 'DATA_CONFIG';
@@ -31,9 +32,14 @@ interface ViewProviderProps {
 
 export default function ViewProvider(props: ViewProviderProps) {
     const [currentViewKey, setCurrentViewKey] = useState<string>(ROCKET_SELECT_KEY);
+    const [currentRocketID, setCurrentRocketID] = useState<string>("");
 
     const updateView = (key: string) => {
         setCurrentViewKey(key);
+    }
+
+    const updateRocketID = (id: string) => {
+        setCurrentRocketID(id);
     }
 
     const fullHeight = {
@@ -70,15 +76,17 @@ export default function ViewProvider(props: ViewProviderProps) {
     function currentView(viewKey: string) {
         switch (viewKey) {
             case ROCKET_SELECT_KEY:
-                return <RocketSelectionView setCurrentView={updateView} />;
+                return <RocketSelectionView setCurrentView={updateView} setRocketID={updateRocketID}/>;
             case COMPONENT_DOCUMENT_KEY:
                 return <ComponentDocs />;
+			case ROCKET_DETAILS_KEY:
+				return <RocketDetailsView rocketID={currentRocketID}/>;
             case TELEMETRY_KEY:
                 return <TelemetryView />;
             case FLIGHT_KEY:
                 return <ModulesView />;
             default:
-                return <RocketSelectionView setCurrentView={updateView} />;
+                return <RocketSelectionView setCurrentView={updateView} setRocketID={updateRocketID} />;
         }   
     }
 
@@ -86,8 +94,10 @@ export default function ViewProvider(props: ViewProviderProps) {
         console.log(currentViewKey);
     }, [currentViewKey])
     return (
-        <div className='app'>
-            {currentViewKey !== (TELEMETRY_KEY || FLIGHT_KEY || RECOVERY_KEY || FLIGHT_REPORT_KEY)  && currentView(ROCKET_SELECT_KEY)}
+		<div className='app'>
+
+            {currentViewKey === (ROCKET_SELECT_KEY)  && currentView(ROCKET_SELECT_KEY)}
+			{currentViewKey === (ROCKET_DETAILS_KEY) && currentView(ROCKET_DETAILS_KEY)}
             {currentViewKey === (TELEMETRY_KEY || FLIGHT_KEY || RECOVERY_KEY || FLIGHT_REPORT_KEY)  && (
 				<Grid container spacing={2} direction="row">
 					{/* Any views should be rendered within this grid item */}
