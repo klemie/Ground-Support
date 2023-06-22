@@ -4,44 +4,41 @@ import Header, { Breadcrumb } from '../components/Header';
 import axios from 'axios';
 
 import '../styles/rocketSelection.css';
-
-
-interface Rocket {
-	id: string;
-	name: string;
-	image?: string;
-	active: boolean;
-}
+import { IRocket } from '../utils/entities';
 
 interface TabPanelProps {
     children?: React.ReactNode;
     index: number;
     value: number;
-  }
-  
-  function TabPanel(props: TabPanelProps) {
+}
+
+interface IRocketDetails {
+	result: IRocket;
+}
+
+function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
   
     return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
-      >
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
         {value === index && (
-          <Box sx={{ p: 3 }}>
-            <Typography>{children}</Typography>
-          </Box>
+            <Box sx={{ p: 3 }}>
+                <Typography>{children}</Typography>
+            </Box>
         )}
-      </div>
-    );
-  }
+        </div>
+        );
+    }
 
-  interface RocketDetailsProps {
+interface RocketDetailsProps {
     rocketID: string;
-  }
+}
 
 export default function RocketDetailsView(props: RocketDetailsProps) {
 	const colors: string[] = [
@@ -60,7 +57,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
     //value is for tab things
     const [value, setValue] = React.useState(0);
 
-    const [rocketData, setRocketData] = useState<Rocket>();
+    const [rocketData, setRocketData] = useState<IRocket>();
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -69,14 +66,18 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
     useEffect(() => {
 		async function getRocket() {
 			//make an API call when component first mounts and setRocketData with response
-			const response = await axios.get(`http://127.0.0.1:9090/rocket/${props.rocketID}`);
+			const response = await axios.get<IRocketDetails>(`http://127.0.0.1:9090/rocket/${props.rocketID}`);
             const rocket = response.data.result;
             
-            const data = {
-                id: rocket._id,
-                image: 'Xenia1.svg',
-                name: rocket.Name,
-                active: true
+            const data: IRocket = {
+                Name: rocket.Name,
+                Missions: rocket.Missions,
+                Components: rocket.Components,
+                Mass: rocket.Mass,
+                Height: rocket.Height,
+                Class: rocket.Class,
+                MotorType: rocket.MotorType,
+                Motor: rocket.Motor
             }
             setRocketData(data);
         }
@@ -84,7 +85,6 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 	}, []);
     useEffect(() => {
         console.log(rocketData);
-        console.log(rocketData?.name);
 	}, [rocketData]);
 
 	return (
@@ -104,7 +104,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                 <Grid item>
 					<Card>
                         <Typography marginX={"2rem"} marginY={"1rem"} align='left' variant='h6'>
-                            {rocketData?.name}
+                            {rocketData?.Name}
                         </Typography>
                     </Card>
 				</Grid>
