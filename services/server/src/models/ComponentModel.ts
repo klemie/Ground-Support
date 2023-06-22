@@ -27,7 +27,7 @@ const ComponentModel: Schema = new Schema(
         },
         TelemetrySource: {
             type: String,
-            enum: ['LoRa', 'APRS']
+            enum: ['LORA', 'APRS']
         },
         DataConfigId: {
             type: Types.ObjectId, ref: 'DataConfig'
