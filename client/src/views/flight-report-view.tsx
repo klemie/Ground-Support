@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { IComponent, IDataConfig, IMission } from '../utils/entities';
 import axios from 'axios';
-import { Grid, Stack, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import ModuleSummary from '../components/ModuleSummary';
 
@@ -34,8 +34,7 @@ export default function RocketSelectionView(props: FlightReportProps) {
         setMissionData(undefined);
         setDataConfigs([]);
 
-        // get mission data
-        const getMissionData = async () => {
+        const getDataConfigs = async () => {
             const response = await axios.get<IMissionResponse>(`http://127.0.0.1:9090/mission/${missionId}`);
             setMissionData(response.data.result);
             response.data.result.Components.map(async(componentId) => {
@@ -46,24 +45,11 @@ export default function RocketSelectionView(props: FlightReportProps) {
             });
         };
 
-        const getDataConfig = async () => {
-       
-
-        };
-        getMissionData();
+        getDataConfigs();
         console.log('Mission Data:', missionData);
 
-        getDataConfig();
-    }, [missionId]);
+    }, [missionId, missionData]);
 
-    // Module Summaries
-    const moduleSummaries = () => {
-        dataConfigs.map((dataConfig: IDataConfig) => {
-            return dataConfig.Modules.map((module) => {
-                return <ModuleSummary Module={module} />
-            });
-        }); 
-    };
 
     return (
         <Grid 
