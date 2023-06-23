@@ -17,7 +17,7 @@ const ModuleSummary: React.FC<ModuleSummaryProps> = (props: ModuleSummaryProps) 
         <Container>
             <Typography variant="h5" sx={{ paddingBlockEnd: 2 }}>{Module.Name}</Typography>
             <Stack direction={'column'} spacing={5}>
-                {Module.FieldGroups.map((fieldGroup, index) => {
+                {Module.FieldGroups.map((fieldGroup: IFieldGroup, index) => {
                     
                     return (
                         <Stack direction={'row'} alignItems={'center'}>

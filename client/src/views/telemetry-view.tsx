@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Frequency from '../components/Frequency';
-import { Grid, Card, Stack, TextField, CardContent } from '@mui/material';
+import { Grid, Card, Stack, TextField, Typography, CardContent } from '@mui/material';
 import SatelliteCount from '../components/SatelliteCount';
+import getTelemetryData from '../utils/fetchPacket';
 import Header, { Breadcrumb } from '../components/Header';
-import { IDataConfig } from '../utils/entities';
-import axios from 'axios';
-import DataConstructor from '../utils/data-constructor';
+import goat from '../static/images/goat.jpg';
 
 export default function TelemetryView() {
 	const [frequency, setFrequency] = useState<number>(100);
@@ -38,44 +37,22 @@ export default function TelemetryView() {
 	}, [frequency]);
 
 	useEffect(() => {
-		
-			interface IDataConfigResponse {
-				result: IDataConfig
-			}
-
-
-			let dataConfig: IDataConfig;
-
-			async function getDataConfig(id: string): Promise<boolean> {
-				const response = await axios.get<IDataConfigResponse>(`http://127.0.0.1:9090/dataConfig/${id}`);
-				dataConfig = response.data.result;
-				return true;
-			}
-			const runTest = async () => {
-				await getDataConfig('648d5fb2d3eb5ecf4a4cb164');
-				const modules = dataConfig.Modules;
-				const tableData = new DataConstructor(modules[1]);
-				const flightReportData = tableData.flightReportConstructor(true, true, 100);
-				console.log(flightReportData);
-			}
-
-			runTest()
-		// if (frequencySet) {
-		// 	const interval = setInterval(async () => {
-		// 		const data = await getTelemetryData();
-		// 		console.log(data.header);
-		// 		const { altitude, latitude, longitude, satellites, timeStamp } = data.header;
-		// 		console.log(altitude, latitude, longitude, satellites, timeStamp);
-		// 		setLongitude(longitude);
-		// 		setLatitude(latitude);
-		// 		setAltitude(altitude);
-		// 		setSatelliteCount(satellites);
-		// 		setTimeStamp(timeStamp);
-		// 		setTelemetryData(data);
-		// 	}, 1000);
-		// 	return () => clearInterval(interval);
-		// }
-	}, []);
+		if (frequencySet) {
+			const interval = setInterval(async () => {
+				const data = await getTelemetryData();
+				console.log(data.header);
+				const { altitude, latitude, longitude, satellites, timeStamp } = data.header;
+				console.log(altitude, latitude, longitude, satellites, timeStamp);
+				setLongitude(longitude);
+				setLatitude(latitude);
+				setAltitude(altitude);
+				setSatelliteCount(satellites);
+				setTimeStamp(timeStamp);
+				setTelemetryData(data);
+			}, 1000);
+			return () => clearInterval(interval);
+		}
+	}, [timeStamp]);
 
 	return (
 		<>

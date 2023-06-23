@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Container, Grid, Step, StepButton, Stepper } from '@mui/material';
+import { Button, Grid, Step, StepButton, Stepper } from '@mui/material';
 
 import '../root/App.css'
 // Views
@@ -30,12 +30,18 @@ interface ViewProviderProps {
     currentView?: () => void
 }
 
-export default function ViewProvider(props: ViewProviderProps) {
+export default function ViewProvider (props: ViewProviderProps) {
     const [currentViewKey, setCurrentViewKey] = useState<string>(ROCKET_SELECT_KEY);
+	const [missionId, setMissionId] = useState<string>('');
+
+	const updateMissionId = (id: string) => {
+		// currently no way to set this
+		setMissionId(id);
+	};
 
     const updateView = (key: string) => {
         setCurrentViewKey(key);
-    }
+    };
 
     const fullHeight = {
 		height: '100vh',
@@ -77,7 +83,7 @@ export default function ViewProvider(props: ViewProviderProps) {
             case TELEMETRY_KEY:
                 return <TelemetryView />;
 			case FLIGHT_REPORT_KEY:
-				return <FlightReportView missionId='6431f84f3e89bb6b6922534d' />
+				return <FlightReportView missionId={missionId} />
             case FLIGHT_KEY:
                 return <ModulesView />;
             default:
@@ -87,7 +93,8 @@ export default function ViewProvider(props: ViewProviderProps) {
 
     useEffect(() => {
         console.log(currentViewKey);
-    }, [currentViewKey])
+    }, [currentViewKey]);
+
     return (
         <div className='app'>
             {currentViewKey !== (TELEMETRY_KEY || FLIGHT_KEY || RECOVERY_KEY || FLIGHT_REPORT_KEY)  && currentView(ROCKET_SELECT_KEY)}

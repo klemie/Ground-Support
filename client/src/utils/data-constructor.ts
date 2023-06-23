@@ -4,8 +4,6 @@ import { IFieldData } from "./entities";
 interface IDataConstructor {
     module: IModule;
     data?: IFieldData;
-    table?: boolean;
-    graph?: boolean;
 }
 
 interface ITableCol {
@@ -26,7 +24,11 @@ class DataConstructor implements IDataConstructor {
         this.module = module;
         this.fieldNames = this._getFieldNames();
     }
-
+    /**
+     * Returns an array of arrays of field names from the module
+     * 
+     *  @returns - An array of arrays of field names 
+     */
     _getFieldNames(): string[][] {
         const fieldGroupNames: string[][] = this.module.FieldGroups.map((fieldGroup) => {
             const fields: string[] = fieldGroup.Fields.map((field: IField) => {
@@ -45,6 +47,25 @@ class DataConstructor implements IDataConstructor {
         return
     }
 
+    /**
+     * Returns an array of arrays of random data points
+     * 
+     * @remarks
+     * This method is part of the {@link utils#DataConstructor|DataConstructor utility class}.
+     * 
+     * @param timestamp - Whether or not to add a timestamp to the data to the randomly generated data
+     * @param random - Whether or not to generate random data
+     * @param numberOfDataPoints - The number of data points to generate if random
+     * @returns - An array of arrays of random data points
+     * 
+     * @beta
+     * 
+     * @example
+     * Only internal use
+     * ```ts
+     * this._generateData(true, true, 10);
+     * ```
+     */
     _generateData(timestamp: boolean, random: boolean, numberOfDataPoints: number) {
         this.fieldNames = this._getFieldNames();
         if (random) {
@@ -53,6 +74,25 @@ class DataConstructor implements IDataConstructor {
         return;
     }
 
+    /**
+     * Returns an array of arrays of random data points
+     * 
+     * @remarks
+     * This method is part of the {@link utils#DataConstructor|DataConstructor utility class}.
+     * 
+     * @param dataPoints - The number of data points to generate
+     * @param numberOfColumns - The number of columns to generate
+     * @param timestamp - Whether or not to add a timestamp to the data and keys
+     * @returns - An array of arrays of random data points
+     * 
+     * @beta
+     * 
+     * @example
+     * Only internal use
+     * ```ts
+     * this._randomStaticData(10, Module.FieldGroup.length, true);
+     * ```
+     */
     _randomStaticData(dataPoints: number, numberOfColumns: number, timestamp: boolean): string[][] {
         const data: string[][] = [];
 
@@ -69,6 +109,18 @@ class DataConstructor implements IDataConstructor {
         return data;
     }
 
+    /**
+     * Returns an array of objects with keys and data formatted for the MUIDataTable
+     * 
+     * @remarks
+     * This method is part of the {@link utils#DataConstructor|DataConstructor utility class}.
+     * 
+     * @param timestamp - Whether or not to add a timestamp column
+     * @returns - An array of ITableCol objects for the MUIDataTable
+     * 
+     * @beta
+     * 
+     */
     _tableCols(timestamp: boolean): ITableCol[][] {
         this.fieldNames = this._getFieldNames();
         const timestampCol: ITableCol = {
@@ -95,7 +147,9 @@ class DataConstructor implements IDataConstructor {
                 row.push(col);
                 return col;
             });
-            row.unshift(timestampCol);
+            if (timestamp) {
+                row.unshift(timestampCol);
+            }
             cols.push(row);
         });
         
@@ -106,6 +160,18 @@ class DataConstructor implements IDataConstructor {
         return data;
     }
 
+    /**
+     * Returns an array of keys for the data formatted for the ReChart graph
+     * 
+     * @remarks
+     * This method is part of the {@link utils#DataConstructor|DataConstructor utility class}.
+     * 
+     * @param timestamp - Whether or not to add a timestamp key
+     * @returns - An array of keys for the data formatted for the Rechart graph
+     * 
+     * @beta
+     * 
+     */
     _dataKeys(timestamp: boolean) {
         const dataKeys: string[][] = [];
         this.fieldNames = this._getFieldNames();
@@ -122,6 +188,29 @@ class DataConstructor implements IDataConstructor {
         return dataKeys;
     }
 
+    /**
+     * Returns an Array of arrays formatted data for the Rechart graph  
+     * 
+     * @remarks
+     * This method is part of the {@link utils#DataConstructor|DataConstructor utility class}.
+     * 
+     * @param timestamp - Whether or not to add a timestamp at the start of every row in the data
+     * @param data - The data to be formatted. Either Created by the 
+     * {@link utils#DataConstructor._generateData|_generateData} method or piped in from the socket
+     * @returns - An object with keys and data formatted for the Rechart graph
+     * 
+     * @beta
+     *  
+     * @example
+     * ```ts
+     * const data = socket.on('data', (data) => {
+     *     return data;
+     * });
+     *
+     * const dataConstructor = new DataConstructor(module);
+     * const graphData = dataConstructor.graphConstructor(true, data);
+     * ```
+    */
     _graphData(timestamp: boolean, data: [][][]) {
         const ts = timestamp ? timestamp : false; 
         const keys = this._dataKeys(ts);
@@ -144,7 +233,29 @@ class DataConstructor implements IDataConstructor {
         });
         return formattedData;
     }
-
+ /**
+     * Returns an object with keys and data formatted for the MUIDataTable
+     * 
+     * @remarks
+     * This method is part of the {@link utils#DataConstructor|DataConstructor utility class}.
+     * 
+     * @param timestamp - Whether or not to add a timestamp to the data and keys
+     * @param data - The data to be formatted
+     * @returns - An object with keys and data formatted for the Rechart graph
+     * 
+     * @beta
+     * 
+     * @example
+     * ```ts
+     * const data = socket.on('data', (data) => {
+     *    return data;
+     * });
+     * 
+     * const dataConstructor = new DataConstructor(module);
+     * const tableData = dataConstructor.tableConstructor(true, data);
+     * ```
+     * 
+     */
     tableConstructor(timestamp: boolean, data: [][][]) {
         return {
             cols: this._tableCols(timestamp),
@@ -152,6 +263,29 @@ class DataConstructor implements IDataConstructor {
         }
     }
 
+    /**
+     * Returns an object with keys and data formatted for the Rechart graph
+     * 
+     * @remarks
+     * This method is part of the {@link utils#DataConstructor|DataConstructor utility class}.
+     * 
+     * @param timestamp - Whether or not to add a timestamp to the data and keys
+     * @param data - The data to be formatted
+     * @returns - An object with keys and data formatted for the Rechart graph
+     * 
+     * @beta
+     * 
+     * @example
+     * ```ts
+     * const data = socket.on('data', (data) => {
+     *   return data;
+     * });
+     * 
+     * const dataConstructor = new DataConstructor(module);
+     * const graphData = dataConstructor.graphConstructor(true, data);
+     * ```
+     * 
+     */
     graphConstructor(timestamp: boolean, data: [][][]) {
         return {
             keys: this._dataKeys(timestamp),
@@ -159,6 +293,26 @@ class DataConstructor implements IDataConstructor {
         }
     }
 
+    /**
+     * Returns an object with keys and data formatted for the Rechart graph
+     * 
+     * @remarks
+     * This method is part of the {@link utils#DataConstructor|DataConstructor utility class}.
+     * 
+     * @param timestamp - Whether or not to add a timestamp to the data and keys
+     * @param random - Whether or not to generate random data
+     * @param numberOfDataPoints - The number of data points to generate
+     * @returns - An object with keys and data formatted for the Rechart graph
+     * 
+     * @beta
+     * 
+     * @example
+     * 
+     * ```ts
+     * const dataConstructor = new DataConstructor(module);
+     * const data = dataConstructor.flightReportConstructor(true, true, 100);
+     * ```
+     */
     flightReportConstructor(timestamp: boolean, random: boolean, numberOfDataPoints: number) {
         this.data = this._generateData(timestamp, random, numberOfDataPoints);
         return {
