@@ -11,7 +11,7 @@ import {
 import { IModule } from '../utils/entities';
 
 interface GraphProps {
-	dataKeys: string[][];
+	dataKeys: string[];
 	// fieldsToRender: string[];
 	staticData: any[];
 	realTime: boolean;
@@ -29,6 +29,7 @@ const Graph: React.FC<GraphProps> = (props: GraphProps) => {
 			setData(staticData);
 		}
 		console.log('Data:', data);
+		console.log(dataKeys);
 	}, [realTime, staticData]);
 
 	return (
@@ -38,19 +39,17 @@ const Graph: React.FC<GraphProps> = (props: GraphProps) => {
 			<YAxis />
 			<Tooltip />
 			<Legend align='center' />
-			{dataKeys && dataKeys.map((dks) => {
-				return dks.map((key, index) => {
-					return (
-						<Line 
-							key={index} 
-							type="monotone" 
-							dataKey={key} 
-							strokeWidth={3} 
-							activeDot={{ r: 8 }} 
-							isAnimationActive={!realTime} 
-						/>
-					);
-				});
+			{dataKeys && dataKeys.map((key, index) => {
+				return (
+					<Line 
+						key={index} 
+						type="monotone" 
+						dataKey={key} 
+						strokeWidth={3} 
+						activeDot={{ r: 8 }} 
+						isAnimationActive={!realTime} 
+					/>
+				);
 			})}
 		</LineChart>
 	);

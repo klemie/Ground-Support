@@ -17,12 +17,12 @@ const ModuleSummary: React.FC<ModuleSummaryProps> = (props: ModuleSummaryProps) 
         <Container>
             <Typography variant="h5" sx={{ paddingBlockEnd: 2 }}>{Module.Name}</Typography>
             <Stack direction={'column'} spacing={5}>
-                {Module.FieldGroups.map((fieldGroup: IFieldGroup) => {
+                {Module.FieldGroups.map((fieldGroup, index) => {
                     
                     return (
                         <Stack direction={'row'} alignItems={'center'}>
-                            <MUIDataTable options={{elevation: 1, rowsPerPage: 5}} columns={data.table.cols} data={data.table.data} title={fieldGroup.Name}/>
-                            <Graph dataKeys={data.graph.data} realTime={false} staticData={data.graph.data}/>
+                            <MUIDataTable options={{elevation: 1, rowsPerPage: 5}} columns={data.table.cols[index]} data={data.table.data[index]} title={fieldGroup.Name}/>
+                            <Graph dataKeys={data.graph.keys[index]} realTime={false} staticData={data.graph.data[index]}/>
                         </Stack>
                     );
                 })}

@@ -114,17 +114,23 @@ class DataConstructor implements IDataConstructor {
                 return field;
             });
 
-      
+            if (timestamp) {
+                currentFieldGroup.unshift('Time')
+            } 
             dataKeys.push(currentFieldGroup);
         });
         return dataKeys;
     }
 
     _graphData(timestamp: boolean, data: [][][]) {
-        const keys = this._dataKeys(timestamp);
+        const ts = timestamp ? timestamp : false; 
+        const keys = this._dataKeys(ts);
         this.fieldNames = this._getFieldNames();
         const fieldGroupsData: [][][] = data;
         const formattedData: any[] = [];
+        if (ts) {
+            fieldGroupsData.unshift();
+        }
         fieldGroupsData.forEach((dataPoints, index) => {
             const fieldGroupData: any = [];
             dataPoints.forEach((dps) => {
