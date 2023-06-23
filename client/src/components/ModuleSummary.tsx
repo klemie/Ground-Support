@@ -21,8 +21,17 @@ const ModuleSummary: React.FC<ModuleSummaryProps> = (props: ModuleSummaryProps) 
                     
                     return (
                         <Stack direction={'row'} alignItems={'center'}>
-                            <MUIDataTable options={{elevation: 1, rowsPerPage: 5}} columns={data.table.cols[index]} data={data.table.data[index]} title={fieldGroup.Name}/>
-                            <Graph dataKeys={data.graph.keys[index]} realTime={false} staticData={data.graph.data[index]}/>
+                            <MUIDataTable 
+                                options={{elevation: 1, rowsPerPage: 5}} 
+                                columns={data.table.cols[index]} 
+                                data={data.table.data[index]} 
+                                title={fieldGroup.Name}
+                            />
+                            <Graph 
+                                dataKeys={data.graph.keys[index]} 
+                                realTime={false} 
+                                staticData={data.graph.data[index]}
+                            />
                         </Stack>
                     );
                 })}

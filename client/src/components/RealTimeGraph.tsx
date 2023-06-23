@@ -40,16 +40,20 @@ const Graph: React.FC<GraphProps> = (props: GraphProps) => {
 			<Tooltip />
 			<Legend align='center' />
 			{dataKeys && dataKeys.map((key, index) => {
-				return (
-					<Line 
-						key={index} 
-						type="monotone" 
-						dataKey={key} 
-						strokeWidth={3} 
-						activeDot={{ r: 8 }} 
-						isAnimationActive={!realTime} 
-					/>
-				);
+				if (key !== 'Time') {
+					return (
+						<Line 
+							key={index} 
+							type="monotone" 
+							dataKey={key} 
+							stroke={`hsl(${index * 360 / dataKeys.length}, 100%, 50%)`}
+							strokeWidth={3} 
+							activeDot={{ r: 8 }} 
+							isAnimationActive={!realTime} 
+						/>
+					);
+				}
+				return null;
 			})}
 		</LineChart>
 	);
