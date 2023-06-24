@@ -117,14 +117,15 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                             </Tabs>
                         </Box>
                         <TabPanel value={value} index={0}>
-                            Item One
+                             Details
                         </TabPanel>
                         <TabPanel value={value} index={1}>
-                            Item Two
+                            Components
                         </TabPanel>
                         <TabPanel value={value} index={2}>
-                            Item Three
+                            Missions
                         </TabPanel>
+
                     </Box>
                 <Grid item>
                     
