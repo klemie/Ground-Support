@@ -110,7 +110,8 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 				</Grid>
                     <Box sx={{ width: '100%' }}>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                            <Tabs value={value} onChange={handleChange}>
+
                                 <Tab label="Item One" />
                                 <Tab label="Item Two"  />
                                 <Tab label="Item Three" />
