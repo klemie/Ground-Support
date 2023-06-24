@@ -104,7 +104,8 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                 <Grid item>
 					<Card>
                         <Typography marginX={"2rem"} marginY={"1rem"} align='left' variant='h6'>
-                            {rocketData?.Name}
+                            {rocketData?.Name || 'Rocket Not found'}
+
                         </Typography>
                     </Card>
 				</Grid>
