@@ -55,7 +55,8 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 	// const [rocketData, setRocketData] = useState<Rocket[]>([]);
 
     //value is for tab things
-    const [value, setValue] = React.useState(0);
+    const [value, setValue] = useState<number>(0);
+
 
     const [rocketData, setRocketData] = useState<IRocket>();
 
