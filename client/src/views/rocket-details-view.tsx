@@ -112,9 +112,10 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                             <Tabs value={value} onChange={handleChange}>
 
-                                <Tab label="Item One" />
-                                <Tab label="Item Two"  />
-                                <Tab label="Item Three" />
+                                <Tab label="Details" />
+                                <Tab label="Components"  />
+                                <Tab label="Missions" />
+
                             </Tabs>
                         </Box>
                         <TabPanel value={value} index={0}>
