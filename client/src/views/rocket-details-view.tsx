@@ -83,9 +83,6 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
         }
 		getRocket();
 	}, []);
-    useEffect(() => {
-        console.log(rocketData);
-	}, [rocketData]);
 
 	return (
 		<div style={{ width: '100vw', height: '99vh' }}>
