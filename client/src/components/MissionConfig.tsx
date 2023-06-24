@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Dialog, TextField, Stack, DialogContent, Typography, Checkbox, FormControlLabel, InputAdornment, Tooltip, IconButton  } from "@mui/material";
 import { Upload, Info } from "@mui/icons-material"; 
 
@@ -10,6 +10,18 @@ interface MissionConfigProps {
 }
 
 const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) => {
+    const [missionName, setMissionName] = useState<string>();
+    const [latitude, setLatitude] = useState<string>();
+    const [longitude, setLongitude] = useState<string>();
+    const [launchDate, setLaunchDate] = useState<Date>();
+    const [altitude, setAltitude] = useState<string>();
+
+    const handleChange = (e: any, setState: Function) => {
+		// if (!editMode) {
+		// 	setEditMode(true);
+		// }
+		setState(e.target.value as string);
+	};
 
     return(
         <Dialog open={props.isOpen} fullWidth>
@@ -24,6 +36,8 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                             fullWidth
                             size="small"
                             label="Mission Name"
+                            value={missionName}
+                            onChange={(e) => handleChange(e, setMissionName)}
                         />
                         <Tooltip title="Data Collected is for testing purposes">
                             <FormControlLabel 
@@ -33,7 +47,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                                 labelPlacement="start"
                             />
                         </Tooltip>
-                        
+                        {/* still need to add a state for the checkbox */}
                     </Stack>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <TextField 
@@ -43,6 +57,8 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                             fullWidth
                             size="small"
                             label="Mission Location (Latitude)"
+                            value={latitude}
+                            onChange={(e) => handleChange(e, setLatitude)}
                         />
                         <TextField 
                             required
@@ -51,6 +67,8 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                             fullWidth
                             size="small"
                             label="Mission Location (Longitude)"
+                            value={longitude}
+                            onChange={(e) => handleChange(e, setLongitude)}
                         />
                     </Stack>
                     <TextField 
@@ -61,6 +79,8 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         size="small"
                         label="Launch Date"
                         InputLabelProps={{ shrink: true }}
+                        value={launchDate}
+                        onChange={(e) => handleChange(e, setLaunchDate)}
                     />
                     <TextField 
                         required
@@ -72,6 +92,8 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         InputProps={{
                             endAdornment: <InputAdornment position="end">ft</InputAdornment>,
                         }}
+                        value={altitude}
+                        onChange={(e) => handleChange(e, setAltitude)}
                     />
 
                     <Stack direction="row" spacing={2} alignItems="center">

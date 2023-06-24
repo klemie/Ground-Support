@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Card, Typography, Box, Tabs, Tab } from '@mui/material';
+import { Grid, Card, Typography, Box, Tabs, Tab, Button, Stack } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import axios from 'axios';
 
 import '../styles/rocketSelection.css';
 import { IRocket } from '../utils/entities';
+import MUIDataTable from 'mui-datatables';
+import AddIcon from '@mui/icons-material/Add';
+import MissionConfig from '../components/MissionConfig';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -52,11 +55,17 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 		{ name: 'Rocket Selection', path: '/', active: false },
 		{ name: 'Rocket Details', path: '/', active: true }
 	];
-	// const [rocketData, setRocketData] = useState<Rocket[]>([]);
+
+    const columns = ["Name", "Launch Date", "Test", "Launch Latitude", "Launch Longitude", "Launch Altitude", "Publish"];
+    //needs to be database data at some point
+    const data = [
+    ["Pickles", "Yeet", "Oho", "ehe", "orange", "42", "beepus"],
+    ];
 
     //value is for tab things
     const [value, setValue] = useState<number>(0);
 
+    const [isOpen, setIsOpen] = useState(false);
 
     const [rocketData, setRocketData] = useState<IRocket>();
 
@@ -108,15 +117,22 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                     </Card>
 				</Grid>
                     <Box sx={{ width: '100%' }}>
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <Tabs value={value} onChange={handleChange}>
+                        <Stack direction={"row"}>
+                            <Box maxWidth={"21rem"} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                                <Tabs value={value} onChange={handleChange}>
 
-                                <Tab label="Details" />
-                                <Tab label="Components"  />
-                                <Tab label="Missions" />
+                                    <Tab label="Details" />
+                                    <Tab label="Components"  />
+                                    <Tab label="Missions" />
 
-                            </Tabs>
-                        </Box>
+                                </Tabs>
+                            </Box> 
+                            {value===2 && (
+                                <Button variant="contained" startIcon={<AddIcon/>} onClick={()=>setIsOpen(true)}>
+                                    Mission
+                                </Button>
+                            )}
+                        </Stack>
                         <TabPanel value={value} index={0}>
                              Details
                         </TabPanel>
@@ -124,7 +140,12 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                             Components
                         </TabPanel>
                         <TabPanel value={value} index={2}>
-                            Missions
+                        <MUIDataTable
+                            title={"Missions"}
+                            data={data}
+                            columns={columns}
+                            
+                            />
                         </TabPanel>
 
                     </Box>
@@ -146,6 +167,14 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 					);
 				})}
 			</div>
+            <MissionConfig
+                isOpen={isOpen}
+                onSave={() => { 
+					setIsOpen(false);
+				}}
+                onClose={() => setIsOpen(false)}
+            />
+                
 		</div>
 	);
 }
