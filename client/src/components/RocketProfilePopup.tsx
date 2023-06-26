@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	Button,
 	InputAdornment,
@@ -16,9 +16,10 @@ import {
 	Chip,
 	OutlinedInput
 } from '@mui/material';
-import { Add, FileUpload } from '@mui/icons-material';
+import { Add, FileUpload, NetworkLockedRounded } from '@mui/icons-material';
 import { IRocket } from '../utils/entities';
 import axios from 'axios';
+import ComponentModal from './modals/ComponentModal';
 
 interface RocketProfileProps {
 	rocketProfileId?: string;
@@ -40,6 +41,9 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 	const [height, setHeight] = useState<number>();
 	const [selectedComponents, setSelectedComponents] = useState<string[]>([]);
 	const [rocketData, setRocketData] = useState<IRocket>();
+	const [showComponentModal, setShowComponentModal] = useState<boolean>(false);
+	const components = useRef<string[]>([]);
+	const newRocketData = useRef<boolean>(false);
 	// POST or PATCH data depending on if were creating a new rocket or editing a old one
 	const save = async () => {
 		const payload = {
@@ -57,32 +61,6 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 		}
 	};
 
-	useEffect(() => {
-		async function getRocket() {
-			console.log('about to query');
-			//make an API call when component first mounts and setRocketData with response
-			const response = await axios.get<IRocketDetails>(`http://127.0.0.1:9090/rocket/${props.rocketProfileId}`);
-			console.log(response);
-			const rocket = response.data.result;
-
-			const data: IRocket = {
-				Name: rocket.Name,
-				Missions: rocket.Missions,
-				Components: rocket.Components,
-				Mass: rocket.Mass,
-				Height: rocket.Height,
-				Class: rocket.Class,
-				MotorType: rocket.MotorType,
-				Motor: rocket.Motor
-			};
-			console.log(data);
-			setRocketData(data);
-		}
-		if (props.isOpen) {
-			getRocket();
-		}
-	}, [props.isOpen]);
-
 	const [editMode, setEditMode] = useState<boolean>(props.rocketProfileId !== '-1');
 
 	useEffect(() => {
@@ -94,23 +72,27 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 		setMotor('');
 		setName('');
 		setMotorType('');
+		components.current = [];
 		async function getRocketDetails() {
-			if (props.rocketProfileId) {
+			if (props.rocketProfileId || newRocketData.current) {
 				const response = await axios.get<IRocketDetails>(
 					`http://127.0.0.1:9090/rocket/${props.rocketProfileId}`
 				);
 				const data = response.data.result;
+				console.log(data);
 				setHeight(data.Height);
 				setMass(data.Mass);
 				setRocketClass(data.Class);
 				setMotor(data.Motor);
 				setName(data.Name);
 				setMotorType(data.MotorType);
+				components.current = data.Components;
 				return response.data;
 			}
 		}
 		getRocketDetails();
-	}, [props.rocketProfileId]);
+		newRocketData.current = false;
+	}, [props.rocketProfileId, newRocketData.current]);
 
 	const handleChange = (e: any, setState: Function) => {
 		if (!editMode) {
@@ -161,7 +143,6 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 									variant="outlined"
 									multiple
 									fullWidth
-									// sx={{ width: '70%' }}
 									value={selectedComponents}
 									onChange={(e) => handleChange(e, setSelectedComponents)}
 									renderValue={(selected: string[]) => (
@@ -180,7 +161,7 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 									)}
 									labelId="component-source-label"
 								>
-									{rocketData?.Components.map((name) => (
+									{components.current.map((name) => (
 										<MenuItem key={name} value={name}>
 											{name}
 										</MenuItem>
@@ -191,6 +172,7 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 								variant="contained"
 								component="label"
 								className={'button'}
+								onClick={() => setShowComponentModal(true)}
 								startIcon={<Add />}
 								size="small"
 								sx={{ width: '30%' }}
@@ -289,6 +271,14 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 				<Button onClick={props.onClose}>Cancel</Button>
 				<Button onClick={saveProfile}>Save</Button>
 			</DialogActions>
+			<ComponentModal
+				isOpen={showComponentModal}
+				onSave={() => {
+					// newRocketData.current = true;
+					setShowComponentModal(false);
+				}}
+				onClose={() => setShowComponentModal(false)}
+			/>
 		</Dialog>
 	);
 };
