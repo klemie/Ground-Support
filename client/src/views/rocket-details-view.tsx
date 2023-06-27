@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Card, Typography, Box, Tabs, Tab } from '@mui/material';
+import { Grid, Card, Typography, Box, Tabs, Tab, Stack, Button } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import axios from 'axios';
 
 import '../styles/rocketSelection.css';
 import { IRocket } from '../utils/entities';
+import RocketDetailsTab from './tabs/rocket-details-tab';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -57,8 +59,15 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
     //value is for tab things
     const [value, setValue] = useState<number>(0);
 
+    enum MotorType {
+        solid = "Solid",
+        liquid = "Liquid",
+        hybrid = "Hybrid"
+    };
 
-    const [rocketData, setRocketData] = useState<IRocket>();
+    const [rocketData, setRocketData] = useState<IRocket>({
+        Name:"", Missions:[], Components:[], Mass:0, Height:0, Class: "", MotorType:MotorType.solid, Motor:""
+    });
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -85,6 +94,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 		getRocket();
 	}, []);
 
+    const [isOpen, setIsOpen] = useState(false);
 	return (
 		<div style={{ width: '100vw', height: '99vh' }}>
 			<Grid
@@ -108,17 +118,25 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                     </Card>
 				</Grid>
                     <Box sx={{ width: '100%' }}>
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <Tabs value={value} onChange={handleChange}>
+                        <Stack spacing={2} direction={"row"}>
+                            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                                <Tabs value={value} onChange={handleChange}>
 
-                                <Tab label="Details" />
-                                <Tab label="Components"  />
-                                <Tab label="Missions" />
+                                    <Tab label="Details" />
+                                    <Tab label="Components"  />
+                                    <Tab label="Missions" />
 
-                            </Tabs>
-                        </Box>
+                                </Tabs>
+                            </Box>
+                            {value===0 && (
+                                <Button variant="contained" startIcon={<EditIcon/>} onClick={()=>setIsOpen(true)}>
+                                    Edit
+                                </Button>
+                            )}
+                        </Stack>
+                        
                         <TabPanel value={value} index={0}>
-                             Details
+                             <RocketDetailsTab rocketDetails={rocketData}></RocketDetailsTab>
                         </TabPanel>
                         <TabPanel value={value} index={1}>
                             Components
