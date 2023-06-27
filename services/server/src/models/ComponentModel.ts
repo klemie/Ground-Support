@@ -43,23 +43,27 @@ const ComponentModel: Schema = new Schema(
     }
 );
 
-ComponentModel.pre('findOneAndDelete', async function (next) {
-    const component = this;
-    const id = component.getFilter()["_id"];
+ComponentModel.pre<IComponentModel>('deleteOne', async function (next) {
+    const componentId = this._id;
     try {
-        console.log("Deleting component: " + id);
-        // await MissionModel.deleteMany({ $unset : { Components : id} });
+        // Remove component reference from Rockets
         await RocketModel.updateMany(
-            {_id: id },
-            { $pull: { Components: id } },
-            { multi: true },
-            next
+          { Components: componentId },
+          { $pull: { Components: componentId } }
         );
-    }
-    catch (error) {
-        console.log(error);
-    }
-    next();
+        // console.log(`deleted Rocket`);
+        // console.log(this.$model('Rocket'));
+    
+        // Remove component reference from Missions
+        await MissionModel.updateMany(
+          { Components: componentId },
+          { $pull: { Components: componentId } }
+        );
+    
+        next();
+      } catch (error: any) {
+        next(error);
+      }
 });
 
 export default mongoose.model<IComponent>('Component', ComponentModel);
