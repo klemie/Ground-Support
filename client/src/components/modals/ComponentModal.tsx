@@ -23,6 +23,7 @@ import {
 import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { parseJsonFile } from '../../utils/data-parser';
+import { IComponent } from '../../utils/entities';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -35,9 +36,15 @@ const MenuProps = {
 	}
 };
 
+interface ComponentDetails extends IComponent {
+	Id?: string;	
+}
+
 interface ComponentModalProps {
+	component?: ComponentDetails;
+	componentId?: string;
 	isOpen: boolean;
-	onSave: () => void;
+	onSave: (id: string) => void;
 	onClose: () => void;
 }
 
@@ -51,10 +58,13 @@ interface dataConfigStructure {
 }
 
 const ComponentModal = (props: ComponentModalProps) => {
+	const { component } = props;
+	console.log(component);
 	const [name, setName] = useState<string>('');
 	const [details, setDetails] = useState<string>('');
 	const [sourceTypes, setSourceTypes] = useState<string[]>([]);
-	const [editMode, setEditMode] = useState<boolean>(false);
+	const [editMode, setEditMode] = useState<boolean>(!!component || false);
+	const [componentId, setComponentId] = useState<string>('');
 	const [errorBar, setErrorBar] = useState({
 		show: false,
 		message: 'Error Occured'
@@ -68,15 +78,36 @@ const ComponentModal = (props: ComponentModalProps) => {
 		}
 		setState(e.target.value);
 	};
+
+	const resetState = () => {
+		setName('');
+		setDetails('');
+		setSourceTypes([]);
+		setEditMode(false);
+		setComponentId('');
+		setConfigFile(null);
+		parsedConfigFile.current = {};
+	};
+
+
 	const save = async (): Promise<boolean> => {
-		const response: dataConfigStructure = await axios.post(
-			`http://127.0.0.1:9090/DataConfig`,
-			parsedConfigFile.current
-		);
+		let dataConfigResponse: dataConfigStructure;
+		if (componentId && configFile) {
+			dataConfigResponse = await axios.patch(
+				`http://127.0.0.1:9090/DataConfig/${component?.DataConfig}`, 
+				parsedConfigFile.current
+			);
+		} else {	
+			dataConfigResponse = await axios.post(
+				`http://127.0.0.1:9090/DataConfig`,
+				parsedConfigFile.current
+			);
+		}
+		
 		let dataConfigId: string;
-		if (response['status'] === 201) {
-			if ('data' in response) {
-				dataConfigId = response['data']['results']['_id'];
+		if (dataConfigResponse['status'] === 201) {
+			if ('data' in dataConfigResponse) {
+				dataConfigId = dataConfigResponse['data']['results']['_id'];
 			} else {
 				dataConfigId = '';
 			}
@@ -84,29 +115,53 @@ const ComponentModal = (props: ComponentModalProps) => {
 			setErrorBar({ message: 'DataConfig Upload Failed', show: true });
 			return false;
 		}
-
+		let cId: string;
 		sourceTypes.map(async (sourceType) => {
-			const payload = {
+			const payload: IComponent = {
 				Name: name,
-				DataConfigId: dataConfigId,
+				DataConfig: dataConfigId,
 				TelemetrySource: sourceType,
 				Details: details
 			};
-			const response: { [key: string]: string | number } = await axios.post(
-				`http://127.0.0.1:9090/component`,
-				payload
-			);
-			if (response['status'] == 400) {
+			let response: any;
+			if (componentId) {
+				response = await axios.patch(
+					`http://127.0.0.1:9090/component/${componentId}`,
+					payload
+				);
+			} else {
+				response = await axios.post(
+					`http://127.0.0.1:9090/component`,
+					payload
+				);
+			}
+			if (response['status'] === 400) {
 				setErrorBar({ message: 'Component Upload Failed', show: true });
 				return false;
+			} else {
+				debugger;
+				const data = response.data.results ? response.data.results : response.data.results;
+				console.log('component post / patch data')
+				console.log(data);
+				cId = data._id;
+				props.onSave(cId);
+				setComponentId(cId);
 			}
 		});
 		return true;
 	};
 
+	
+
 	const saveAndClose = async () => {
-		if (!(await save())) return;
-		props.onSave();
+		try {
+			debugger;
+			await save();
+		} finally {
+			props.onSave(componentId);
+			props.onClose();
+			resetState();
+		};
 	};
 
 	const onUploadFile = (event: any): void => {
@@ -125,6 +180,17 @@ const ComponentModal = (props: ComponentModalProps) => {
 	useEffect(() => {
 		parseUploadedFileToJson();
 	}, [parseUploadedFileToJson]);
+
+	useEffect(() => {
+		resetState();
+		if (component) {
+			setEditMode(true);
+			setName(component.Name);
+			setDetails(component.Details);
+			setSourceTypes(component.TelemetrySource ? [component.TelemetrySource] : []);
+			setComponentId(component.Id ? component?.Id : '');
+		}
+	}, [component]);
 
 	return (
 		<Dialog open={props.isOpen} fullWidth>
@@ -255,7 +321,7 @@ const ComponentModal = (props: ComponentModalProps) => {
 									startIcon={<CloudUpload />}
 									fullWidth
 								>
-									{!configFile && 'Data Configuration'}
+									{!configFile && (component?.DataConfig ? 'overwrite config' : 'Data Configuration')}
 								</Button>
 							</label>
 							<Tooltip

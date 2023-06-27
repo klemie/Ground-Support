@@ -1,5 +1,7 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 import { DataConfigSchema } from "./DataConfigModel";
+import MissionModel from "./MissionModel";
+import RocketModel from "./RocketModel";
 
 enum TelemetrySource {
     lora = "LORA",
@@ -27,10 +29,12 @@ const ComponentModel: Schema = new Schema(
         },
         TelemetrySource: {
             type: String,
-            enum: ['LORA', 'APRS']
+            required: false
         },
         DataConfigId: {
-            type: Types.ObjectId, ref: 'DataConfig'
+            type: Types.ObjectId, 
+            ref: 'DataConfig',
+            required: false
         }
     },
     {
@@ -38,5 +42,24 @@ const ComponentModel: Schema = new Schema(
         timestamps: true
     }
 );
+
+ComponentModel.pre('findOneAndDelete', async function (next) {
+    const component = this;
+    const id = component.getFilter()["_id"];
+    try {
+        console.log("Deleting component: " + id);
+        // await MissionModel.deleteMany({ $unset : { Components : id} });
+        await RocketModel.updateMany(
+            {_id: id },
+            { $pull: { Components: id } },
+            { multi: true },
+            next
+        );
+    }
+    catch (error) {
+        console.log(error);
+    }
+    next();
+});
 
 export default mongoose.model<IComponent>('Component', ComponentModel);
