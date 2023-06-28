@@ -1,12 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Grid, Card, Typography, Box, Tabs, Tab, Button, Stack, Paper, Container } from '@mui/material';
+import { Grid, Typography, Box, Tabs, Tab, Stack, Button, Paper } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
-import axios from 'axios';
-
 import { IRocket } from '../utils/entities';
-import ComponentsTab from './Tabs/components-tab';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import axios from 'axios';
+import _ from 'lodash';
+
+//Tabs
+import ComponentsTab from './Tabs/components-tab';
+import RocketDetailsTab from './Tabs/rocket-details-tab';
+
+// Popups
 import ComponentModal from '../components/modals/ComponentModal';
+import RocketProfilePopup from '../components/RocketProfilePopup';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -61,9 +69,23 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
     const [componentId, setComponentId] = useState<string>('');
     // component modal
 	const [open, setOpen] = useState<boolean>(false);
-	const handleClose = () => setOpen(false);
 
-    const [rocketData, setRocketData] = useState<IRocket>();
+    enum MotorType {
+        solid = "Solid",
+        liquid = "Liquid",
+        hybrid = "Hybrid"
+    };
+
+    const [rocketData, setRocketData] = useState<IRocket>({
+        Name:"", 
+        Mass:0, 
+        Motor:"",
+        Height:0, 
+        Class: "", 
+        Missions:[], 
+        Components:[], 
+        MotorType:MotorType.solid
+    });
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -106,12 +128,19 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
         console.log(componentId);
         updateRocket();
         setOpen(false);
-    }, [updateRocket]);
+    }, [updateRocket, componentId]);
 
-    useEffect(() => {
-		async function getRocket() {
-			//make an API call when component first mounts and setRocketData with response
-			const response = await axios.get<IRocketDetails>(`http://127.0.0.1:9090/rocket/${rocketId}`);
+    const handleClose = () => {
+        setIsOpen(false);
+    };
+
+    const handleSave = () => {
+        _.delay(getRocket, 500);
+        handleClose();
+    }
+
+    const getRocket = useCallback(async () => {
+        const response = await axios.get<IRocketDetails>(`http://127.0.0.1:9090/rocket/${rocketId}`);
             const rocket = response.data.result;
             
             const data: IRocket = {
@@ -125,10 +154,14 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                 Motor: rocket.Motor
             }
             setRocketData(data);
-        }
-		getRocket();
-	}, [rocketId]);
+    }, [rocketId]);
 
+
+    useEffect(() => {
+		getRocket();
+	}, [getRocket]);
+
+    const [isOpen, setIsOpen] = useState(false);
 	return (
 		<Box sx={{ width: '100vw', height: '100vh' }}>
 			<Stack
@@ -141,12 +174,16 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 				<Grid item >
 					<Header breadCrumbs={breadCrumbs} />
 				</Grid>
-                <Grid item width={'100%'}>
-					<Card>
-                        <Typography marginX={"2rem"} marginY={"1rem"} align='left' variant='h6'>
+                {/* Rocket Title */}
+                <Grid item>
+					<Paper elevation={2} sx={{ padding: 2 }}>
+                        <Stack direction="row" spacing={2} alignItems={'center'}>
+                            <RocketLaunchIcon color={'primary'} /> 
+                            <Typography marginX={"2rem"} marginY={"1rem"} align='left' variant='h6'>
                             {rocketData?.Name || 'Rocket Not found'}
-                        </Typography>
-                    </Card>
+                            </Typography>
+                        </Stack>
+                    </Paper>
 				</Grid>
                 <Grid item overflow={'scroll'}>
                     <Box sx={{ width: '100%' }}>
@@ -158,14 +195,20 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                                     <Tab label="Missions" />
                                 </Tabs>
                             </Paper>
-                            {value===1 && (
+                             {value===1 && (
                                 <Button variant="contained" startIcon={<AddIcon/>} onClick={()=>setOpen(true)}>
                                     Component
                                 </Button>
                             )}
+                            {value===0 && (
+                                <Button variant="contained" startIcon={<EditIcon/>} onClick={()=>setIsOpen(true)}>
+                                    Edit
+                                </Button>
+                            )}
                         </Stack>
+                        
                         <TabPanel value={value} index={0}>
-                            Details
+                             <RocketDetailsTab rocketDetails={rocketData}></RocketDetailsTab>
                         </TabPanel>
                         <TabPanel value={value} index={1}>
                             <ComponentsTab refresh={updateRocket} componentIds={rocketData?.Components || []} />
@@ -175,7 +218,10 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                         </TabPanel>
                     </Box>
                 </Grid>
-                <ComponentModal componentId={componentId} isOpen={open} onSave={attachComponentToRocket} onClose={handleClose}/>
+                <Grid item>
+                    <RocketProfilePopup isOpen={isOpen} onSave={handleSave} onClose={handleClose} rocketProfileId={props.rocketID}/>
+                    <ComponentModal componentId={componentId} isOpen={open} onSave={attachComponentToRocket} onClose={handleClose}/>
+                </Grid>
 			</Stack>
 			<div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
 				{colors.map((color) => {
