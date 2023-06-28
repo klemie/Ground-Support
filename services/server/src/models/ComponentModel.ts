@@ -43,27 +43,26 @@ const ComponentModel: Schema = new Schema(
     }
 );
 
-ComponentModel.pre<IComponentModel>('deleteOne', async function (next) {
+ComponentModel.pre<IComponentModel>('deleteOne', { document: true, query: false }, async function (next) {
+    console.log('Deleting all references to component');
     const componentId = this._id;
     try {
         // Remove component reference from Rockets
         await RocketModel.updateMany(
-          { Components: componentId },
+          { },
           { $pull: { Components: componentId } }
         );
-        // console.log(`deleted Rocket`);
-        // console.log(this.$model('Rocket'));
     
         // Remove component reference from Missions
         await MissionModel.updateMany(
-          { Components: componentId },
+          {  },
           { $pull: { Components: componentId } }
         );
     
         next();
-      } catch (error: any) {
+    } catch (error: any) {
         next(error);
-      }
+    }
 });
 
 export default mongoose.model<IComponent>('Component', ComponentModel);

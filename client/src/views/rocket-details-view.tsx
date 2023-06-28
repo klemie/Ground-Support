@@ -22,8 +22,12 @@ interface TabPanelProps {
     value: number;
 }
 
-interface IRocketDetails {
+interface IRocketResponse {
 	result: IRocket;
+}
+
+interface RocketDetails extends IRocket {
+    Id?: string;
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -66,9 +70,8 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
     //value is for tab things
     const [value, setValue] = useState<number>(0);
     const [rocketId, setRocketId] = useState<string>(props.rocketID);
-    const [componentId, setComponentId] = useState<string>('');
     // component modal
-	const [open, setOpen] = useState<boolean>(false);
+	const [componentModalOpen, setComponentModalOpen] = useState<boolean>(false);
 
     enum MotorType {
         solid = "Solid",
@@ -76,7 +79,8 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
         hybrid = "Hybrid"
     };
 
-    const [rocketData, setRocketData] = useState<IRocket>({
+    const [rocketData, setRocketData] = useState<RocketDetails>({
+        Id: props.rocketID,
         Name:"", 
         Mass:0, 
         Motor:"",
@@ -91,59 +95,25 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
         setValue(newValue);
     };
 
-    const updateRocket = useCallback(async () : Promise<boolean> => {
-        //make an API call to update the rocket
-        const response = await axios.patch<IRocketDetails>(`http://127.0.0.1:9090/rocket/${rocketId}`, rocketData);
-        const r = response.data.result;
-        if (response.data.result) {
-            const data: IRocket = {
-                Name: r.Name,
-                Missions: r.Missions,
-                Components: r.Components,
-                Mass: r.Mass,
-                Height: r.Height,
-                Class: r.Class,
-                MotorType: r.MotorType,
-                Motor: r.Motor
-            }
-            setRocketData(data);
-            return true;
-        }
-        return false;
-    }, [rocketData, rocketId]);
-
-    const attachComponentToRocket = useCallback((id: string) => {
-        setComponentId(id);
-        setRocketData((rocketData) => {
-            if (rocketData) {
-                const newRocketData = { ...rocketData };
-                if (componentId !== '')
-                    newRocketData.Components.push(componentId);
-                return newRocketData;
-            }
-            return rocketData;
-        });
-        debugger;
-        console.log('attach component to rocket');
-        console.log(componentId);
-        updateRocket();
-        setOpen(false);
-    }, [updateRocket, componentId]);
-
-    const handleClose = () => {
+    const handleRocketPopupClose = () => {
         setIsOpen(false);
     };
 
-    const handleSave = () => {
+    const handleRocketPopupSave = () => {
+        refresh();
+        handleRocketPopupClose();
+    }
+
+    const refresh = () => {
         _.delay(getRocket, 500);
-        handleClose();
     }
 
     const getRocket = useCallback(async () => {
-        const response = await axios.get<IRocketDetails>(`http://127.0.0.1:9090/rocket/${rocketId}`);
+        const response = await axios.get<IRocketResponse>(`http://127.0.0.1:9090/rocket/${rocketId}`);
             const rocket = response.data.result;
             
-            const data: IRocket = {
+            const data: RocketDetails = {
+                Id: rocketId,
                 Name: rocket.Name,
                 Missions: rocket.Missions,
                 Components: rocket.Components,
@@ -165,6 +135,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 	return (
 		<Box sx={{ width: '100vw', height: '100vh' }}>
 			<Stack
+                height={'100%'}
                 padding={3}
 				direction="column"
 				gap={3}
@@ -186,7 +157,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                     </Paper>
 				</Grid>
                 <Grid item overflow={'scroll'}>
-                    <Box sx={{ width: '100%' }}>
+                    <Box sx={{ padding: 0.5 }}>
                         <Stack direction="row" spacing={3} justifyContent="flex-start">
                             <Paper sx={{ borderBottom: 1, borderColor: 'divider' }} >
                                 <Tabs value={value} onChange={handleChange}>
@@ -196,7 +167,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                                 </Tabs>
                             </Paper>
                              {value===1 && (
-                                <Button variant="contained" startIcon={<AddIcon/>} onClick={()=>setOpen(true)}>
+                                <Button variant="contained" startIcon={<AddIcon/>} onClick={()=>setComponentModalOpen(true)}>
                                     Component
                                 </Button>
                             )}
@@ -211,7 +182,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                              <RocketDetailsTab rocketDetails={rocketData}></RocketDetailsTab>
                         </TabPanel>
                         <TabPanel value={value} index={1}>
-                            <ComponentsTab refresh={updateRocket} componentIds={rocketData?.Components || []} />
+                            <ComponentsTab rocket={rocketData} refresh={() => refresh} componentIds={rocketData?.Components || []} />
                         </TabPanel>
                         <TabPanel value={value} index={2}>
                             Missions
@@ -219,8 +190,8 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                     </Box>
                 </Grid>
                 <Grid item>
-                    <RocketProfilePopup isOpen={isOpen} onSave={handleSave} onClose={handleClose} rocketProfileId={props.rocketID}/>
-                    <ComponentModal componentId={componentId} isOpen={open} onSave={attachComponentToRocket} onClose={handleClose}/>
+                    <RocketProfilePopup isOpen={isOpen} onSave={handleRocketPopupSave} onClose={handleRocketPopupClose} rocketProfileId={props.rocketID}/>
+                    <ComponentModal rocket={rocketData} isOpen={componentModalOpen} onSave={()=> refresh} onClose={() => setComponentModalOpen(false)}/>
                 </Grid>
 			</Stack>
 			<div style={{ position: 'fixed', bottom: 0, width: '100%' }}>

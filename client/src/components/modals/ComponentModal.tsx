@@ -23,7 +23,7 @@ import {
 import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { parseJsonFile } from '../../utils/data-parser';
-import { IComponent } from '../../utils/entities';
+import { IComponent, IRocket } from '../../utils/entities';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -40,9 +40,13 @@ interface ComponentDetails extends IComponent {
 	Id?: string;	
 }
 
+interface RocketDetails extends IRocket {
+	Id?: string;
+}
+
 interface ComponentModalProps {
 	component?: ComponentDetails;
-	componentId?: string;
+	rocket?: RocketDetails;
 	isOpen: boolean;
 	onSave: (id: string) => void;
 	onClose: () => void;
@@ -58,13 +62,15 @@ interface dataConfigStructure {
 }
 
 const ComponentModal = (props: ComponentModalProps) => {
-	const { component } = props;
-	console.log(component);
+	const { component, rocket } = props;
+
+	debugger;
 	const [name, setName] = useState<string>('');
 	const [details, setDetails] = useState<string>('');
-	const [sourceTypes, setSourceTypes] = useState<string[]>([]);
+	const [sourceType, setSourceType] = useState<string>('');
 	const [editMode, setEditMode] = useState<boolean>(!!component || false);
 	const [componentId, setComponentId] = useState<string>('');
+
 	const [errorBar, setErrorBar] = useState({
 		show: false,
 		message: 'Error Occured'
@@ -82,13 +88,24 @@ const ComponentModal = (props: ComponentModalProps) => {
 	const resetState = () => {
 		setName('');
 		setDetails('');
-		setSourceTypes([]);
+		setSourceType('');
 		setEditMode(false);
 		setComponentId('');
 		setConfigFile(null);
 		parsedConfigFile.current = {};
 	};
 
+	const attachComponentToRocket = async (cId: string) => {
+		if (rocket)
+			rocket.Components.push(cId);
+		try {
+			console.log('rocket data in attach component to rocket');
+			console.log(!!rocket ? rocket : null);
+			await axios.patch(`http://127.0.0.1:9090/rocket/${rocket?.Id}`, rocket);
+		} catch (error) {
+			setErrorBar({ message: 'Component Failed to attach to Rocket', show: true });
+		}
+	};
 
 	const save = async (): Promise<boolean> => {
 		let dataConfigResponse: dataConfigStructure;
@@ -115,15 +132,16 @@ const ComponentModal = (props: ComponentModalProps) => {
 			setErrorBar({ message: 'DataConfig Upload Failed', show: true });
 			return false;
 		}
-		let cId: string;
-		sourceTypes.map(async (sourceType) => {
-			const payload: IComponent = {
-				Name: name,
-				DataConfig: dataConfigId,
-				TelemetrySource: sourceType,
-				Details: details
-			};
-			let response: any;
+
+		const payload: IComponent = {
+			Name: name,
+			DataConfig: dataConfigId,
+			TelemetrySource: sourceType,
+			Details: details
+		};
+	
+		let response: any;
+		try {
 			if (componentId) {
 				response = await axios.patch(
 					`http://127.0.0.1:9090/component/${componentId}`,
@@ -135,32 +153,32 @@ const ComponentModal = (props: ComponentModalProps) => {
 					payload
 				);
 			}
-			if (response['status'] === 400) {
-				setErrorBar({ message: 'Component Upload Failed', show: true });
-				return false;
-			} else {
-				debugger;
-				const data = response.data.results ? response.data.results : response.data.results;
-				console.log('component post / patch data')
-				console.log(data);
-				cId = data._id;
-				props.onSave(cId);
-				setComponentId(cId);
-			}
-		});
-		return true;
+		} catch (error) {
+			setErrorBar({ message: 'Component Upload Failed', show: true });
+			return false;
+		} finally {
+			const data = response.data.results ? response.data.results : response.data.results;
+			console.log('component post / patch data')
+			console.log(data);
+			setComponentId(data['_id']);
+			debugger;
+			await attachComponentToRocket(data['_id']);
+			props.onSave(data['_id']);
+			return true;
+		}
 	};
-
-	
 
 	const saveAndClose = async () => {
 		try {
-			debugger;
 			await save();
+		} catch {
+			setErrorBar({ message: 'Component Upload Failed', show: true });
 		} finally {
 			props.onSave(componentId);
-			props.onClose();
-			resetState();
+			if (!errorBar.show) {
+				props.onClose();
+				resetState();
+			}
 		};
 	};
 
@@ -187,7 +205,7 @@ const ComponentModal = (props: ComponentModalProps) => {
 			setEditMode(true);
 			setName(component.Name);
 			setDetails(component.Details);
-			setSourceTypes(component.TelemetrySource ? [component.TelemetrySource] : []);
+			setSourceType(component.TelemetrySource ? component.TelemetrySource : '');
 			setComponentId(component.Id ? component?.Id : '');
 		}
 	}, [component]);
@@ -250,12 +268,11 @@ const ComponentModal = (props: ComponentModalProps) => {
 								<Select
 									id="component-source"
 									variant="filled"
-									multiple
 									fullWidth
-									value={sourceTypes}
-									onChange={(e) => handleChange(e, setSourceTypes)}
+									value={sourceType}
+									onChange={(e) => handleChange(e, setSourceType)}
 									input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-									renderValue={(selected: string[]) => (
+									renderValue={(selected: string) => (
 										<Box
 											sx={{
 												display: 'flex',
@@ -264,9 +281,7 @@ const ComponentModal = (props: ComponentModalProps) => {
 												transform: 'translateY(20%)'
 											}}
 										>
-											{selected.map((value: string) => (
-												<Chip key={value} label={value} />
-											))}
+											<Chip label={selected} />
 										</Box>
 									)}
 									sx={{

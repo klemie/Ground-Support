@@ -56,8 +56,8 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 	useEffect(() => {
 		setEditMode(props.rocketProfileId !== '')
 		// Reset State
-		setHeight(0);
-		setMass(0);
+		setHeight(NaN);
+		setMass(NaN);
 		setRocketClass('');
 		setMotor('');
 		setName('');
@@ -106,9 +106,8 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 								onChange={(e) => handleChange(e, setName)}
 								fullWidth
 								size="small"
-								helperText="Name of the rocket"
 								id="profile-name"
-								label="Profile Name"
+								label="Rocket Name"
 								variant="outlined"
 							/>
 							<Button
