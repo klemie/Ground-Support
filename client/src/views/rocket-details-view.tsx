@@ -5,10 +5,10 @@ import axios from 'axios';
 
 import '../styles/rocketSelection.css';
 import { IRocket } from '../utils/entities';
-import MUIDataTable from 'mui-datatables';
 import AddIcon from '@mui/icons-material/Add';
 import MissionConfig from '../components/MissionConfig';
 import RocketDetailsTab from './tabs/rocket-details-tab';
+import RocketMissionsTab from './tabs/rocket-missions-tab';
 import EditIcon from '@mui/icons-material/Edit';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import RocketProfilePopup from '../components/RocketProfilePopup';
@@ -61,11 +61,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 		{ name: 'Rocket Details', path: '/', active: true }
 	];
 
-    const columns = ["Name", "Launch Date", "Test", "Launch Latitude", "Launch Longitude", "Launch Altitude", "Publish"];
-    //needs to be database data at some point
-    const data = [
-        ["Pickles", "Yeet",  "Oho", "ehe", "orange", "42", "beepus"],
-    ];
+
 
     //value is for tab things
     const [value, setValue] = useState<number>(0);
@@ -143,13 +139,13 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                         <Stack direction="row" spacing={2} alignItems={'center'}>
                             <RocketLaunchIcon color={'primary'} /> 
                             <Typography marginX={"2rem"} marginY={"1rem"} align='left' variant='h6'>
-                            {rocketData?.Name || 'Rocket Not found'}
+                                {rocketData?.Name || 'Rocket Not found'}
                             </Typography>
                         </Stack>
                     </Paper>
 				</Grid>
                     <Box sx={{ width: '100%' }}>
-                        <Stack spacing={2} direction={"row"}>
+                        <Stack spacing={3} direction={"row"}>
                             <Paper sx={{ borderBottom: 1, borderColor: 'divider' }}>
                                 <Tabs value={value} onChange={handleChange}>
                                     <Tab label="Details" />
@@ -175,14 +171,8 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                             Components
                         </TabPanel>
                         <TabPanel value={value} index={2}>
-                        <MUIDataTable
-                            title={"Missions"}
-                            data={data}
-                            columns={columns}
-                            
-                            />
+                            <RocketMissionsTab rocket={rocketData} />
                         </TabPanel>
-
                     </Box>
                 <Grid item>
                     <RocketProfilePopup 
@@ -193,6 +183,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                     />
                     <MissionConfig
                         isOpen={isMissionConfigOpen}
+                        rocket={rocketData}
                         onSave={() => { 
                             setIsMissionConfigOpen(false);
                         }}
