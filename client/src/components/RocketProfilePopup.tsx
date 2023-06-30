@@ -114,6 +114,7 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 			componentData.forEach((component: IComponentModel) => {
 				componentIdToName.current[component._id] = component.Name;
 			});
+			setComponentList(componentData);
 		}
 		if (newRocketData.current) {
 			refreshComponentList();
