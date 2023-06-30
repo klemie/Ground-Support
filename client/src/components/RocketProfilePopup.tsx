@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Component, useEffect, useRef, useState } from 'react';
 import {
 	Button,
 	InputAdornment,
@@ -18,8 +18,9 @@ import {
 } from '@mui/material';
 import { Add, FileUpload, NetworkLockedRounded } from '@mui/icons-material';
 import { IRocket } from '../utils/entities';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import ComponentModal from './modals/ComponentModal';
+import { IComponentModel } from '../../../services/server/src/models/ComponentModel';
 
 interface RocketProfileProps {
 	rocketProfileId?: string;
@@ -32,6 +33,10 @@ interface IRocketDetails {
 	result: IRocket;
 }
 
+interface IComponentDetails {
+	results: IComponentModel[];
+}
+
 const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfileProps) => {
 	const [name, setName] = useState<string>();
 	const [motor, setMotor] = useState<string>();
@@ -40,9 +45,9 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 	const [rocketClass, setRocketClass] = useState<string>('');
 	const [height, setHeight] = useState<number>();
 	const [selectedComponents, setSelectedComponents] = useState<string[]>([]);
-	const [rocketData, setRocketData] = useState<IRocket>();
 	const [showComponentModal, setShowComponentModal] = useState<boolean>(false);
-	const components = useRef<string[]>([]);
+	const [componentList, setComponentList] = useState<IComponentModel[]>([]);
+	const componentIdToName = useRef<{ [key: string]: string }>({});
 	const newRocketData = useRef<boolean>(false);
 	// POST or PATCH data depending on if were creating a new rocket or editing a old one
 	const save = async () => {
@@ -52,7 +57,8 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 			Motor: motor,
 			MotorType: motorType,
 			Name: name,
-			Mass: mass
+			Mass: mass,
+			Components: selectedComponents
 		};
 		if (props.rocketProfileId) {
 			await axios.patch(`http://127.0.0.1:9090/rocket/${props.rocketProfileId}`, payload);
@@ -72,32 +78,53 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 		setMotor('');
 		setName('');
 		setMotorType('');
-		components.current = [];
+		setComponentList([]);
+		componentIdToName.current = {};
 		async function getRocketDetails() {
 			if (props.rocketProfileId || newRocketData.current) {
-				const response = await axios.get<IRocketDetails>(
+				const rocketResponse = await axios.get<IRocketDetails>(
 					`http://127.0.0.1:9090/rocket/${props.rocketProfileId}`
 				);
-				const data = response.data.result;
-				console.log(data);
+				const componentResponse = await axios.get<IComponentDetails>(`http://127.0.0.1:9090/component`);
+				const data = rocketResponse.data.result;
+				const componentData = componentResponse.data.results;
+				componentData.forEach((component: IComponentModel) => {
+					componentIdToName.current[component._id] = component.Name;
+				});
+				console.log(componentData);
+				setComponentList(componentData);
 				setHeight(data.Height);
 				setMass(data.Mass);
 				setRocketClass(data.Class);
 				setMotor(data.Motor);
 				setName(data.Name);
 				setMotorType(data.MotorType);
-				components.current = data.Components;
-				return response.data;
+				return rocketResponse.data;
 			}
 		}
 		getRocketDetails();
-		newRocketData.current = false;
-	}, [props.rocketProfileId, newRocketData.current]);
+	}, [props.rocketProfileId]);
 
+	useEffect(() => {
+		async function refreshComponentList() {
+			setComponentList([]);
+			componentIdToName.current = {};
+			const componentResponse = await axios.get<IComponentDetails>(`http://127.0.0.1:9090/component`);
+			const componentData = componentResponse.data.results;
+			componentData.forEach((component: IComponentModel) => {
+				componentIdToName.current[component._id] = component.Name;
+			});
+		}
+		if (newRocketData.current) {
+			refreshComponentList();
+			newRocketData.current = false;
+		}
+	}, [newRocketData.current]);
 	const handleChange = (e: any, setState: Function) => {
 		if (!editMode) {
 			setEditMode(true);
 		}
+		console.log(e.target.value);
 		setState(e.target.value as string);
 	};
 
@@ -105,6 +132,7 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 		save();
 		props.onSave();
 	};
+	console.log(componentList);
 
 	return (
 		<Dialog open={props.isOpen} fullWidth>
@@ -155,15 +183,15 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 											}}
 										>
 											{selected.map((value: string) => (
-												<Chip key={value} label={value} />
+												<Chip key={value} label={componentIdToName.current[value]} />
 											))}
 										</Box>
 									)}
 									labelId="component-source-label"
 								>
-									{components.current.map((name) => (
-										<MenuItem key={name} value={name}>
-											{name}
+									{componentList.map((component) => (
+										<MenuItem key={component._id} value={component._id}>
+											{component.Name}
 										</MenuItem>
 									))}
 								</Select>
@@ -274,7 +302,7 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 			<ComponentModal
 				isOpen={showComponentModal}
 				onSave={() => {
-					// newRocketData.current = true;
+					newRocketData.current = true;
 					setShowComponentModal(false);
 				}}
 				onClose={() => setShowComponentModal(false)}
