@@ -91,7 +91,6 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 				componentData.forEach((component: IComponentModel) => {
 					componentIdToName.current[component._id] = component.Name;
 				});
-				console.log(componentData);
 				setComponentList(componentData);
 				setHeight(data.Height);
 				setMass(data.Mass);
@@ -125,7 +124,6 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 		if (!editMode) {
 			setEditMode(true);
 		}
-		console.log(e.target.value);
 		setState(e.target.value as string);
 	};
 
@@ -133,7 +131,6 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 		save();
 		props.onSave();
 	};
-	console.log(componentList);
 
 	return (
 		<Dialog open={props.isOpen} fullWidth>
