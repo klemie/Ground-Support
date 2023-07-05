@@ -5,7 +5,7 @@ import { Typography, Grid } from '@mui/material';
 import { dataConfigParser } from '../utils/data-parser';
 import _ from 'lodash';
 
-const ROUND_TO = 3;
+const ROUND_TO = 3; 
 const FLOATING = true;
 
 export default function ModulesView() {
@@ -43,12 +43,12 @@ export default function ModulesView() {
 			paddingY="2rem" 
 			gap={3}
 		>
-			<Grid container>
+			<Grid container> {/* container for the whole card*/}
 				<Header breadCrumbs={breadCrumbs} />
 			</Grid>
 			<Grid 
 				container 
-				spacing={3}
+				spacing={1}
 				direction="row"
 				sx={{ 
 					display: "flex"
@@ -56,7 +56,14 @@ export default function ModulesView() {
 				justifyContent="space-between"
 				alignItems="stretch"
 			>
-				{formattedModules.map((module) => {
+				<Module 
+					title='Telemetry' /* passing the title variable */
+					telemetry
+					fields={formattedModules[0]}
+					visualize={false}
+				/>
+
+				{/* {formattedModules.map((module) => {
 					return (
 						<Grid 
 							item 
@@ -71,7 +78,7 @@ export default function ModulesView() {
 							/>
 						</Grid>
 					);
-				})}
+				})} */}
 			</Grid>
 		</Grid>
 		</>
