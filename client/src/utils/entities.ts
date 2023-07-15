@@ -30,7 +30,7 @@ export interface IMission {
     Date: Date;
     Coordinates: ICoordinates;
     LaunchAltitude: Number;
-    Components: [];
+    Components: [] | IComponent[];
     Published: boolean;
 }
 
@@ -42,8 +42,8 @@ enum MotorType {
 
 export interface IRocket{
     Name: string;
-    Missions: [];
-    Components: [];
+    Missions: [] | IMission[];
+    Components: [] | IComponent[];
     Mass: number;
     Height: number;
     Class: string;

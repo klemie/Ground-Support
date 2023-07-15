@@ -39,4 +39,10 @@ const ComponentModel: Schema = new Schema(
     }
 );
 
+// Populate DataConfig
+ComponentModel.pre('findOne', function (next) { 
+    this.populate("DataConfigId", { options: { strictPopulate: false }});
+    next();
+});
+
 export default mongoose.model<IComponent>('Component', ComponentModel);
