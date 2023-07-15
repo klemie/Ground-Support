@@ -4,9 +4,8 @@ import { Box } from "@mui/material";
 import { Download } from "@mui/icons-material";
 
 interface TelemetryLogProps {
-    value: any;
+    value: string;
     width: string;
-    height: string;
     maxRows: number
 }
 
@@ -16,8 +15,7 @@ const TelemetryLog: React.FC<TelemetryLogProps> = (props: TelemetryLogProps) => 
         <Box style={{
                 backgroundColor: "#282C34",
                 borderRadius: 13,
-                width: props.width,
-                height: props.height
+                width: props.width
             }}>
             <Stack direction={"column"}>
                 <TextField 

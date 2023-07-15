@@ -151,7 +151,7 @@ export default function TelemetryView() {
 					Wave to us! We'll be in row 118,000.
 					Bye!
 					" 
-					width='30%' height='50%' maxRows={20}/>
+					width='30%' maxRows={20}/>
 				</Grid>
 			</Grid>
 		</>
