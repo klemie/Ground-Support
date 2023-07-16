@@ -47,7 +47,7 @@ export interface IRocket{
     Id: string;
     Name: string;
     Missions: [];
-    Components: IComponent[];
+    Components: string[] | IComponent[];
     Mass: number;
     Height: number;
     Class: string;
@@ -58,9 +58,9 @@ export interface IRocket{
 export interface IComponent {
     Id: string;
     Name: string;
-    TelemetrySource: TelemetrySource;
+    TelemetrySource:  string;
     Details: string,
-    DataConfig: IDataConfig
+    DataConfig: string;
 }
 export interface IFieldGroup {
     Name: String;

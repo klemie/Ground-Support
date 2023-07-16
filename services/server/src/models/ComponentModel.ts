@@ -1,5 +1,7 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 import { DataConfigSchema } from "./DataConfigModel";
+import MissionModel from "./MissionModel";
+import RocketModel from "./RocketModel";
 
 enum TelemetrySource {
     lora = "LORA",
@@ -27,10 +29,12 @@ const ComponentModel: Schema = new Schema(
         },
         TelemetrySource: {
             type: String,
-            enum: ['LoRa', 'APRS']
+            required: false
         },
         DataConfigId: {
-            type: Types.ObjectId, ref: 'DataConfig'
+            type: Types.ObjectId, 
+            ref: 'DataConfig',
+            required: false
         }
     },
     {
@@ -38,5 +42,27 @@ const ComponentModel: Schema = new Schema(
         timestamps: true
     }
 );
+
+ComponentModel.pre<IComponentModel>('deleteOne', { document: true, query: false }, async function (next) {
+    console.log('Deleting all references to component');
+    const componentId = this._id;
+    try {
+        // Remove component reference from Rockets
+        await RocketModel.updateMany(
+          { },
+          { $pull: { Components: componentId } }
+        );
+    
+        // Remove component reference from Missions
+        await MissionModel.updateMany(
+          {  },
+          { $pull: { Components: componentId } }
+        );
+    
+        next();
+    } catch (error: any) {
+        next(error);
+    }
+});
 
 export default mongoose.model<IComponent>('Component', ComponentModel);
