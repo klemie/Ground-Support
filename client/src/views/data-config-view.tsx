@@ -6,8 +6,14 @@ import Header, { Breadcrumb } from '../components/Header';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { useCallback } from 'react';
 import MUIDataTable, { ExpandButton, MUIDataTableExpandButton, MUIDataTableOptions } from "mui-datatables";
+import { IDataConfig } from '../utils/entities';
+
 interface Props {
     DataConfigID: string;
+}
+
+interface IDataConfigResponse {
+    result: IDataConfig;
 }
 
 export default function DataConfigView(props: Props) {
@@ -18,12 +24,16 @@ export default function DataConfigView(props: Props) {
         { name: 'Data Configuration', path: '/', active: true }
     ];
 
-
+    const[dataConfig, setDataConfig] = useState<IDataConfig>({Modules:[]});
     const getDataConfig = useCallback(async () => {
         console.log(DataConfigID)
         try {
-            const response = await axios.get(`http://127.0.0.1:9090/dataConfig/${DataConfigID}`);
+            const response = await axios.get<IDataConfigResponse>(`http://127.0.0.1:9090/dataConfig/${DataConfigID}`);
             const data = response.data.result;
+            
+            setDataConfig({
+                Modules: data.Modules
+            })
             console.log(data);
         } catch (error) {
             console.log(error);
@@ -32,7 +42,7 @@ export default function DataConfigView(props: Props) {
 
     const columns = [
         {
-            name: 'Module Number',
+            name: 'Module Name',
             options: {
                 filter: true,
             },
@@ -44,13 +54,12 @@ export default function DataConfigView(props: Props) {
             },
         },
     ];
-    
-    const data = [
-      ['Gabby George', 'Business Analyst'],
-      ['Aiden Lloyd', 'Business Consultant'],
-      ['Jaden Collins', 'Attorney'],
-      ['Franky Rees', 'Business Analyst']
-    ];
+
+    const data = dataConfig.Modules.map((module) => {
+        return [
+            module.Name, module.FieldGroups.length
+        ]
+    });
 
     const options: MUIDataTableOptions = {
       filter: true,
