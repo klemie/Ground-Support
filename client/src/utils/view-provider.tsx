@@ -7,7 +7,7 @@ import TelemetryView from '../views/telemetry-view';
 import RocketSelectionView from '../views/rocket-selection-view';
 import ModulesView from '../views/modules-view';
 import ComponentDocs from '../views/component-docs-view';
-import SettingsDialog from '../components/SettingsDialog';
+import SettingsDialog from '../components/ModuleConfigDialogue';
 import RocketDetailsView from '../views/rocket-details-view';
 
 const ROCKET_SELECT_KEY = 'ROCKET_SELECT';
@@ -31,7 +31,7 @@ interface ViewProviderProps {
 }
 
 export default function ViewProvider(props: ViewProviderProps) {
-    const [currentViewKey, setCurrentViewKey] = useState<string>(ROCKET_SELECT_KEY);
+    const [currentViewKey, setCurrentViewKey] = useState<string>(TELEMETRY_KEY);
     const [currentRocketID, setCurrentRocketID] = useState<string>("");
 
     const updateView = (key: string) => {
@@ -118,8 +118,8 @@ export default function ViewProvider(props: ViewProviderProps) {
 							{/* TODO: Should call a Setting pop up */}
 							<Grid item>
 								<SettingsDialog isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-								<Button variant="outlined" onClick={() => handleSettingsDialog()}>
-									Settings
+								<Button variant="contained" onClick={() => handleSettingsDialog()}>
+									Configure Modules
 								</Button>
 							</Grid>
 
