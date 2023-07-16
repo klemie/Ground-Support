@@ -44,10 +44,10 @@ enum MotorType {
 };
 
 export interface IRocket{
-    Id: string;
+    Id?: string;
     Name: string;
     Missions: [];
-    Components: string[] | IComponent[];
+    Components: string[];
     Mass: number;
     Height: number;
     Class: string;
@@ -56,7 +56,7 @@ export interface IRocket{
 }
 
 export interface IComponent {
-    Id: string;
+    Id?: string;
     Name: string;
     TelemetrySource:  string;
     Details: string,

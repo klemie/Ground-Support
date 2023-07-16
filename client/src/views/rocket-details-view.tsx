@@ -26,10 +26,6 @@ interface IRocketResponse {
 	result: IRocket;
 }
 
-interface RocketDetails extends IRocket {
-    Id?: string;
-}
-
 function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
 
@@ -79,7 +75,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
         hybrid = "Hybrid"
     };
 
-    const [rocketData, setRocketData] = useState<RocketDetails>({
+    const [rocketData, setRocketData] = useState<IRocket>({
         Id: props.rocketID,
         Name:"", 
         Mass:0, 
@@ -112,7 +108,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
         const response = await axios.get<IRocketResponse>(`http://127.0.0.1:9090/rocket/${rocketId}`);
             const rocket = response.data.result;
             
-            const data: RocketDetails = {
+            const data: IRocket = {
                 Id: rocketId,
                 Name: rocket.Name,
                 Missions: rocket.Missions,

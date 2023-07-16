@@ -36,17 +36,9 @@ const MenuProps = {
 	}
 };
 
-interface ComponentDetails extends IComponent {
-	Id?: string;	
-}
-
-interface RocketDetails extends IRocket {
-	Id?: string;
-}
-
 interface ComponentModalProps {
-	component?: ComponentDetails;
-	rocket?: RocketDetails;
+	component?: IComponent;
+	rocket?: IRocket;
 	isOpen: boolean;
 	onSave: (id: string) => void;
 	onClose: () => void;
