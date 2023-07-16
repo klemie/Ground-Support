@@ -43,7 +43,7 @@ enum MotorType {
 export interface IRocket{
     Name: string;
     Missions: [];
-    Components: [];
+    Components: string[];
     Mass: number;
     Height: number;
     Class: string;
@@ -53,9 +53,9 @@ export interface IRocket{
 
 export interface IComponent {
     Name: string;
-    TelemetrySource: TelemetrySource;
+    TelemetrySource:  string;
     Details: string,
-    DataConfig: IDataConfig
+    DataConfig: string;
 }
 export interface IFieldGroup {
     Name: String;

@@ -107,7 +107,7 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 								fullWidth
 								size="small"
 								id="profile-name"
-								label="Profile Name"
+								label="Rocket Name"
 								variant="outlined"
 							/>
 							<Button
