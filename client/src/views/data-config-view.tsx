@@ -47,9 +47,9 @@ export default function DataConfigView(props: Props) {
     
     const data = [
       ['Gabby George', 'Business Analyst'],
-      ['Aiden Lloyd', 'Business Consultant', 'Dallas', 55, '$200,000'],
-      ['Jaden Collins', 'Attorney', 'Santa Ana', 27, '$500,000'],
-      ['Franky Rees', 'Business Analyst', 'St. Petersburg', 22, '$50,000']
+      ['Aiden Lloyd', 'Business Consultant'],
+      ['Jaden Collins', 'Attorney'],
+      ['Franky Rees', 'Business Analyst']
     ];
 
     const options: MUIDataTableOptions = {
@@ -59,8 +59,8 @@ export default function DataConfigView(props: Props) {
       expandableRows: true,
       expandableRowsHeader: false,
       expandableRowsOnClick: true,
+    //   rowsExpanded: [0],
 
-      rowsExpanded: [0, 1],
       renderExpandableRow: (rowData: string | any[], rowMeta: any) => {
         const colSpan = rowData.length + 1;
         return (
