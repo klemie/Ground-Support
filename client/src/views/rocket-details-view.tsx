@@ -9,8 +9,8 @@ import axios from 'axios';
 import _ from 'lodash';
 
 //Tabs
-import ComponentsTab from './Tabs/components-tab';
-import RocketDetailsTab from './Tabs/rocket-details-tab';
+import ComponentsTab from './tabs/components-tab';
+import RocketDetailsTab from './tabs/rocket-details-tab';
 
 // Popups
 import ComponentModal from '../components/modals/ComponentModal';
