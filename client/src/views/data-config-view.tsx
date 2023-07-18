@@ -44,13 +44,13 @@ export default function DataConfigView(props: Props) {
         {
             name: 'Module Name',
             options: {
-                filter: true,
+                filter: false,
             },
         },
         {
             name: 'Number Of Fields',
             options: {
-                filter: true,
+                filter: false,
             },
         },
     ];
@@ -68,6 +68,7 @@ export default function DataConfigView(props: Props) {
       expandableRows: true,
       expandableRowsHeader: false,
       expandableRowsOnClick: true,
+      selectableRows: undefined,
     //   rowsExpanded: [0],
 
       renderExpandableRow: (rowData: string | any[], rowMeta: any) => {
