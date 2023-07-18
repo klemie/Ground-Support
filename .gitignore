@@ -1,2 +1,7 @@
-.DS_Store
-commit-hist.txt
+/node_modules
+yarn.lock
+.json*
+client/package-lock.json
+client/package.json
+services/server-service/src/index.js
+.DS_STORE

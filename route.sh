@@ -37,7 +37,6 @@ function pushChanges() {
   git add . && git add * && git add -u && \
   git commit -m $"$CommitMessage"$'\nCommit by @arfazhxss on '"$(date +'%a %d %b %Y')" && \
   git push --set-upstream origin "$branch"
-  git log > commit-hist.txt
   rm -Rf .DS_Store/
   echo -e "${breakStrIter}\n\t\tYour changes have been pushed\n\t\tto the repository :)\n${breakStrIter}"
 }
@@ -45,7 +44,6 @@ function pushChanges() {
 
 function gitWorkflow() {
   find . -name ".DS_Store" -type f -delete
-  echo -e ".DS_Store\ncommit-hist.txt" > .gitignore
   versionCheck
   echo -e "\n${breakStrIter}\n\n\t\tDELETE LOCAL CHANGES? (YES) \n\t\t\tOR\n\t\tPUSH LOCAL CHANGES (ENTER)\n"
   read -s -n 3 -p "(yes/ENTER): " answer
