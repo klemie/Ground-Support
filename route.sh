@@ -8,6 +8,7 @@ breakStrIter=$(printf '_%.0s' $(seq 1 "$breakStrSize"))
 currentBranch=$(git rev-parse --abbrev-ref HEAD)
 
 function versionCheck() {
+  git config advice.addIgnoredFile false
   dir="$(dirname "$0")/.git"
   if [ ! -d "$dir" ]
   then
@@ -34,7 +35,7 @@ function pushChanges() {
     return
   fi
 
-  git add . && git add * && git add -u && \
+  git add . && git add -u && \
   git commit -m $"$CommitMessage"$'\nCommit by @arfazhxss on '"$(date +'%a %d %b %Y')" && \
   git push --set-upstream origin "$branch"
   rm -Rf .DS_Store/

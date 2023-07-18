@@ -4,6 +4,8 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Header, { Breadcrumb } from '../components/Header';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { useCallback } from 'react';
 import MUIDataTable, { ExpandButton, MUIDataTableExpandButton, MUIDataTableOptions } from "mui-datatables";
 import { IDataConfig } from '../utils/entities';
@@ -31,9 +33,7 @@ export default function DataConfigView(props: Props) {
             const response = await axios.get<IDataConfigResponse>(`http://127.0.0.1:9090/dataConfig/${DataConfigID}`);
             const data = response.data.result;
             
-            setDataConfig({
-                Modules: data.Modules
-            })
+            setDataConfig({ Modules: data.Modules })
             console.log(data);
         } catch (error) {
             console.log(error);
@@ -43,15 +43,11 @@ export default function DataConfigView(props: Props) {
     const columns = [
         {
             name: 'Module Name',
-            options: {
-                filter: false,
-            },
+            options: { filter: false, },
         },
         {
             name: 'Number Of Fields',
-            options: {
-                filter: false,
-            },
+            options: { filter: false, },
         },
     ];
 
@@ -74,9 +70,15 @@ export default function DataConfigView(props: Props) {
       renderExpandableRow: (rowData: string | any[], rowMeta: any) => {
         const colSpan = rowData.length + 1;
         return (
-          <TableRow>
-            <TableCell colSpan={colSpan}>Custom expandable row option. Data: {JSON.stringify(rowData)}</TableCell>
-          </TableRow>
+        //   <TableRow>
+        //     <TableCell colSpan={colSpan}>Custom expandable row option. Data: {JSON.stringify(rowData)}</TableCell>
+        //   </TableRow>
+            <TableRow>
+                <TableCell colSpan={colSpan}>
+                    <NestedTable module={dataConfig.Modules[rowMeta.dataIndex]} />
+                </TableCell>
+            </TableRow>
+
         );
       },
       onRowExpansionChange: (curExpanded: any, allExpanded: any, rowsExpanded: any) =>
@@ -118,3 +120,33 @@ export default function DataConfigView(props: Props) {
         </div>
         );  
     };
+
+function NestedTable({ module }: { module: any }) {
+    const nestedColumns = [
+        {
+            name: 'Field Name',
+            options: { filter: false },
+        },
+        {
+            name: 'Data Type',
+            options: { filter: false },
+        },
+    ];
+
+    const nestedData = module.FieldGroups.flatMap((fieldGroup: any) =>
+        fieldGroup.Fields.map((field: any) => [field.Name, field.DataType])
+    );
+
+    return (
+        <MUIDataTable
+            title={'Nested Table'}
+            data={nestedData}
+            columns={nestedColumns}
+            options={{
+                filter: true,
+                filterType: 'dropdown' as any,
+                responsive: 'standard',
+            }}
+        />
+    );
+}
