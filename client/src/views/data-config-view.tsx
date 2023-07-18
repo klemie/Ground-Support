@@ -10,6 +10,7 @@ import { useCallback } from 'react';
 import MUIDataTable, { ExpandButton, MUIDataTableExpandButton, MUIDataTableOptions } from "mui-datatables";
 import { IDataConfig } from '../utils/entities';
 
+
 interface Props {
     DataConfigID: string;
 }
@@ -29,6 +30,7 @@ export default function DataConfigView(props: Props) {
     const[dataConfig, setDataConfig] = useState<IDataConfig>({Modules:[]});
     const getDataConfig = useCallback(async () => {
         console.log(DataConfigID)
+
         try {
             const response = await axios.get<IDataConfigResponse>(`http://127.0.0.1:9090/dataConfig/${DataConfigID}`);
             const data = response.data.result;
@@ -57,6 +59,8 @@ export default function DataConfigView(props: Props) {
         ]
     });
 
+
+
     const options: MUIDataTableOptions = {
       filter: true,
       filterType: 'dropdown' as any,
@@ -65,14 +69,11 @@ export default function DataConfigView(props: Props) {
       expandableRowsHeader: false,
       expandableRowsOnClick: true,
       selectableRows: undefined,
-    //   rowsExpanded: [0],
+      rowsExpanded: [0],
 
       renderExpandableRow: (rowData: string | any[], rowMeta: any) => {
         const colSpan = rowData.length + 1;
         return (
-        //   <TableRow>
-        //     <TableCell colSpan={colSpan}>Custom expandable row option. Data: {JSON.stringify(rowData)}</TableCell>
-        //   </TableRow>
             <TableRow>
                 <TableCell colSpan={colSpan}>
                     <NestedTable module={dataConfig.Modules[rowMeta.dataIndex]} />
@@ -121,34 +122,131 @@ export default function DataConfigView(props: Props) {
         );  
     };
 
+// function NestedTable ({ module }: { module: any }) {
+//     return (
+//         <div style={{ display: 'flex', width: '50vw' }}>
+//             {module.FieldGroups.map((fieldGroup: any, index: number) => (
+//                 <div key={index} style={{ flex: 1, marginRight: '50px', minWidth: '400px' }}>
+//                     <MUIDataTable
+//                         title={fieldGroup.Name}
+//                         data={fieldGroup.Fields.map((field: any) => [
+//                             field.Name,
+//                             field.Units,
+//                             JSON.stringify(field.Range),
+//                         ])}
+//                         columns={[
+//                             {
+//                                 name: 'Field',
+//                                 options: {
+//                                     filter: false, 
+//                                     customHeadRender: () => (
+//                                         <TableCell align="left"><strong>Field</strong></TableCell>
+//                                     )},
+//                             },
+//                             {
+//                                 name: 'Units',
+//                                 options: { 
+//                                     filter: false,
+//                                     customHeadRender: () => (
+//                                         <TableCell align="left"><strong>Units</strong></TableCell>
+//                                     )},
+//                             },
+//                             {
+//                                 name: 'Range',
+//                                 options: {
+//                                     filter: false,
+//                                     customHeadRender: () => (
+//                                         <TableCell align="left"><strong>Range</strong></TableCell>
+//                                     )},
+//                             },
+//                         ]}
+//                         options={{
+//                             filter: true,
+//                             filterType: 'dropdown' as any,
+//                             responsive: 'standard',
+//                             selectableRows: undefined,
+//                             search: false,
+//                             download: false,
+//                             print: false,
+//                             viewColumns: false,
+//                             pagination: false,
+//                         }}
+//                     />
+//                 </div>
+//             ))}
+//         </div>
+//     );
+// }
+
 function NestedTable({ module }: { module: any }) {
+    const fieldData = module.FieldGroups.map((fieldGroup: any) =>
+        fieldGroup.Fields.map((field: any) => [
+            field.Name,
+            field.Units,
+            JSON.stringify(field.Range),
+        ])
+    );
+
+    const fieldColumns = [
+        {
+            name: 'Field',
+            options: {
+                filter: false,
+                customHeadRender: () => (
+                    <TableCell align="left">
+                        <strong>Field</strong>
+                    </TableCell>
+                ),
+            },
+        },
+        {
+            name: 'Units',
+            options: {
+                filter: false,
+                customHeadRender: () => (
+                    <TableCell align="left">
+                        <strong>Units</strong>
+                    </TableCell>
+                ),
+            },
+        },
+        {
+            name: 'Range',
+            options: {
+                filter: false,
+                customHeadRender: () => (
+                    <TableCell align="left">
+                        <strong>Range</strong>
+                    </TableCell>
+                ),
+            },
+        },
+    ];
+
+    const fieldOptions: MUIDataTableOptions = {
+        filter: true,
+        filterType: 'dropdown',
+        responsive: 'standard',
+        selectableRows: undefined,
+        search: false,
+        download: false,
+        print: false,
+        viewColumns: false,
+        pagination: false,
+    };
+
     return (
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', width: '50vw' }}>
             {module.FieldGroups.map((fieldGroup: any, index: number) => (
-                <div key={index} style={{ flex: 1, marginRight: '20px' }}>
-                    <Typography variant="h6">Field Group {index + 1}</Typography>
+                <div key={index} style={{ flex: 1, marginRight: '50px', minWidth: '400px' }}>
                     <MUIDataTable
-                        title={`Nested Table ${index + 1}`}
-                        data={fieldGroup.Fields.map((field: any) => [field.Name, field.DataType])}
-                        columns={[
-                            {
-                                name: 'Field Name',
-                                options: { filter: false },
-                            },
-                            {
-                                name: 'Data Type',
-                                options: { filter: false },
-                            },
-                        ]}
-                        options={{
-                            filter: true,
-                            filterType: 'dropdown' as any,
-                            responsive: 'standard',
-                        }}
+                        title={fieldGroup.Name}
+                        data={fieldData[index]}
+                        columns={fieldColumns}
+                        options={fieldOptions}
                     />
                 </div>
             ))}
         </div>
     );
 }
-
