@@ -122,31 +122,33 @@ export default function DataConfigView(props: Props) {
     };
 
 function NestedTable({ module }: { module: any }) {
-    const nestedColumns = [
-        {
-            name: 'Field Name',
-            options: { filter: false },
-        },
-        {
-            name: 'Data Type',
-            options: { filter: false },
-        },
-    ];
-
-    const nestedData = module.FieldGroups.flatMap((fieldGroup: any) =>
-        fieldGroup.Fields.map((field: any) => [field.Name, field.DataType])
-    );
-
     return (
-        <MUIDataTable
-            title={'Nested Table'}
-            data={nestedData}
-            columns={nestedColumns}
-            options={{
-                filter: true,
-                filterType: 'dropdown' as any,
-                responsive: 'standard',
-            }}
-        />
+        <div style={{ display: 'flex' }}>
+            {module.FieldGroups.map((fieldGroup: any, index: number) => (
+                <div key={index} style={{ flex: 1, marginRight: '20px' }}>
+                    <Typography variant="h6">Field Group {index + 1}</Typography>
+                    <MUIDataTable
+                        title={`Nested Table ${index + 1}`}
+                        data={fieldGroup.Fields.map((field: any) => [field.Name, field.DataType])}
+                        columns={[
+                            {
+                                name: 'Field Name',
+                                options: { filter: false },
+                            },
+                            {
+                                name: 'Data Type',
+                                options: { filter: false },
+                            },
+                        ]}
+                        options={{
+                            filter: true,
+                            filterType: 'dropdown' as any,
+                            responsive: 'standard',
+                        }}
+                    />
+                </div>
+            ))}
+        </div>
     );
 }
+
