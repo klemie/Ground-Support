@@ -74,9 +74,9 @@ export interface IRocketPopulated {
 
 export interface IComponent {
     Name: string;
-    TelemetrySource: TelemetrySource;
+    TelemetrySource:  string;
     Details: string,
-    DataConfig: IDataConfig
+    DataConfig: string;
 }
 export interface IFieldGroup {
     Name: String;
