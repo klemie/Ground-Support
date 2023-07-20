@@ -122,62 +122,6 @@ export default function DataConfigView(props: Props) {
         );  
     };
 
-// function NestedTable ({ module }: { module: any }) {
-//     return (
-//         <div style={{ display: 'flex', width: '50vw' }}>
-//             {module.FieldGroups.map((fieldGroup: any, index: number) => (
-//                 <div key={index} style={{ flex: 1, marginRight: '50px', minWidth: '400px' }}>
-//                     <MUIDataTable
-//                         title={fieldGroup.Name}
-//                         data={fieldGroup.Fields.map((field: any) => [
-//                             field.Name,
-//                             field.Units,
-//                             JSON.stringify(field.Range),
-//                         ])}
-//                         columns={[
-//                             {
-//                                 name: 'Field',
-//                                 options: {
-//                                     filter: false, 
-//                                     customHeadRender: () => (
-//                                         <TableCell align="left"><strong>Field</strong></TableCell>
-//                                     )},
-//                             },
-//                             {
-//                                 name: 'Units',
-//                                 options: { 
-//                                     filter: false,
-//                                     customHeadRender: () => (
-//                                         <TableCell align="left"><strong>Units</strong></TableCell>
-//                                     )},
-//                             },
-//                             {
-//                                 name: 'Range',
-//                                 options: {
-//                                     filter: false,
-//                                     customHeadRender: () => (
-//                                         <TableCell align="left"><strong>Range</strong></TableCell>
-//                                     )},
-//                             },
-//                         ]}
-//                         options={{
-//                             filter: true,
-//                             filterType: 'dropdown' as any,
-//                             responsive: 'standard',
-//                             selectableRows: undefined,
-//                             search: false,
-//                             download: false,
-//                             print: false,
-//                             viewColumns: false,
-//                             pagination: false,
-//                         }}
-//                     />
-//                 </div>
-//             ))}
-//         </div>
-//     );
-// }
-
 function NestedTable({ module }: { module: any }) {
     const fieldData = module.FieldGroups.map((fieldGroup: any) =>
         fieldGroup.Fields.map((field: any) => [
