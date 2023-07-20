@@ -30,7 +30,17 @@ export interface IMission {
     Date: Date;
     Coordinates: ICoordinates;
     LaunchAltitude: Number;
-    Components: [];
+    Components: string[];
+    Published: boolean;
+}
+
+export interface IMIssionPopulation {
+    Name: string;
+    IsTest: boolean
+    Date: Date;
+    Coordinates: ICoordinates;
+    LaunchAltitude: Number;
+    Components: IComponent[];
     Published: boolean;
 }
 
@@ -40,10 +50,21 @@ enum MotorType {
     hybrid = "Hybrid"
 };
 
-export interface IRocket{
+export interface IRocket {
     Name: string;
-    Missions: [];
-    Components: [];
+    Missions: string[];
+    Components: string[];
+    Mass: number;
+    Height: number;
+    Class: string;
+    MotorType: MotorType;
+    Motor: string;
+}
+
+export interface IRocketPopulated {
+    Name: string;
+    Missions: IMission[];
+    Components: IComponent[];
     Mass: number;
     Height: number;
     Class: string;
@@ -53,9 +74,9 @@ export interface IRocket{
 
 export interface IComponent {
     Name: string;
-    TelemetrySource: TelemetrySource;
+    TelemetrySource:  string;
     Details: string,
-    DataConfig: IDataConfig
+    DataConfig: string;
 }
 export interface IFieldGroup {
     Name: String;

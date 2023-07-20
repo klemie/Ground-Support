@@ -75,7 +75,7 @@ const update = (model: Model<any>, populate?: string[]) => async (req: Request, 
 const deleteOne = (model: Model<any>) => async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.params.id;
-        const results = await model.findByIdAndDelete(id);
+        const results = await model.deleteOne({_id: id});
         if (!results) {
             res.status(404).json({ message: 'Not Found' });
         }
