@@ -14,9 +14,11 @@ const TelemetryLog: React.FC<TelemetryLogProps> = (props: TelemetryLogProps) => 
     return (
         <Box style={{
                 backgroundColor: "#282C34",
-                borderRadius: 13,
+                borderRadius: 5,
                 width: props.width
-            }}>
+            }}
+            boxShadow={3}
+        >
             <Stack direction={"column"}>
                 <TextField 
                     value={props.value}
@@ -27,7 +29,7 @@ const TelemetryLog: React.FC<TelemetryLogProps> = (props: TelemetryLogProps) => 
                         color: "#CA4D33",
                         backgroundColor: "#282C34",
                         borderRadius: 13,
-                        padding: "20px 0px 0px 20px"
+                        padding: "0px 0px 0px 20px"
                     }}
                     InputProps={{
                         disableUnderline: true,
@@ -40,13 +42,13 @@ const TelemetryLog: React.FC<TelemetryLogProps> = (props: TelemetryLogProps) => 
                     }}
                 /> 
                 <Button 
-                        variant={"contained"} 
-                        color="error"
-                        style={{
-                            width: "150px",
-                            margin: "20px"
-                        }}
-                        startIcon={<Download />}
+                    variant={"contained"} 
+                    color="error"
+                    style={{
+                        width: "150px",
+                        margin: "20px"
+                    }}
+                    startIcon={<Download />}
                 > Packet Log </Button>
             </Stack>
         </Box>

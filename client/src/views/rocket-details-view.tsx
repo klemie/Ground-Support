@@ -3,6 +3,7 @@ import { Grid, Typography, Box, Tabs, Tab, Stack, Button, Paper } from '@mui/mat
 import Header, { Breadcrumb } from '../components/Header';
 import { IRocket } from '../utils/entities';
 import AddIcon from '@mui/icons-material/Add';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import axios from 'axios';
@@ -52,6 +53,7 @@ function TabPanel(props: TabPanelProps) {
 
 interface RocketDetailsProps {
     rocketID: string;
+    openActiveMission: (view: string) => void;
 }
 
 export default function RocketDetailsView(props: RocketDetailsProps) {
@@ -99,14 +101,19 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
         setIsOpen(false);
     };
 
+    const handleContinueMission = () => {
+        console.log("Continue Mission");
+        props.openActiveMission("START_UP");
+    };
+
     const handleRocketPopupSave = () => {
         refresh();
         handleRocketPopupClose();
-    }
+    };
 
     const refresh = () => {
         _.delay(getRocket, 500);
-    }
+    };
 
     const getRocket = useCallback(async () => {
         const response = await axios.get<IRocketResponse>(`http://127.0.0.1:9090/rocket/${rocketId}`);
@@ -151,8 +158,11 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                         <Stack direction="row" spacing={2} alignItems={'center'}>
                             <RocketLaunchIcon color={'primary'} /> 
                             <Typography marginX={"2rem"} marginY={"1rem"} align='left' variant='h6'>
-                            {rocketData?.Name || 'Rocket Not found'}
+                                {rocketData?.Name || 'Rocket Not found'}
                             </Typography>
+                            <Button variant="contained" startIcon={<CheckCircleIcon/>} onClick={handleContinueMission}>
+                                Continue Mission
+                            </Button>
                         </Stack>
                     </Paper>
 				</Grid>

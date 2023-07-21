@@ -3,7 +3,7 @@ import { Button, Grid, Step, StepButton, Stepper } from '@mui/material';
 
 import '../root/App.css'
 // Views
-import TelemetryView from '../views/telemetry-view';
+import StartUpView from '../views/startup-view';
 import RocketSelectionView from '../views/rocket-selection-view';
 import ModulesView from '../views/modules-view';
 import ComponentDocs from '../views/component-docs-view';
@@ -80,9 +80,9 @@ export default function ViewProvider(props: ViewProviderProps) {
             case COMPONENT_DOCUMENT_KEY:
                 return <ComponentDocs />;
 			case ROCKET_DETAILS_KEY:
-				return <RocketDetailsView rocketID={currentRocketID}/>;
+				return <RocketDetailsView rocketID={currentRocketID} openActiveMission={updateView}/>;
             case TELEMETRY_KEY:
-                return <TelemetryView />;
+                return <StartUpView />;
             case FLIGHT_KEY:
                 return <ModulesView />;
             default:

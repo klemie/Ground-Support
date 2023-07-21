@@ -64,7 +64,6 @@ interface dataConfigStructure {
 const ComponentModal = (props: ComponentModalProps) => {
 	const { component, rocket } = props;
 
-	debugger;
 	const [name, setName] = useState<string>('');
 	const [details, setDetails] = useState<string>('');
 	const [sourceType, setSourceType] = useState<string>('');
