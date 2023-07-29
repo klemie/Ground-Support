@@ -8,7 +8,10 @@ import requests
 from utils.random_packet_generator import direwolf_mock
 import time
 
-from gateway import trigger_aprs_route
+import socketio
+
+# standard Python
+sio = socketio.Client()
 
 URL = 'http://127.0.0.1:8080/gateway/'
 FREQUENCY_ONE = "441.35M"
@@ -30,43 +33,51 @@ ARPS_PACKET = {
 }
 
 def aprs_loop():
-    print('in aprs')
     packet = direwolf_mock().splitlines() if MOCK else sys.stdin
-    while True:
-        currentData = {
-            "Position": "",
-            "N": "",
-            "W": "",
-            "alt": ""
-        }
-        if MOCK:
-            time.sleep(3)
-
-        for line in packet:
-            if "Position" in line:
-                currentData["Position"] = line[10:]
-                currentData["Position"] = currentData["Position"][0:-1]
-            if "N " in line:
-                currentData["N"] = line[2:12]
-            if "W " in line:
-                currentData["W"] = line[14:25]
-            if "alt " in line:
-                print('alt: ', line[29:])
-                currentData["alt"] = line[29:]
-                # currentData["alt"] = currentData["alt"][0:-4]
-            if "Invalid character in compressed longitude" in line:
-                print("error: GPS is not locked")
-
-        if currentData != ARPS_PACKET:
-            telemetry_packet = {
-                "Type": "APRS",
-                "Data": currentData
+    try:
+        sio.connect("http://localhost:8086", namespaces=['/data'])
+        
+        while True:
+            currentData = {
+                "Position": "",
+                "N": "",
+                "W": "",
+                "alt": ""
             }
-            trigger_aprs_route(repr(telemetry_packet))
-            # r = requests.post(url=f'{URL}aprs/', json=telemetry_packet)
-            # print(r.json())
+            if MOCK:
+                time.sleep(3)
+
+            for line in packet:
+                if "Position" in line:
+                    currentData["Position"] = line[10:]
+                    currentData["Position"] = currentData["Position"][0:-1]
+                if "N " in line:
+                    currentData["N"] = line[2:12]
+                if "W " in line:
+                    currentData["W"] = line[14:25]
+                if "alt " in line:
+                    print('alt: ', line[29:])
+                    currentData["alt"] = line[29:]
+                    # currentData["alt"] = currentData["alt"][0:-4]
+                if "Invalid character in compressed longitude" in line:
+                    print("error: GPS is not locked")
+
+            if currentData != ARPS_PACKET:
+                telemetry_packet = {
+                    "Type": "APRS",
+                    "Data": currentData
+                }
+            # send_APRS_packet("asdf")
+            print(telemetry_packet)
+            sio.emit('aprs_packet_telemetry', telemetry_packet, namespace='/data')
+    except KeyboardInterrupt:
+        print("Exiting")
+        sio.disconnect()
+        exit(0)
+
 if __name__ == "__main__":
     aprs_loop()
+    sio.disconnect()
 # async def loRa_loop(): 
 #     return
     

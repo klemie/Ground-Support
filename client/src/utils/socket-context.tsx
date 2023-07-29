@@ -36,7 +36,7 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 
 	useEffect(() => {
 		console.log('connecting');
-		const socket = io('http://localhost:8086/data');
+		const socket = io('http://localhost:8086/data2');
 
 		socket.on('loRa_packet', (packet: string) => {
 			console.log('sss', packet);
@@ -45,7 +45,6 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 
 		socket.on('aprs_packet', (packet: string) => {
 			console.log('sas', packet);
-			console.log(packet);
 			setAprsPacket(packet);
 		});
 
