@@ -26,23 +26,32 @@ You can import any component through `import ComponentName from "'@mui/material/
 TODO: After MVP
 
 refer to there docs there pretty good
+#### 
+
+
+#### Interfaces
+
 
 ### Styling
 
 Only style when necessary component library should handle most of it.
 
-However if custom styling is necessary we will be using SASS. Each component will have a separate styling sheet.
+
+Global Theming is done in `src/theme.tsx`. This is provided by MUI and allows us to change the theme of the app. This is where we will be changing the color scheme of the app. The theme is then passed down to the `ThemeProvider` which is a wrapper around the app. This allows us to use the theme in any component. To use the theme in a component you can use the `useTheme` hook. This will give you access to the theme object. You can then use the theme object to style your component. For more information on how to use the theme object refer to the [MUI docs](https://mui.com/customization/theming/)
+
+
+
 ## Views
 
-View are defined by the content inside of full view port. A view is meant to be modular they should only contain HTML code for layout and structure while components fill up the content. The file name is the same name as the component in the definition but is under
+View are defined by the content inside of full view port. A view is meant to be modular they should only contain code for layout, state and structure while components fill up the content. The file name is the same name as the component in the definition but is under kebab-case, which is the general convention for HTML files.
 
 ## Components
 
-Components are independent and reusable bits of code. They serve the same purpose as JavaScript functions, but work in isolation and return HTML. Components will be built as functional components as it is the status quo for most modern React applications.
+Components are independent and reusable bits of code. They serve the same purpose as JavaScript functions, but work in isolation and return HTML. Components will be built as functional components as it is the status quo for most modern React applications. Components will be defined in the `components` folder. The file name is defined using PascalCase, which is the general convention for Txs component files.
 
 ## Component Life Cycle
 
-For a react component there are three main phases
+For a react component there are three main phases:
 
 - Mounting
 - Updating
@@ -57,14 +66,13 @@ Since we are using Functional components we will use React Hooks to deal with th
 </p>
 
 Mounting phase:
-- New component is created and inserted into the DOM
+- New component is created and inserted into the DOM.
 
 Updating phase:
-- Rerenders compute when new state is updated
-
+- Rerenders compute when new state is updated.
 
 Unmounting:
-- Removed from the DOM
+- Removed from the DOM tree.
 
 
 
@@ -120,6 +128,3 @@ const {Name}: React.FC<{Name}Props> = ({ {Param} }) => {
 
 export default {Name}
 ```
-
-## Flight Report
-TODO: After MVP
