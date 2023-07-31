@@ -4,6 +4,15 @@
 
 Uses a MCV architecture.
 Component based design.
+
+## Dynamic UI
+When designing Ground Support, much consideration was put towards the longevity and adaptability of the application. Not every rocket is guaranteed to use the same hardware and components. Hardcoding the software to match the needs of the rocket year to year introduces unnecessary work, increases the risk of errors and lessens any incentive to use the application. To avoid this, we designed the application to have a dynamic UI. This is most present in the module configuration. Modules require a DataConfig that the user creates and the UI dynamically updates to reflect the structure of the DataConfig. As a result, less updates to the code are needed, the application accommodates a wide variety of hardware, the modules are easily configurable and its ease of use lessens the barrier of entry for any new users.
+
+<p align="center">
+    <img src="./assets/data-config-to-module.png" width="600"/>
+</p>
+A DataConfig is a JSON file that is used to interface with the app and communicate different configurations for different rockets. This file will generate what the modules will look like in the app. Telemetry data coming into the app must have exactly the same fields as specified on the data config.
+
 ## MUI
 
 Material User Interface (MUI) is a react component library that builds off of the material design standard regulated by Google. All our styling is made in accordance with these standards. To make sure we follow these standards we will be refraining from creating our own styles as much as possible. This lessing the amount of work on our developers and generally following a proven styling standard.
