@@ -178,6 +178,26 @@ export async function updateComponent(id: string, payload: IComponent): Promise<
     return response.data;
 }
 
+export async function deleteComponent(id: string, rocket?: IRocket): Promise<IComponent> {
+    const response = await api.delete(`/components/${id}`);
+    const r = rocket ? rocket : {} as IRocket;
+
+    // remove component from rocket
+    const rocketComponentList: string[] = r.Components.filter((cId, idx, arr) => {
+        if (cId === id) {
+            arr.splice(idx, 1);
+            return true;
+        } 
+        return false;
+    });
+
+    // detach from rocket
+    if (r !== {} as IRocket) {
+        await api.patch(`/rockets/${r._id}`, { Components: rocketComponentList });
+    }
+    return response.data;
+}
+
 /**
 * --------------------------------------------------------
 * |                  DataConfig CRUD                     |
@@ -238,8 +258,17 @@ export async function updateDataConfig(id: string, payload: IDataConfig): Promis
 /**
  * @param id Id of a data config
  * @returns The deleted data config
+ * 
+ * @description Deletes a data config
  */
-export async function deleteDataConfig(id: string): Promise<IDataConfig> {
+export async function deleteDataConfig(id: string, componentId: string): Promise<IDataConfig> {
     const response = await api.delete(`/dataconfig/${id}`);
+    const cId = componentId ? componentId : '';;
+
+    // remove data config from component
+    if (cId !== '') {
+        await api.patch(`/components/${cId}`, { DataConfig: [] });
+    }
+
     return response.data;
 }
