@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 import {
     IRocketPopulated,
-    IMissionPopulation,
+    IMissionPopulated,
     IDataConfig,
     IRocket,
     IComponentPopulated,
@@ -11,6 +11,51 @@ import {
 const api = axios.create({
     baseURL: 'http://127.0.0.1:9090'
 });
+
+interface IError {
+    error: boolean;
+    status?: number;
+    statusText?: string;
+    message?: string;
+}
+
+interface IApiResponse {
+    data: IRocketPopulated[] | 
+        IRocket |
+        IRocketPopulated | 
+        IDataConfig |
+        IDataConfig[] | 
+        IComponentPopulated[] | 
+        IComponentPopulated |
+        IComponent | 
+        IMissionPopulated[] | 
+        IMissionPopulated;
+    error: IError;
+}
+
+/**
+ * @param response The response from the server
+ * @returns An error IError object
+ * 
+ * @description Handles errors from the server
+ */
+function handleError(response: AxiosResponse): IError {
+    let error: IError = {} as IError;
+    if (response['status'] === 201) {
+        error = {
+            error: false,
+            statusText: response['statusText'],
+            status: response['status']
+        };
+    } else {
+        error = {
+            error: true,
+            statusText: response['statusText'],
+            status: response['status']
+        };
+    }
+    return error;
+}
 
 /**
 * --------------------------------------------------------
@@ -23,18 +68,52 @@ const api = axios.create({
  * 
  * @description Gets all rockets
  */
-export async function getRockets(): Promise<IRocketPopulated[]> {
-    const response = await api.get('/rockets');
-    return response.data;
+async function getRockets(): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: [] as IRocketPopulated[],
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.get('/rockets');
+        data = {
+            data: response.data.results ? response.data.results : response.data.result,
+            error: handleError(response)
+        };
+    } catch (e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error getting all rockets. Full error: \n${err.message}`;
+    }
+
+    return data;
 }
 
 /**
  * @param id Id of a rocket
  * @returns The rocket
  */
-export async function getRocket(id: string): Promise<IRocketPopulated> {
-    const response = await api.get(`/rockets/${id}`);
-    return response.data;
+async function getRocket(id: string): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IRocketPopulated,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.get(`/rockets/${id}`);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch (e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error getting rocket by id with ${id}. Full error: \n${err.message}`;
+    }
+
+    return data;
 }
 
 /**
@@ -43,9 +122,26 @@ export async function getRocket(id: string): Promise<IRocketPopulated> {
  * 
  * @description Creates a rocket
  */
-export async function createRocket(payload: IRocket): Promise<IRocket> {
-    const response = await api.post('/rockets', payload);
-    return response.data;
+async function createRocket(payload: IRocket): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IRocket,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.post('/rockets', payload);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch (e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error creating new rocket. Full error:\n${err.message}`;
+    }
+    
+    return data;
 }
 
 /**
@@ -53,9 +149,26 @@ export async function createRocket(payload: IRocket): Promise<IRocket> {
  * @param payload The rocket to update type IRocket
  * @returns The updated rocket
  */
-export async function updateRocket(id: string, payload: IRocket): Promise<IRocket> {
-    const response = await api.patch(`/rockets/${id}`, payload);
-    return response.data;
+async function updateRocket(id: string, payload: IRocket): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IRocket,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.patch(`/rockets/${id}`, payload);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error updating the rocket with the id ${id}. Full error:\n${err.message}`;
+    }
+
+    return data;
 }
 /**
  * @param id Id of a rocket
@@ -63,9 +176,26 @@ export async function updateRocket(id: string, payload: IRocket): Promise<IRocke
  * 
  * @description Deletes a rocket
  */
-export async function deleteRocket(id: string): Promise<IRocket> {
-    const response = await api.delete(`/rockets/${id}`);
-    return response.data;
+async function deleteRocket(id: string): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IRocket,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.delete(`/rockets/${id}`);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error deleting rocket with the id ${id}. Full error:\n${err.message}`;
+    }
+
+    return data;
 }
 
 /**
@@ -79,27 +209,78 @@ export async function deleteRocket(id: string): Promise<IRocket> {
  * 
  * @description Gets all missions
  */
-export async function getMissions(): Promise<IMissionPopulation[]> {
-    const response = await api.get('/missions');
-    return response.data;
+async function getMissions(): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IRocket,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.get('/missions');
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error getting all missions. Full error:\n${err.message}`;
+    }
+
+    return data;
 }
 
 /**
  * @param id Id of a mission
  * @returns The mission
  */
-export async function getMission(id: string): Promise<IMissionPopulation> {
-    const response = await api.get(`/missions/${id}`);
-    return response.data;
+async function getMission(id: string): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IMissionPopulated,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.get(`/missions/${id}`);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error getting mission with the id ${id}. Full error:\n${err.message}`;
+    }
+
+    return data;
 }
 
 /**
  * @param payload The mission to create type IMissionPopulation
  * @returns The created mission
  */
-export async function createMission(payload: IMissionPopulation): Promise<IMissionPopulation> {
-    const response = await api.post('/missions', payload);
-    return response.data;
+async function createMission(payload: IMissionPopulated): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IMissionPopulated,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.post('/missions', payload);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error creating new mission. Full error:\n${err.message}`;
+    }
+
+    return data;
 }
 
 /**
@@ -107,18 +288,36 @@ export async function createMission(payload: IMissionPopulation): Promise<IMissi
  * @param payload The mission to update type IMissionPopulation
  * @returns The updated mission
  */
-export async function updateMission(id: string, payload: IMissionPopulation): Promise<IMissionPopulation> {
+async function updateMission(id: string, payload: IMissionPopulated): Promise<IApiResponse> {
     const response = await api.patch(`/missions/${id}`, payload);
-    return response.data;
+    const data = response.data;
+    return data.result ? data.result : data.results;
 }
 
 /**
  * @param id Id of a mission
  * @returns The deleted mission
  */
-export async function deleteMission(id: string): Promise<IMissionPopulation> {
-    const response = await api.delete(`/missions/${id}`);
-    return response.data;
+async function deleteMission(id: string): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IMissionPopulated,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.delete(`/missions/${id}`);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error deleting mission with the id ${id}. Full error:\n${err.message}`;
+    }
+
+    return data;
 }
 
 /**
@@ -132,9 +331,26 @@ export async function deleteMission(id: string): Promise<IMissionPopulation> {
  * 
  * @description Gets all components
  */
-export async function getComponents(): Promise<IComponentPopulated[]> {
-    const response = await api.get('/components');
-    return response.data;
+async function getComponents(): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: [] as IComponentPopulated[],
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.get('/components');
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error getting all components. Full error:\n${err.message}`;
+    }
+
+    return data;
 }
 
 /**
@@ -143,9 +359,26 @@ export async function getComponents(): Promise<IComponentPopulated[]> {
  * 
  * @description Gets a component by id
  */
-export async function getComponent(id: string): Promise<IComponentPopulated> {
-    const response = await api.get(`/components/${id}`);
-    return response.data;
+async function getComponent(id: string): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IComponentPopulated,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.get(`/components/${id}`);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error getting component with the id ${id}. Full error:\n${err.message}`;
+    }
+
+    return data;
 }
 
 /**
@@ -155,17 +388,52 @@ export async function getComponent(id: string): Promise<IComponentPopulated> {
  * 
  * @description Creates a component and attaches it to a rocket if rocketId is provided
  */
-export async function createComponent(payload: IComponent, rocketId?: string): Promise<IComponent> {
-    const response = await api.post('/components', payload);
-    const componentId = response.data._id;
-    const rId = rocketId ? rocketId : ''; 
+async function createComponent(payload: IComponent, rocket: IRocket): Promise<IApiResponse[]> {
+    let componentResponse: AxiosResponse;
+    let componentData: IApiResponse = {
+        data: {} as IComponentPopulated,
+        error: {} as IError
+    } as IApiResponse;
 
-    //attach to rocket
-    if (rId !== '') {
-        await api.patch(`/rockets/${rId}`, { Components: [componentId] });
+    let rocketResponse: AxiosResponse;
+    let rocketData: IApiResponse = {
+        data: {} as IComponentPopulated,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        componentResponse = await api.post('/components', payload);
+        const componentId = componentResponse.data._id;
+        const rId = rocket?._id ? rocket?._id : '';
+
+        componentData = {
+            data: componentResponse.data.result ? componentResponse.data.result : componentResponse.data.results,
+            error: handleError(componentResponse)
+        };
+
+        //attach to rocket
+        if (rId !== '') {
+            const rocketPayload: IRocket = rocket;
+            rocketPayload.Components.push(componentId);
+            try {
+                rocketResponse = await api.patch(`/rockets/${rId}`, rocketPayload);
+                rocketData = {
+                    data: rocketResponse.data.result ? rocketResponse.data.result : rocketResponse.data.results,
+                    error: handleError(rocketResponse)
+                };
+            } catch (e) {
+                const err = e as AxiosError;
+                rocketData.error.error = true;
+                rocketData.error.message = `Error attaching component to rocket. Full error:\n${err.message}`;
+            }
+        }
+
+    } catch(e) {
+        const err = e as AxiosError;
+        componentData.error.error = true;
+        componentData.error.message = `Error creating new component. Full error:\n${err.message}`;
     }
-
-    return response.data;
+    return [componentData, rocketData];
 }
 
 /**
@@ -173,13 +441,47 @@ export async function createComponent(payload: IComponent, rocketId?: string): P
  * @param payload The component to update type IComponent
  * @returns The deleted component
  */
-export async function updateComponent(id: string, payload: IComponent): Promise<IComponent> {
-    const response = await api.patch(`/components/${id}`, payload);
-    return response.data;
+async function updateComponent(id: string, payload: IComponent): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IComponent,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.patch(`/components/${id}`, payload);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error updating component with the id ${id}. Full error:\n${err.message}`;
+    }
+
+    return data;
 }
 
-export async function deleteComponent(id: string, rocket?: IRocket): Promise<IComponent> {
-    const response = await api.delete(`/components/${id}`);
+async function deleteComponent(id: string, rocket?: IRocket): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IComponent,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.delete(`/components/${id}`);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error deleting component with the id ${id}. Full error:\n${err.message}`;
+    }
+
     const r = rocket ? rocket : {} as IRocket;
 
     // remove component from rocket
@@ -191,11 +493,11 @@ export async function deleteComponent(id: string, rocket?: IRocket): Promise<ICo
         return false;
     });
 
-    // detach from rocket
+    // detach from rocket (potential fix until middleware is implemented)
     if (r !== {} as IRocket) {
         await api.patch(`/rockets/${r._id}`, { Components: rocketComponentList });
     }
-    return response.data;
+    return data;
 }
 
 /**
@@ -209,9 +511,26 @@ export async function deleteComponent(id: string, rocket?: IRocket): Promise<ICo
  * 
  * @description Gets all data configs
  */
-export async function getDataConfigs(): Promise<IDataConfig[]> {
-    const response = await api.get('/dataconfig');
-    return response.data;
+async function getDataConfigs(): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IDataConfig[],
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.get('/dataconfig');
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error getting all data configs. Full error:\n${err.message}`;
+    }
+
+    return data;
 }
 
 /**
@@ -220,9 +539,26 @@ export async function getDataConfigs(): Promise<IDataConfig[]> {
  * 
  * @description Gets a data config by id
  */
-export async function getDataConfig(id: string): Promise<IDataConfig> {
-    const response = await api.get(`/dataconfig/${id}`);
-    return response.data;
+async function getDataConfig(id: string): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IDataConfig,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.get(`/dataconfig/${id}`);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error getting data config with the id ${id}. Full error:\n${err.message}`;
+    }
+
+    return data;
 }
 
 /**
@@ -232,16 +568,32 @@ export async function getDataConfig(id: string): Promise<IDataConfig> {
  * 
  * @description Creates a data config and attaches it to a component if componentId is provided
  */
-export async function createDataConfig(payload: IDataConfig, componentId?: string): Promise<IDataConfig> {
-    const response = await api.post('/dataconfig', payload);
-    const dataConfigId = response.data._id;
-    const cId = componentId ? componentId : '';
-
-    //attach to component
-    if (cId !== '') {
-        await api.patch(`/components/${cId}`, { DataConfig: [dataConfigId] });
+async function createDataConfig(payload: IDataConfig, componentId?: string): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IDataConfig,
+        error: {} as IError
+    } as IApiResponse;
+    try {
+        response = await api.post('/dataconfig', payload);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+        const dataConfigId = response.data._id;
+        const cId = componentId ? componentId : '';
+    
+        //attach to component
+        if (cId !== '') {
+            await api.patch(`/components/${cId}`, { DataConfig: [dataConfigId] });
+        }
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error creating new data config. Full error:\n${err.message}`;
     }
-    return response.data;
+
+    return data;
 }
 
 /**
@@ -250,9 +602,26 @@ export async function createDataConfig(payload: IDataConfig, componentId?: strin
  * @param payload The data config to update
  * @returns The updated data config
  */
-export async function updateDataConfig(id: string, payload: IDataConfig): Promise<IDataConfig> {
-    const response = await api.patch(`/dataconfig/${id}`, payload);
-    return response.data;
+async function updateDataConfig(id: string, payload: IDataConfig): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IDataConfig,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.patch(`/dataconfig/${id}`, payload);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error updating data config with the id ${id}. Full error:\n${err.message}`;
+    }
+
+    return data;
 }
 
 /**
@@ -261,14 +630,54 @@ export async function updateDataConfig(id: string, payload: IDataConfig): Promis
  * 
  * @description Deletes a data config
  */
-export async function deleteDataConfig(id: string, componentId: string): Promise<IDataConfig> {
-    const response = await api.delete(`/dataconfig/${id}`);
-    const cId = componentId ? componentId : '';;
+async function deleteDataConfig(id: string, componentId: string): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IDataConfig,
+        error: {} as IError
+    } as IApiResponse;
 
-    // remove data config from component
-    if (cId !== '') {
-        await api.patch(`/components/${cId}`, { DataConfig: [] });
+    try {
+        response = await api.delete(`/dataconfig/${id}`);
+        data = {
+            data: response.data.result ? response.data.result : response.data.results,
+            error: handleError(response)
+        };
+        const cId = componentId ? componentId : '';
+
+        // remove data config from component 
+        if (cId !== '') {
+            await api.patch(`/components/${cId}`, { DataConfig: [] });
+        }
+    } catch (e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error deleting data config with the id ${id}. Full error:\n${err.message}`;
     }
-
-    return response.data;
+    
+    return data;
 }
+
+// eslint-disable-next-line import/no-anonymous-default-export
+export default {
+    getRockets,
+    getRocket,
+    createRocket,
+    updateRocket,
+    deleteRocket,
+    getMissions,
+    getMission,
+    createMission,
+    updateMission,
+    deleteMission,
+    getComponents,
+    getComponent,
+    createComponent,
+    updateComponent,
+    deleteComponent,
+    getDataConfigs,
+    getDataConfig,
+    createDataConfig,
+    updateDataConfig,
+    deleteDataConfig
+};
