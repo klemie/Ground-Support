@@ -38,7 +38,7 @@ export interface IMission {
     Published: boolean;
 }
 
-export interface IMissionPopulation {
+export interface IMissionPopulated {
     _id?: string;
     Name: string;
     IsTest: boolean
