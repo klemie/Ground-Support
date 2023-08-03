@@ -1,22 +1,25 @@
-import { Card, CardContent, CardHeader, Grid, Stack, TableCell, TableRow, TextField } from '@mui/material';
-import { Typography, Box, Tabs, Tab, Button, Icon, Paper } from '@mui/material';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import Header, { Breadcrumb } from '../components/Header';
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { useCallback } from 'react';
-import MUIDataTable, { ExpandButton, MUIDataTableExpandButton, MUIDataTableOptions } from "mui-datatables";
-import { IDataConfig } from '../utils/entities';
+import { useEffect, useState, useCallback } from 'react';
 
+// Components
+import {
+    Grid,
+    Stack,
+    TableCell,
+    TableRow
+} from '@mui/material';
+import MUIDataTable, {
+    ExpandButton,
+    MUIDataTableExpandButton,
+    MUIDataTableOptions
+} from "mui-datatables";
+import Header, { Breadcrumb } from '../components/Header';
+
+// Utils
+import { IDataConfig } from '../utils/entities';
+import api from '../services/api';
 
 interface Props {
     DataConfigID: string;
-}
-
-interface IDataConfigResponse {
-    result: IDataConfig;
 }
 
 export default function DataConfigView(props: Props) {
@@ -27,16 +30,12 @@ export default function DataConfigView(props: Props) {
         { name: 'Data Configuration', path: '/', active: true }
     ];
 
-    const[dataConfig, setDataConfig] = useState<IDataConfig>({Modules:[]});
+    const[dataConfig, setDataConfig] = useState<IDataConfig>({} as IDataConfig);
+
     const getDataConfig = useCallback(async () => {
-        try {
-            const response = await axios.get<IDataConfigResponse>(`http://127.0.0.1:9090/dataConfig/${DataConfigID}`);
-            const data = response.data.result;
-            setDataConfig({ Modules: data.Modules })
-        } catch (error) {
-            console.log(error);
-        }
-    }, []);
+        const dataConfigResponse = await api.getDataConfig(DataConfigID);
+        setDataConfig(dataConfigResponse.data as IDataConfig);
+    }, [DataConfigID]);
 
     const columns = [
         {
@@ -54,8 +53,6 @@ export default function DataConfigView(props: Props) {
             module.Name, module.FieldGroups.length
         ]
     });
-
-
 
     const options: MUIDataTableOptions = {
       filter: true,
@@ -77,9 +74,7 @@ export default function DataConfigView(props: Props) {
             </TableRow>
 
         );
-      },
-    //   onRowExpansionChange: (curExpanded: any, allExpanded: any, rowsExpanded: any) =>
-    //     console.log(curExpanded, allExpanded, rowsExpanded),
+      }
     };
 
     const components = {
@@ -91,6 +86,7 @@ export default function DataConfigView(props: Props) {
 
     useEffect(() => {
         getDataConfig();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

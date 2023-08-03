@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Grid, Typography, Box, Tabs, Tab, Stack, Button, Paper } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
-import { IRocket } from '../utils/entities';
+import { IRocketPopulated } from '../utils/entities';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import axios from 'axios';
 import _ from 'lodash';
 
 //Tabs
@@ -15,19 +14,12 @@ import RocketDetailsTab from './tabs/rocket-details-tab';
 // Popups
 import ComponentModal from '../components/modals/ComponentModal';
 import RocketProfilePopup from '../components/RocketProfilePopup';
+import api from '../services/api';
 
 interface TabPanelProps {
     children?: React.ReactNode;
     index: number;
     value: number;
-}
-
-interface IRocketResponse {
-	result: IRocket;
-}
-
-interface RocketDetails extends IRocket {
-    Id?: string;
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -73,23 +65,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
     // component modal
 	const [componentModalOpen, setComponentModalOpen] = useState<boolean>(false);
 
-    enum MotorType {
-        solid = "Solid",
-        liquid = "Liquid",
-        hybrid = "Hybrid"
-    };
-
-    const [rocketData, setRocketData] = useState<RocketDetails>({
-        Id: props.rocketID,
-        Name:"", 
-        Mass:0, 
-        Motor:"",
-        Height:0, 
-        Class: "", 
-        Missions:[], 
-        Components:[], 
-        MotorType:MotorType.solid
-    });
+    const [rocketData, setRocketData] = useState<IRocketPopulated>({} as IRocketPopulated);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -109,27 +85,32 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
     }
 
     const getRocket = useCallback(async () => {
-        const response = await axios.get<IRocketResponse>(`http://127.0.0.1:9090/rocket/${rocketId}`);
-            const rocket = response.data.result;
-            
-            const data: RocketDetails = {
-                Id: rocketId,
-                Name: rocket.Name,
-                Missions: rocket.Missions,
-                Components: rocket.Components,
-                Mass: rocket.Mass,
-                Height: rocket.Height,
-                Class: rocket.Class,
-                MotorType: rocket.MotorType,
-                Motor: rocket.Motor
-            }
-            setRocketData(data);
+        console.log(rocketId);
+        const response = await api.getRocket(rocketId);
+        const rocket = response.data as IRocketPopulated;
+        console.log(response);
+        setRocketData({
+            _id: rocketId,
+            Name: rocket.Name,
+            Missions: rocket.Missions,
+            Components: rocket.Components,
+            Mass: rocket.Mass,
+            Height: rocket.Height,
+            Class: rocket.Class,
+            MotorType: rocket.MotorType,
+            Motor: rocket.Motor
+        })
     }, [rocketId]);
 
 
     useEffect(() => {
 		getRocket();
-	}, [getRocket]);
+        console.log(rocketData);
+	}, []);
+
+    useCallback(() => {
+        console.log(rocketData);
+    }, [rocketData]);
 
     const [isOpen, setIsOpen] = useState(false);
 	return (
@@ -179,10 +160,16 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                         </Stack>
                         
                         <TabPanel value={value} index={0}>
-                             <RocketDetailsTab rocketDetails={rocketData}></RocketDetailsTab>
+                            <RocketDetailsTab 
+                                rocketDetails={rocketData}
+                            />
                         </TabPanel>
                         <TabPanel value={value} index={1}>
-                            <ComponentsTab rocket={rocketData} refresh={() => refresh} componentIds={rocketData?.Components || []} />
+                            <ComponentsTab 
+                                rocket={rocketData} 
+                                refresh={() => refresh} 
+                                componentIds={rocketData.Components ? rocketData.Components.map((c) => c._id as string) : []} 
+                            />
                         </TabPanel>
                         <TabPanel value={value} index={2}>
                             Missions
@@ -190,8 +177,28 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                     </Box>
                 </Grid>
                 <Grid item>
-                    <RocketProfilePopup isOpen={isOpen} onSave={handleRocketPopupSave} onClose={handleRocketPopupClose} rocketProfileId={props.rocketID}/>
-                    <ComponentModal rocket={rocketData} isOpen={componentModalOpen} onSave={()=> refresh} onClose={() => setComponentModalOpen(false)}/>
+                    <RocketProfilePopup 
+                        isOpen={isOpen} 
+                        onSave={handleRocketPopupSave} 
+                        onClose={handleRocketPopupClose} 
+                        rocketProfileId={props.rocketID}
+                    />
+                    <ComponentModal 
+                        rocket={{
+                            _id: rocketId,
+                            Name: rocketData.Name,
+                            Missions: rocketData.Missions ? rocketData.Missions.map((m) => m._id as string) : [],
+                            Components: rocketData.Components ? rocketData.Components.map((c) => c._id as string) : [],
+                            Mass: rocketData.Mass,
+                            Height: rocketData.Height,
+                            Class: rocketData.Class,
+                            MotorType: rocketData.MotorType,
+                            Motor: rocketData.Motor
+                        }} 
+                        isOpen={componentModalOpen} 
+                        onSave={()=> refresh} 
+                        onClose={() => setComponentModalOpen(false)}
+                    />
                 </Grid>
 			</Stack>
 			<div style={{ position: 'fixed', bottom: 0, width: '100%' }}>

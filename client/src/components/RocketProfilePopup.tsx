@@ -14,17 +14,13 @@ import {
 } from '@mui/material';
 import { FileUpload } from '@mui/icons-material';
 import { IRocket } from '../utils/entities';
-import axios from 'axios';
+import api from '../services/api';
 
 interface RocketProfileProps {
 	rocketProfileId?: string;
 	isOpen: boolean;
 	onSave: () => void;
 	onClose: () => void;
-}
-
-interface IRocketDetails {
-	result: IRocket;
 }
 
 const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfileProps) => {
@@ -43,11 +39,11 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 			MotorType: motorType,
 			Name: name,
 			Mass: mass
-		};
+		} as IRocket;
 		if (props.rocketProfileId) {
-			await axios.patch(`http://127.0.0.1:9090/rocket/${props.rocketProfileId}`, payload);
+			await api.updateRocket(props.rocketProfileId, payload);
 		} else {
-			await axios.post(`http://127.0.0.1:9090/rocket`, payload);
+			await api.createRocket(payload);
 		}
 	};
 
@@ -64,17 +60,13 @@ const RocketProfilePopup: React.FC<RocketProfileProps> = (props: RocketProfilePr
 		setMotorType('');
 		async function getRocketDetails() {
 			if (props.rocketProfileId) {
-				const response = await axios.get<IRocketDetails>(
-					`http://127.0.0.1:9090/rocket/${props.rocketProfileId}`
-				);
-				const data = response.data.result;
+				const data = (await api.getRocket(props.rocketProfileId)).data as IRocket;
 				setHeight(data.Height);
 				setMass(data.Mass);
 				setRocketClass(data.Class);
 				setMotor(data.Motor);
 				setName(data.Name);
 				setMotorType(data.MotorType);
-				return response.data;
 			}
 		}
 		getRocketDetails();

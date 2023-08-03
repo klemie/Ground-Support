@@ -28,6 +28,7 @@ interface IApiResponse {
         IComponentPopulated[] | 
         IComponentPopulated |
         IComponent | 
+        IComponent[] |
         IMissionPopulated[] | 
         IMissionPopulated;
     error: IError;
@@ -41,7 +42,7 @@ interface IApiResponse {
  */
 function handleError(response: AxiosResponse): IError {
     let error: IError = {} as IError;
-    if (response['status'] === 201) {
+    if (response['status'] === 201 || response['status'] === 200) {
         error = {
             error: false,
             statusText: response['statusText'],
@@ -76,9 +77,11 @@ async function getRockets(): Promise<IApiResponse> {
     } as IApiResponse;
 
     try {
-        response = await api.get('/rockets');
+        response = await api.get('/rocket');
         data = {
-            data: response.data.results ? response.data.results : response.data.result,
+            data: response.data.results 
+                ? response.data.results 
+                : response.data.result as IRocketPopulated[],
             error: handleError(response)
         };
     } catch (e) {
@@ -102,9 +105,11 @@ async function getRocket(id: string): Promise<IApiResponse> {
     } as IApiResponse;
 
     try {
-        response = await api.get(`/rockets/${id}`);
+        response = await api.get(`/rocket/${id}`);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IRocketPopulated,
             error: handleError(response)
         };
     } catch (e) {
@@ -130,9 +135,11 @@ async function createRocket(payload: IRocket): Promise<IApiResponse> {
     } as IApiResponse;
 
     try {
-        response = await api.post('/rockets', payload);
+        response = await api.post('/rocket', payload);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IRocket,
             error: handleError(response)
         };
     } catch (e) {
@@ -157,9 +164,11 @@ async function updateRocket(id: string, payload: IRocket): Promise<IApiResponse>
     } as IApiResponse;
 
     try {
-        response = await api.patch(`/rockets/${id}`, payload);
+        response = await api.patch(`/rocket/${id}`, payload);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IRocket,
             error: handleError(response)
         };
     } catch(e) {
@@ -184,9 +193,11 @@ async function deleteRocket(id: string): Promise<IApiResponse> {
     } as IApiResponse;
 
     try {
-        response = await api.delete(`/rockets/${id}`);
+        response = await api.delete(`/rocket/${id}`);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IRocket,
             error: handleError(response)
         };
     } catch(e) {
@@ -212,14 +223,16 @@ async function deleteRocket(id: string): Promise<IApiResponse> {
 async function getMissions(): Promise<IApiResponse> {
     let response: AxiosResponse;
     let data: IApiResponse = {
-        data: {} as IRocket,
+        data: [] as IMissionPopulated[],
         error: {} as IError
     } as IApiResponse;
 
     try {
-        response = await api.get('/missions');
+        response = await api.get('/mission');
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IMissionPopulated[],
             error: handleError(response)
         };
     } catch(e) {
@@ -243,9 +256,11 @@ async function getMission(id: string): Promise<IApiResponse> {
     } as IApiResponse;
 
     try {
-        response = await api.get(`/missions/${id}`);
+        response = await api.get(`/mission/${id}`);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result
+                ? response.data.result 
+                : response.data.results as IMissionPopulated,
             error: handleError(response)
         };
     } catch(e) {
@@ -269,9 +284,11 @@ async function createMission(payload: IMissionPopulated): Promise<IApiResponse> 
     } as IApiResponse;
 
     try {
-        response = await api.post('/missions', payload);
+        response = await api.post('/mission', payload);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IMissionPopulated,
             error: handleError(response)
         };
     } catch(e) {
@@ -289,9 +306,27 @@ async function createMission(payload: IMissionPopulated): Promise<IApiResponse> 
  * @returns The updated mission
  */
 async function updateMission(id: string, payload: IMissionPopulated): Promise<IApiResponse> {
-    const response = await api.patch(`/missions/${id}`, payload);
-    const data = response.data;
-    return data.result ? data.result : data.results;
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IMissionPopulated,
+        error: {} as IError
+    } as IApiResponse;
+    
+    try {
+        response = await api.patch(`/mission/${id}`, payload);
+        data = {
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IMissionPopulated,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error updating the mission with the id ${id}. Full error:\n${err.message}`;
+    }
+
+    return data;
 }
 
 /**
@@ -306,9 +341,11 @@ async function deleteMission(id: string): Promise<IApiResponse> {
     } as IApiResponse;
 
     try {
-        response = await api.delete(`/missions/${id}`);
+        response = await api.delete(`/mission/${id}`);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IMissionPopulated,
             error: handleError(response)
         };
     } catch(e) {
@@ -334,14 +371,16 @@ async function deleteMission(id: string): Promise<IApiResponse> {
 async function getComponents(): Promise<IApiResponse> {
     let response: AxiosResponse;
     let data: IApiResponse = {
-        data: [] as IComponentPopulated[],
+        data: [] as IComponent[],
         error: {} as IError
     } as IApiResponse;
 
     try {
-        response = await api.get('/components');
+        response = await api.get('/component');
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IComponent[],
             error: handleError(response)
         };
     } catch(e) {
@@ -367,9 +406,11 @@ async function getComponent(id: string): Promise<IApiResponse> {
     } as IApiResponse;
 
     try {
-        response = await api.get(`/components/${id}`);
+        response = await api.get(`/component/${id}`);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IComponentPopulated,
             error: handleError(response)
         };
     } catch(e) {
@@ -402,12 +443,14 @@ async function createComponent(payload: IComponent, rocket: IRocket): Promise<IA
     } as IApiResponse;
 
     try {
-        componentResponse = await api.post('/components', payload);
+        componentResponse = await api.post('/component', payload);
         const componentId = componentResponse.data._id;
         const rId = rocket?._id ? rocket?._id : '';
 
         componentData = {
-            data: componentResponse.data.result ? componentResponse.data.result : componentResponse.data.results,
+            data: componentResponse.data.result 
+                ? componentResponse.data.result 
+                : componentResponse.data.results as IComponentPopulated,
             error: handleError(componentResponse)
         };
 
@@ -416,9 +459,11 @@ async function createComponent(payload: IComponent, rocket: IRocket): Promise<IA
             const rocketPayload: IRocket = rocket;
             rocketPayload.Components.push(componentId);
             try {
-                rocketResponse = await api.patch(`/rockets/${rId}`, rocketPayload);
+                rocketResponse = await api.patch(`/rocket/${rId}`, rocketPayload);
                 rocketData = {
-                    data: rocketResponse.data.result ? rocketResponse.data.result : rocketResponse.data.results,
+                    data: rocketResponse.data.result 
+                        ? rocketResponse.data.result 
+                        : rocketResponse.data.results as IRocket,
                     error: handleError(rocketResponse)
                 };
             } catch (e) {
@@ -449,9 +494,11 @@ async function updateComponent(id: string, payload: IComponent): Promise<IApiRes
     } as IApiResponse;
 
     try {
-        response = await api.patch(`/components/${id}`, payload);
+        response = await api.patch(`/component/${id}`, payload);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IComponent,
             error: handleError(response)
         };
     } catch(e) {
@@ -471,9 +518,11 @@ async function deleteComponent(id: string, rocket?: IRocket): Promise<IApiRespon
     } as IApiResponse;
 
     try {
-        response = await api.delete(`/components/${id}`);
+        response = await api.delete(`/component/${id}`);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IComponent,
             error: handleError(response)
         };
     } catch(e) {
@@ -495,7 +544,7 @@ async function deleteComponent(id: string, rocket?: IRocket): Promise<IApiRespon
 
     // detach from rocket (potential fix until middleware is implemented)
     if (r !== {} as IRocket) {
-        await api.patch(`/rockets/${r._id}`, { Components: rocketComponentList });
+        await api.patch(`/rocket/${r._id}`, { Components: rocketComponentList });
     }
     return data;
 }
@@ -514,14 +563,16 @@ async function deleteComponent(id: string, rocket?: IRocket): Promise<IApiRespon
 async function getDataConfigs(): Promise<IApiResponse> {
     let response: AxiosResponse;
     let data: IApiResponse = {
-        data: {} as IDataConfig[],
+        data: [] as IDataConfig[],
         error: {} as IError
     } as IApiResponse;
 
     try {
-        response = await api.get('/dataconfig');
+        response = await api.get('/dataConfig');
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IDataConfig[],
             error: handleError(response)
         };
     } catch(e) {
@@ -547,9 +598,11 @@ async function getDataConfig(id: string): Promise<IApiResponse> {
     } as IApiResponse;
 
     try {
-        response = await api.get(`/dataconfig/${id}`);
+        response = await api.get(`/dataConfig/${id}`);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IDataConfig,
             error: handleError(response)
         };
     } catch(e) {
@@ -575,9 +628,11 @@ async function createDataConfig(payload: IDataConfig, componentId?: string): Pro
         error: {} as IError
     } as IApiResponse;
     try {
-        response = await api.post('/dataconfig', payload);
+        response = await api.post('/dataConfig', payload);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IDataConfig,
             error: handleError(response)
         };
         const dataConfigId = response.data._id;
@@ -585,7 +640,7 @@ async function createDataConfig(payload: IDataConfig, componentId?: string): Pro
     
         //attach to component
         if (cId !== '') {
-            await api.patch(`/components/${cId}`, { DataConfig: [dataConfigId] });
+            await api.patch(`/component/${cId}`, { DataConfig: [dataConfigId] });
         }
     } catch(e) {
         const err = e as AxiosError;
@@ -610,9 +665,11 @@ async function updateDataConfig(id: string, payload: IDataConfig): Promise<IApiR
     } as IApiResponse;
 
     try {
-        response = await api.patch(`/dataconfig/${id}`, payload);
+        response = await api.patch(`/dataConfig/${id}`, payload);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IDataConfig,
             error: handleError(response)
         };
     } catch(e) {
@@ -638,16 +695,18 @@ async function deleteDataConfig(id: string, componentId: string): Promise<IApiRe
     } as IApiResponse;
 
     try {
-        response = await api.delete(`/dataconfig/${id}`);
+        response = await api.delete(`/dataConfig/${id}`);
         data = {
-            data: response.data.result ? response.data.result : response.data.results,
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IDataConfig,
             error: handleError(response)
         };
         const cId = componentId ? componentId : '';
 
         // remove data config from component 
         if (cId !== '') {
-            await api.patch(`/components/${cId}`, { DataConfig: [] });
+            await api.patch(`/component/${cId}`, { DataConfig: [] });
         }
     } catch (e) {
         const err = e as AxiosError;
