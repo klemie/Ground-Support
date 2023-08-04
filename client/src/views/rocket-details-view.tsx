@@ -2,11 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Grid, Typography, Box, Tabs, Tab, Stack, Button, Paper } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import { IRocketPopulated } from '../utils/entities';
-import AddIcon from '@mui/icons-material/Add';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import EditIcon from '@mui/icons-material/Edit';
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import _ from 'lodash';
+
+// Icons
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import LaunchIcon from '@mui/icons-material/Launch';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
 //Tabs
 import ComponentsTab from './tabs/components-tab';
@@ -136,12 +138,14 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                 {/* Rocket Title */}
                 <Grid item>
 					<Paper elevation={2} sx={{ padding: 2 }}>
-                        <Stack direction="row" spacing={2} alignItems={'center'}>
-                            <RocketLaunchIcon color={'primary'} /> 
-                            <Typography marginX={"2rem"} marginY={"1rem"} align='left' variant='h6'>
-                                {rocketData?.Name || 'Rocket Not found'}
-                            </Typography>
-                            <Button variant="contained" startIcon={<CheckCircleIcon/>} onClick={handleContinueMission}>
+                        <Stack direction="row" alignItems={'center'} justifyContent={'space-between'}>
+                            <Stack direction="row" alignItems={'center'} spacing={2}>
+                                <RocketLaunchIcon color={'primary'} /> 
+                                <Typography align='left' variant='h6'>
+                                    {rocketData?.Name || 'Rocket Not found'}
+                                </Typography>
+                            </Stack>
+                            <Button variant="contained" size={'large'} startIcon={<LaunchIcon/>} onClick={handleContinueMission}>
                                 Continue Mission
                             </Button>
                         </Stack>
