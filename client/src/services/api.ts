@@ -5,7 +5,8 @@ import {
     IDataConfig,
     IRocket,
     IComponentPopulated,
-    IComponent
+    IComponent,
+    IMission
 } from '../utils/entities';
 
 const api = axios.create({
@@ -22,13 +23,16 @@ interface IError {
 interface IApiResponse {
     data: IRocketPopulated[] | 
         IRocket |
+        IRocket[] |
         IRocketPopulated | 
         IDataConfig |
         IDataConfig[] | 
-        IComponentPopulated[] | 
         IComponentPopulated |
+        IComponentPopulated[] | 
         IComponent | 
         IComponent[] |
+        IMission |
+        IMission[] |
         IMissionPopulated[] | 
         IMissionPopulated;
     error: IError;
