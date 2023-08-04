@@ -1,16 +1,10 @@
 import { Card, CardContent, CardHeader, Grid, Stack, TextField } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
-import { IMission, IRocket } from '../../utils/entities';
+import { IMission, IMissionPopulated, IRocket, IRocketPopulated } from '../../utils/entities';
 import MUIDataTable from 'mui-datatables';
 
-interface RocketDetails extends IRocket {
-    Id?: string;
-}
 
-interface MissionDetails extends IMission {
-    Id?: string;
-}
 
 interface FormattedMissionData {
     Name: string;
@@ -38,58 +32,35 @@ interface ITableColumns {
 }
 
 interface Props {
-    rocket: RocketDetails;
+    rocket: IRocketPopulated;
 }
 
 const RocketDetailsTab: React.FC<Props> = (props: Props) => {
     const { rocket } = props;
     const [ missions, setMissions ] = useState<FormattedMissionData[]>([]);
 
-    // const getMissionIds = useCallback(async () => {
-    //     try {
-    //         const response = await axios.get(`localhost:9090/rockets/${rocket.Id}`);
-    //         const data = response.data.result;
-    //         setMissionIds(data.Missions);
-    //     } catch(error) {
-    //         console.log("error", error);
-    //     }
-    // }, [rocket.Id]);
-
     const getMissions = useCallback(async () => {
-        // getMissionIds();
-        console.log(rocket.Missions);
-        rocket.Missions.map(async (missionId: string) => {
-            console.log(missionId)
-            try {
-                const response = await axios.get<MissionResponse>(`http://127.0.0.1:9090/mission/${missionId}`);
-                const data = response.data.result;
-                const mission: FormattedMissionData = {
-                    Name: data.Name,
-                    Date: data.Date,
-                    IsTest: String(data.IsTest),
-                    Longitude: data.Coordinates.Longitude,
-                    Latitude: data.Coordinates.Latitude,
-                    LaunchAltitude: data.LaunchAltitude,
-                    Published: String(data.Published),
-                    Components: data.Components
-                } 
-                if (missions.length === 0) {
-                    missions.push(mission);
-                }
-                setMissions((prev) => [...prev, mission]);
-            } catch(error) {
-                console.log(error);
+        rocket.Missions.map(async (mission: IMission) => {
+            const m: FormattedMissionData = {
+                Name: mission.Name,
+                Date: mission.Date,
+                IsTest: String(mission.IsTest),
+                Longitude: mission.Coordinates.Longitude,
+                Latitude: mission.Coordinates.Latitude,
+                LaunchAltitude: mission.LaunchAltitude,
+                Published: String(mission.Published),
+                Components: mission.Components
+            };
+            if (missions.length === 0) {
+                missions.push(m);
             }
-            console.log(missions)
+            setMissions((prev) => [...prev, m]);
         });
-        return data;
     }, [missions, rocket.Missions]);
 
     useEffect(() => {
-        // Reset data to prevent duplicates on re-render
         setMissions([]);
         getMissions();
-        console.log("missions", missions);
     }, []);
 
     const columns: ITableColumns[] = [
@@ -156,19 +127,6 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
                 viewColumns: true,
             }
         },
-    ];
-
-    // Format data for table
-    // const data = missionData.map((row) => {
-    //     const updateRow = {
-    //         ...row,
-    //     };
-    //     return updateRow;
-    // });
-
-    //needs to be database data at some point
-    const data = [
-        ["Pickles", "Yeet",  "Oho", "ehe", "orange", "42", "beepus"],
     ];
 
     return (
