@@ -23,7 +23,7 @@ import {
 import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { parseJsonFile } from '../../utils/data-parser';
-import { IComponent, IRocket } from '../../utils/entities';
+import { IComponent, IComponentPopulated, IRocket } from '../../utils/entities';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -36,17 +36,10 @@ const MenuProps = {
 	}
 };
 
-interface ComponentDetails extends IComponent {
-	Id?: string;	
-}
-
-interface RocketDetails extends IRocket {
-	Id?: string;
-}
 
 interface ComponentModalProps {
-	component?: ComponentDetails;
-	rocket?: RocketDetails;
+	component?: IComponentPopulated;
+	rocket?: IRocket;
 	isOpen: boolean;
 	onSave: (id: string) => void;
 	onClose: () => void;
@@ -100,7 +93,7 @@ const ComponentModal = (props: ComponentModalProps) => {
 		try {
 			console.log('rocket data in attach component to rocket');
 			console.log(!!rocket ? rocket : null);
-			await axios.patch(`http://127.0.0.1:9090/rocket/${rocket?.Id}`, rocket);
+			await axios.patch(`http://127.0.0.1:9090/rocket/${rocket?._id}`, rocket);
 		} catch (error) {
 			setErrorBar({ message: 'Component Failed to attach to Rocket', show: true });
 		}
@@ -205,7 +198,7 @@ const ComponentModal = (props: ComponentModalProps) => {
 			setName(component.Name);
 			setDetails(component.Details);
 			setSourceType(component.TelemetrySource ? component.TelemetrySource : '');
-			setComponentId(component.Id ? component?.Id : '');
+			setComponentId(component._id ? component?._id : '');
 		}
 	}, [component]);
 
