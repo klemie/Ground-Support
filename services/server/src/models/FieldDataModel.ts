@@ -67,4 +67,10 @@ export const FieldDataSchema: Schema = new Schema(
     }
 );
 
+FieldDataSchema.pre('findOne', function (next) { 
+    this.populate("ParentModuleName", { options: { strictPopulate: false }});
+    this.populate("ParentFieldGroupName", { options: { strictPopulate: false }});
+    next();
+});
+
 export default mongoose.model<IFieldData>('Field', FieldDataSchema);

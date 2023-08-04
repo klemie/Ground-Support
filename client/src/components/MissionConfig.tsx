@@ -1,16 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, Dialog, TextField, Stack, DialogContent, Typography, Checkbox, FormControlLabel, InputAdornment, Tooltip, IconButton, DialogActions, Select, MenuItem, OutlinedInput, Box, Chip, FormControl, InputLabel  } from "@mui/material";
-import { IRocket, IComponent } from "../utils/entities";
-
-import axios from "axios";
-
-interface RocketDetails extends IRocket {
-    Id?: string;
-}
+import { IComponent, IRocketPopulated } from "../utils/entities";
 
 interface MissionConfigProps {
     missionId?: string;
-    rocket?: RocketDetails;
+    rocket?: IRocketPopulated;
     isOpen: boolean;
     onClose: () => void;
     onSave: () => void;
@@ -41,10 +35,8 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
     const getComponents = useCallback(async () => {
         try {
             if (rocket) {
-                rocket.Components.map( async (componentId: string) => {
-                    const response = await axios.get(`http://127.0.0.1:9090/component/${componentId}`);
-                    const data = response.data.result as IComponent;
-                    setComponents((prev) => [...prev, data.Name]);
+                rocket.Components.map( async (component: IComponent) => {
+                    setComponents((prev) => [...prev, component.Name]);
                 });
             }
         } catch (error) {

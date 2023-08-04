@@ -1,18 +1,27 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Grid, Card, Typography, Box, Tabs, Tab, Stack, Button, Icon, CardContent, Paper } from '@mui/material';
+import { Grid, Typography, Box, Tabs, Tab, Stack, Button, Paper } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
-import axios from 'axios';
 
-import '../styles/rocketSelection.css';
-import { IRocket } from '../utils/entities';
+// Icons
 import AddIcon from '@mui/icons-material/Add';
-import MissionConfig from '../components/MissionConfig';
-import RocketDetailsTab from './tabs/rocket-details-tab';
-import RocketMissionsTab from './tabs/rocket-missions-tab';
 import EditIcon from '@mui/icons-material/Edit';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+
+
+//Tabs
+import ComponentsTab from './tabs/components-tab';
+import RocketDetailsTab from './tabs/rocket-details-tab';
+import RocketMissionsTab from './tabs/rocket-missions-tab';
+
+// Popups
+import ComponentModal from '../components/modals/ComponentModal';
 import RocketProfilePopup from '../components/RocketProfilePopup';
+import MissionConfig from '../components/MissionConfig';
+
+// Utils
+import api from '../services/api';
 import _ from 'lodash';
+import { IRocketPopulated } from '../utils/entities';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -20,13 +29,9 @@ interface TabPanelProps {
     value: number;
 }
 
-interface IRocketDetails {
-	result: IRocket;
-}
-
 function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
-  
+
     return (
         <div
             role="tabpanel"
@@ -36,7 +41,7 @@ function TabPanel(props: TabPanelProps) {
             {...other}
         >
         {value === index && (
-            <Box sx={{ p: 3 }}>
+            <Box sx={{ paddingTop: 3 }}>
                 <Typography>{children}</Typography>
             </Box>
         )}
@@ -61,79 +66,76 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 		{ name: 'Rocket Details', path: '/', active: true }
 	];
 
-
-
     //value is for tab things
     const [value, setValue] = useState<number>(0);
+    const [rocketId, setRocketId] = useState<string>(props.rocketID);
 
+    // Popup state
+	const [componentModalOpen, setComponentModalOpen] = useState<boolean>(false);
     const [isRocketPopUpOpen, setIsRocketPopUpOpen] = useState<boolean>(false);
+    const [isMissionConfigOpen, setIsMissionConfigOpen] = useState(false);
 
-    enum MotorType {
-        solid = "Solid",
-        liquid = "Liquid",
-        hybrid = "Hybrid"
-    };
-
-    const [rocketData, setRocketData] = useState<IRocket>({
-        Name:"", 
-        Mass:0, 
-        Motor:"",
-        Height:0, 
-        Class: "", 
-        Missions:[], 
-        Components:[], 
-        MotorType:MotorType.solid
-    });
+    const [rocketData, setRocketData] = useState<IRocketPopulated>({} as IRocketPopulated);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
 
-    const handleClose = () => {
+    const handleRocketPopupClose = () => {
         setIsRocketPopUpOpen(false);
     };
 
-    const handleSave = () => {
+    const handleRocketPopupSave = () => {
+        refresh();
+        handleRocketPopupClose();
+    }
+
+    const refresh = () => {
         _.delay(getRocket, 500);
-        handleClose();
     }
 
     const getRocket = useCallback(async () => {
-        const response = await axios.get<IRocketDetails>(`http://127.0.0.1:9090/rocket/${props.rocketID}`);
-            const rocket = response.data.result;
-            
-            const data: IRocket = {
-                Name: rocket.Name,
-                Missions: rocket.Missions,
-                Components: rocket.Components,
-                Mass: rocket.Mass,
-                Height: rocket.Height,
-                Class: rocket.Class,
-                MotorType: rocket.MotorType,
-                Motor: rocket.Motor
-            }
-            setRocketData(data);
-    }, [props.rocketID]);
+        console.log(rocketId);
+        const response = await api.getRocket(rocketId);
+        const rocket = response.data as IRocketPopulated;
+        console.log(response);
+        setRocketData({
+            _id: rocketId,
+            Name: rocket.Name,
+            Missions: rocket.Missions,
+            Components: rocket.Components,
+            Mass: rocket.Mass,
+            Height: rocket.Height,
+            Class: rocket.Class,
+            MotorType: rocket.MotorType,
+            Motor: rocket.Motor
+        })
+    }, [rocketId]);
+
 
     useEffect(() => {
 		getRocket();
-	}, [getRocket]);
+        console.log(rocketData);
+	}, []);
 
-    const [isMissionConfigOpen, setIsMissionConfigOpen] = useState(false);
+    useCallback(() => {
+        console.log(rocketData);
+    }, [rocketData]);
+
 	return (
-		<div style={{ width: '100vw', height: '99vh' }}>
-			<Grid
-				container
+		<Box sx={{ width: '100vw', height: '100vh' }}>
+			<Stack
+                height={'100%'}
+                padding={3}
 				direction="column"
-				paddingX="2rem"
-				paddingY="2rem"
 				gap={3}
-				sx={{ height: '100%', width: '100%' }}
+                overflow={'none'}
 			>
 				{/* Page Header */}
-				<Grid item>
+				<Grid item >
 					<Header breadCrumbs={breadCrumbs} />
 				</Grid>
+                {/* Rocket Title */}
                 <Grid item>
 					<Paper elevation={2} sx={{ padding: 2 }}>
                         <Stack direction="row" spacing={2} alignItems={'center'}>
@@ -144,15 +146,21 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                         </Stack>
                     </Paper>
 				</Grid>
-                    <Box sx={{ width: '100%' }}>
-                        <Stack spacing={3} direction={"row"}>
-                            <Paper sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <Grid item overflow={'scroll'}>
+                    <Box sx={{ padding: 0.5 }}>
+                        <Stack direction="row" spacing={3} justifyContent="flex-start">
+                            <Paper sx={{ borderBottom: 1, borderColor: 'divider' }} >
                                 <Tabs value={value} onChange={handleChange}>
                                     <Tab label="Details" />
-                                    <Tab label="Components"  />
+                                    <Tab label="Components" />
                                     <Tab label="Missions" />
                                 </Tabs>
                             </Paper>
+                             {value===1 && (
+                                <Button variant="contained" startIcon={<AddIcon/>} onClick={()=>setComponentModalOpen(true)}>
+                                    Component
+                                </Button>
+                            )}
                             {value===0 && (
                                 <Button variant="contained" startIcon={<EditIcon/>} onClick={()=>setIsRocketPopUpOpen(true)}>
                                     Edit
@@ -165,20 +173,27 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                             )}
                         </Stack>
                         <TabPanel value={value} index={0}>
-                             <RocketDetailsTab rocketDetails={rocketData}></RocketDetailsTab>
+                            <RocketDetailsTab 
+                                rocketDetails={rocketData}
+                            />
                         </TabPanel>
                         <TabPanel value={value} index={1}>
-                            Components
+                            <ComponentsTab 
+                                rocket={rocketData} 
+                                refresh={() => refresh} 
+                                componentIds={rocketData.Components ? rocketData.Components.map((c) => c._id as string) : []} 
+                            />
                         </TabPanel>
                         <TabPanel value={value} index={2}>
                             <RocketMissionsTab rocket={rocketData} />
                         </TabPanel>
                     </Box>
+                </Grid>
                 <Grid item>
                     <RocketProfilePopup 
                         isOpen={isRocketPopUpOpen} 
-                        onSave={handleSave} 
-                        onClose={handleClose} 
+                        onSave={handleRocketPopupSave} 
+                        onClose={handleRocketPopupClose} 
                         rocketProfileId={props.rocketID}
                     />
                     <MissionConfig
@@ -189,9 +204,25 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                         }}
                         onClose={() => setIsMissionConfigOpen(false)}
                     />
+                    <ComponentModal 
+                        rocket={{
+                            _id: rocketId,
+                            Name: rocketData.Name,
+                            Missions: rocketData.Missions ? rocketData.Missions.map((m) => m._id as string) : [],
+                            Components: rocketData.Components ? rocketData.Components.map((c) => c._id as string) : [],
+                            Mass: rocketData.Mass,
+                            Height: rocketData.Height,
+                            Class: rocketData.Class,
+                            MotorType: rocketData.MotorType,
+                            Motor: rocketData.Motor
+                        }} 
+                        isOpen={componentModalOpen} 
+                        onSave={()=> refresh} 
+                        onClose={() => setComponentModalOpen(false)}
+                    />
                 </Grid>
-			</Grid>
-			<div>
+			</Stack>
+			<div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
 				{colors.map((color) => {
 					return (
 						<div
@@ -205,7 +236,6 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 					);
 				})}
 			</div>
-            
-		</div>
+		</Box>
 	);
 }
