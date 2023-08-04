@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Frequency from '../components/Frequency';
 import { Grid, Card, Stack, TextField, Typography, CardContent } from '@mui/material';
 import SatelliteCount from '../components/SatelliteCount';
-import getTelemetryData from '../utils/fetchPacket';
 import Header, { Breadcrumb } from '../components/Header';
-import goat from '../static/images/goat.jpg';
 import TelemetryLog from '../components/TelemetryLog';
 
 export default function TelemetryView() {
@@ -40,16 +38,15 @@ export default function TelemetryView() {
 	useEffect(() => {
 		if (frequencySet) {
 			const interval = setInterval(async () => {
-				const data = await getTelemetryData();
-				console.log(data.header);
-				const { altitude, latitude, longitude, satellites, timeStamp } = data.header;
-				console.log(altitude, latitude, longitude, satellites, timeStamp);
-				setLongitude(longitude);
-				setLatitude(latitude);
-				setAltitude(altitude);
-				setSatelliteCount(satellites);
-				setTimeStamp(timeStamp);
-				setTelemetryData(data);
+				// console.log(data.header);
+				// const { altitude, latitude, longitude, satellites, timeStamp } = data.header;
+				// console.log(altitude, latitude, longitude, satellites, timeStamp);
+				// setLongitude(longitude);
+				// setLatitude(latitude);
+				// setAltitude(altitude);
+				// setSatelliteCount(satellites);
+				// setTimeStamp(timeStamp);
+				// setTelemetryData(data);
 			}, 1000);
 			return () => clearInterval(interval);
 		}

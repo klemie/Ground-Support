@@ -1,13 +1,12 @@
 import React from 'react';
 import ComponentCard from '../../components/ComponentCard';
 import { Alert, Box, Grid } from '@mui/material';
-import { IRocket } from '../../utils/entities';
-interface RocketDetails extends IRocket {
-	Id?: string;
-}
+import { IRocketPopulated } from '../../utils/entities';
+
+
 interface ComponentProps {
 	componentIds: string[];
-	rocket: RocketDetails;
+	rocket: IRocketPopulated;
 	refresh: () => void;
 }
 

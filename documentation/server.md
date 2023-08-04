@@ -283,11 +283,12 @@ mission calling the configured mission .
 <img src="./assets/Data Constructor.png" width="500"/>
 </p>
 
-## Telemetry
+# Telemetry
 
 The Telemetry Service is an iteration of UVic Rocketry's [groundstation](https://github.com/UVicRocketry/groundstation)
-proof of concept. Based on a deep dive into the old code we have determined ...
+proof of concept. 
 
+Both of the telemetry systems start by using the RTL-provided command line utility to take the incoming wave data from the RTL-SDRs and output the incoming signal. For the 434 MHz primary system we are using a nearly identical program as before using direwolf to take the incoming wave data and translate that into the APRS data. The team’s ground station backend then takes the output from Direwolf and makes the data available to the front end. For the 915 MHz signal, the software similarly uses a different piece of software written using GNU Radio to take the wave signal and convert and decode the FSK. The binary data is given to a Python program that decodes the binary data into something that the back and front ends can use.
 ### How to Run Telemetry service for testing:
 
 1. Have a Windows PC.
@@ -310,14 +311,20 @@ proof of concept. Based on a deep dive into the old code we have determined ...
     > 1 -r 24000 -b 16 - | python telemetry.py
 11. Smile! "No way it's working perfectly!"
 
-### Packets
+### Receiving
 
-#### Packet API format
+To be filled in by the person who takes on
 
 ### Decoding
 
 To be filled in by the person who takes on
 
-### Receiving
+# Gateway
 
-To be filled in by the person who takes on
+## Real Time Operation
+A key feature of the application is showing real time data during flight. In order to do this we use sockets. A socket is an interface that allows two processes to communicate with each other over a network. This protocol follows a client-server model, where one program acts as the client that initiates the communication, and the other program acts as the server that listens for incoming connections and responds to client requests. In this case the client receives telemetry packets after they have been decoded. 
+
+<p align="center">
+<img src="./assets/socket.png" width="500"/>
+</p>
+
