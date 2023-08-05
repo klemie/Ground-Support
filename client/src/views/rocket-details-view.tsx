@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Grid, Typography, Box, Tabs, Tab, Stack, Button, Paper } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
-import { IRocketPopulated } from '../utils/entities';
-import _ from 'lodash';
 
 // Icons
 import AddIcon from '@mui/icons-material/Add';
@@ -13,11 +11,17 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 //Tabs
 import ComponentsTab from './tabs/components-tab';
 import RocketDetailsTab from './tabs/rocket-details-tab';
+import RocketMissionsTab from './tabs/rocket-missions-tab';
 
 // Popups
 import ComponentModal from '../components/modals/ComponentModal';
 import RocketProfilePopup from '../components/RocketProfilePopup';
+import MissionConfig from '../components/MissionConfig';
+
+// Utils
 import api from '../services/api';
+import _ from 'lodash';
+import { IRocketPopulated } from '../utils/entities';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -48,9 +52,11 @@ function TabPanel(props: TabPanelProps) {
 interface RocketDetailsProps {
     rocketID: string;
     openActiveMission: (view: string) => void;
+    setActiveView: (key: string) => void;
 }
 
 export default function RocketDetailsView(props: RocketDetailsProps) {
+    const { openActiveMission, setActiveView } = props;
 	const colors: string[] = [
 		'rgba(255, 197, 87, 1)',
 		'rgba(214, 91, 79, 1)',
@@ -66,17 +72,27 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
     //value is for tab things
     const [value, setValue] = useState<number>(0);
     const [rocketId, setRocketId] = useState<string>(props.rocketID);
-    // component modal
+
+    // Popup state
 	const [componentModalOpen, setComponentModalOpen] = useState<boolean>(false);
+    const [isRocketPopUpOpen, setIsRocketPopUpOpen] = useState<boolean>(false);
+    const [isMissionConfigOpen, setIsMissionConfigOpen] = useState(false);
 
     const [rocketData, setRocketData] = useState<IRocketPopulated>({} as IRocketPopulated);
+    const [selectedMission, setSelectedMission] = useState<string>('');
+    
+    const handleSelectedMission = (mission: string) => {
+        setSelectedMission(mission);
+        openActiveMission(mission);
+        setActiveView('START_UP')
+    };
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
 
     const handleRocketPopupClose = () => {
-        setIsOpen(false);
+        setIsRocketPopUpOpen(false);
     };
 
     const handleContinueMission = () => {
@@ -114,14 +130,8 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 
     useEffect(() => {
 		getRocket();
-        console.log(rocketData);
 	}, []);
 
-    useCallback(() => {
-        console.log(rocketData);
-    }, [rocketData]);
-
-    const [isOpen, setIsOpen] = useState(false);
 	return (
 		<Box sx={{ width: '100vw', height: '100vh' }}>
 			<Stack
@@ -157,7 +167,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                             <Paper sx={{ borderBottom: 1, borderColor: 'divider' }} >
                                 <Tabs value={value} onChange={handleChange}>
                                     <Tab label="Details" />
-                                    <Tab label="Components"  />
+                                    <Tab label="Components" />
                                     <Tab label="Missions" />
                                 </Tabs>
                             </Paper>
@@ -167,12 +177,16 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                                 </Button>
                             )}
                             {value===0 && (
-                                <Button variant="contained" startIcon={<EditIcon/>} onClick={()=>setIsOpen(true)}>
+                                <Button variant="contained" startIcon={<EditIcon/>} onClick={()=>setIsRocketPopUpOpen(true)}>
                                     Edit
                                 </Button>
                             )}
+                            {value===2 && (
+                                <Button variant="contained" startIcon={<AddIcon/>} onClick={()=>setIsMissionConfigOpen(true)}>
+                                    Mission
+                                </Button>
+                            )}
                         </Stack>
-                        
                         <TabPanel value={value} index={0}>
                             <RocketDetailsTab 
                                 rocketDetails={rocketData}
@@ -186,16 +200,27 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                             />
                         </TabPanel>
                         <TabPanel value={value} index={2}>
-                            Missions
+                            <RocketMissionsTab 
+                                onMissionClick={handleSelectedMission} 
+                                rocket={rocketData} 
+                            />
                         </TabPanel>
                     </Box>
                 </Grid>
                 <Grid item>
                     <RocketProfilePopup 
-                        isOpen={isOpen} 
+                        isOpen={isRocketPopUpOpen} 
                         onSave={handleRocketPopupSave} 
                         onClose={handleRocketPopupClose} 
                         rocketProfileId={props.rocketID}
+                    />
+                    <MissionConfig
+                        isOpen={isMissionConfigOpen}
+                        rocket={rocketData}
+                        onSave={() => { 
+                            setIsMissionConfigOpen(false);
+                        }}
+                        onClose={() => setIsMissionConfigOpen(false)}
                     />
                     <ComponentModal 
                         rocket={{
