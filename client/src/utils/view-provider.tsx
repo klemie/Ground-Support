@@ -17,8 +17,6 @@ const COMPONENT_DOCUMENT_KEY = 'COMPONENT_DOCUMENT';
 
 // Rocket Details
 const ROCKET_DETAILS_KEY = 'ROCKET_DETAILS';
-// const COMPONENT_DETAILS_KEY = 'COMPONENT_DETAILS';
-// const MISSION_DETAILS_KEY = 'MISSION_DETAILS';
 const DATA_CONFIG_KEY = 'DATA_CONFIG';
 
 // Active Flight
@@ -34,10 +32,15 @@ interface ViewProviderProps {
 export default function ViewProvider(props: ViewProviderProps) {
 	const [currentViewKey, setCurrentViewKey] = useState<string>(ROCKET_SELECT_KEY);
     const [currentRocketID, setCurrentRocketID] = useState<string>("");
+	const [currentMissionId, setCurrentMissionId] = useState<string>("");
 
     const updateView = (key: string) => {
         setCurrentViewKey(key);
     }
+
+	const updateMissionId = (id: string) => {
+		setCurrentMissionId(id);
+	}
 
     const updateRocketID = (id: string) => {
         setCurrentRocketID(id);
@@ -81,7 +84,7 @@ export default function ViewProvider(props: ViewProviderProps) {
             case COMPONENT_DOCUMENT_KEY:
                 return <ComponentDocs />;
 			case ROCKET_DETAILS_KEY:
-				return <RocketDetailsView rocketID={currentRocketID}/>;
+				return <RocketDetailsView setActiveView={updateView} onActiveMission={updateMissionId} rocketID={currentRocketID}/>;
             case TELEMETRY_KEY:
                 return <TelemetryView />;
             case FLIGHT_KEY:

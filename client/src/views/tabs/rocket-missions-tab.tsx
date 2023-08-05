@@ -1,10 +1,7 @@
-import { Card, CardContent, CardHeader, Grid, Stack, TextField } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { IMission, IMissionPopulated, IRocket, IRocketPopulated } from '../../utils/entities';
-import MUIDataTable from 'mui-datatables';
-
-
+import MUIDataTable, { MUIDataTableOptions } from 'mui-datatables';
 
 interface FormattedMissionData {
     Name: string;
@@ -15,10 +12,6 @@ interface FormattedMissionData {
     LaunchAltitude: Number;
     Published: string;
     Components: string[];
-}
-
-interface MissionResponse {
-    result: IMission;
 }
 
 interface ITableColumns {
@@ -33,10 +26,11 @@ interface ITableColumns {
 
 interface Props {
     rocket: IRocketPopulated;
+    onMissionClick: (mission: any) => void;
 }
 
 const RocketDetailsTab: React.FC<Props> = (props: Props) => {
-    const { rocket } = props;
+    const { rocket, onMissionClick } = props;
     const [ missions, setMissions ] = useState<FormattedMissionData[]>([]);
 
     const getMissions = useCallback(async () => {
@@ -62,6 +56,14 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
         setMissions([]);
         getMissions();
     }, []);
+
+    const options: MUIDataTableOptions = {
+        filter: true,
+        responsive: 'standard',
+        onRowClick: (rowData: any[], rowMeta: { dataIndex: number, rowIndex: number }) => {
+            onMissionClick(missions[rowMeta.dataIndex]);
+        }
+    };
 
     const columns: ITableColumns[] = [
         {
@@ -133,10 +135,7 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
         <>
             <MUIDataTable
                 title={"Missions"}
-                options={{
-                    filter: true,
-                    filterType: 'checkbox',
-                }}
+                options={options}
                 columns={columns}
                 data={missions}
             />

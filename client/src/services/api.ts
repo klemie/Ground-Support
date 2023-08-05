@@ -280,10 +280,16 @@ async function getMission(id: string): Promise<IApiResponse> {
  * @param payload The mission to create type IMissionPopulation
  * @returns The created mission
  */
-async function createMission(payload: IMissionPopulated): Promise<IApiResponse> {
+async function createMission(payload: IMission, rocket: IRocketPopulated): Promise<IApiResponse[]> {
     let response: AxiosResponse;
     let data: IApiResponse = {
-        data: {} as IMissionPopulated,
+        data: {} as IMission,
+        error: {} as IError
+    } as IApiResponse;
+
+    let rocketResponse: AxiosResponse;
+    let rocketData: IApiResponse = {
+        data: {} as IMission,
         error: {} as IError
     } as IApiResponse;
 
@@ -292,16 +298,46 @@ async function createMission(payload: IMissionPopulated): Promise<IApiResponse> 
         data = {
             data: response.data.result 
                 ? response.data.result 
-                : response.data.results as IMissionPopulated,
+                : response.data.results as IMission,
             error: handleError(response)
         };
+        const rId = rocket?._id ? rocket?._id : '';
+        const missionId = response.data._id;
+        console.log('missionId', missionId);
+        // attach to rocket
+        if (rId !== '') {
+            const rocketPayload: IRocket = {
+                Name: rocket.Name,
+                Mass: rocket.Mass,
+                Height: rocket.Height,
+                Class: rocket.Class,
+                Motor: rocket.Motor,
+                MotorType: rocket.MotorType,
+                Missions: rocket.Missions.map(m => m._id as string),
+                Components: rocket.Components.map(c => c._id as string)
+            };
+            rocketPayload.Missions.push(missionId);
+            try {
+                rocketResponse = await api.patch(`/rocket/${rId}`, rocketPayload);
+                rocketData = {
+                    data: rocketResponse.data.result 
+                        ? rocketResponse.data.result 
+                        : rocketResponse.data.results as IRocket,
+                    error: handleError(rocketResponse)
+                };
+            } catch (e) {
+                const err = e as AxiosError;
+                rocketData.error.error = true;
+                rocketData.error.message = `Error attaching mission to rocket. Full error:\n${err.message}`;
+            }
+        }
     } catch(e) {
         const err = e as AxiosError;
         data.error.error = true;
         data.error.message = `Error creating new mission. Full error:\n${err.message}`;
     }
 
-    return data;
+    return [data, rocketData];
 }
 
 /**
@@ -309,10 +345,10 @@ async function createMission(payload: IMissionPopulated): Promise<IApiResponse> 
  * @param payload The mission to update type IMissionPopulation
  * @returns The updated mission
  */
-async function updateMission(id: string, payload: IMissionPopulated): Promise<IApiResponse> {
+async function updateMission(id: string, payload: IMission): Promise<IApiResponse> {
     let response: AxiosResponse;
     let data: IApiResponse = {
-        data: {} as IMissionPopulated,
+        data: {} as IMission,
         error: {} as IError
     } as IApiResponse;
     
@@ -321,7 +357,7 @@ async function updateMission(id: string, payload: IMissionPopulated): Promise<IA
         data = {
             data: response.data.result 
                 ? response.data.result 
-                : response.data.results as IMissionPopulated,
+                : response.data.results as IMission,
             error: handleError(response)
         };
     } catch(e) {
@@ -340,7 +376,7 @@ async function updateMission(id: string, payload: IMissionPopulated): Promise<IA
 async function deleteMission(id: string): Promise<IApiResponse> {
     let response: AxiosResponse;
     let data: IApiResponse = {
-        data: {} as IMissionPopulated,
+        data: {} as IMission,
         error: {} as IError
     } as IApiResponse;
 
@@ -349,7 +385,7 @@ async function deleteMission(id: string): Promise<IApiResponse> {
         data = {
             data: response.data.result 
                 ? response.data.result 
-                : response.data.results as IMissionPopulated,
+                : response.data.results as IMission,
             error: handleError(response)
         };
     } catch(e) {

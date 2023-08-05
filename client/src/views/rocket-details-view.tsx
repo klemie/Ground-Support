@@ -51,9 +51,12 @@ function TabPanel(props: TabPanelProps) {
 
 interface RocketDetailsProps {
     rocketID: string;
+    onActiveMission: (mission: string) => void;
+    setActiveView: (key: string) => void;
 }
 
 export default function RocketDetailsView(props: RocketDetailsProps) {
+    const { onActiveMission, setActiveView } = props;
 	const colors: string[] = [
 		'rgba(255, 197, 87, 1)',
 		'rgba(214, 91, 79, 1)',
@@ -76,6 +79,13 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
     const [isMissionConfigOpen, setIsMissionConfigOpen] = useState(false);
 
     const [rocketData, setRocketData] = useState<IRocketPopulated>({} as IRocketPopulated);
+    const [selectedMission, setSelectedMission] = useState<string>('');
+    
+    const handleSelectedMission = (mission: string) => {
+        setSelectedMission(mission);
+        onActiveMission(mission);
+        setActiveView('START_UP')
+    };
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -115,12 +125,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 
     useEffect(() => {
 		getRocket();
-        console.log(rocketData);
 	}, []);
-
-    useCallback(() => {
-        console.log(rocketData);
-    }, [rocketData]);
 
 	return (
 		<Box sx={{ width: '100vw', height: '100vh' }}>
@@ -185,7 +190,10 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                             />
                         </TabPanel>
                         <TabPanel value={value} index={2}>
-                            <RocketMissionsTab rocket={rocketData} />
+                            <RocketMissionsTab 
+                                onMissionClick={handleSelectedMission} 
+                                rocket={rocketData} 
+                            />
                         </TabPanel>
                     </Box>
                 </Grid>

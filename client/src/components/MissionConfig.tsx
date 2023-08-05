@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, Dialog, TextField, Stack, DialogContent, Typography, Checkbox, FormControlLabel, InputAdornment, Tooltip, IconButton, DialogActions, Select, MenuItem, OutlinedInput, Box, Chip, FormControl, InputLabel  } from "@mui/material";
-import { IComponent, IRocketPopulated } from "../utils/entities";
+import { IComponent, IMission, IRocket, IRocketPopulated } from "../utils/entities";
+import api from "../services/api";
+import { MUIDataTableOptions } from "mui-datatables";
 
 interface MissionConfigProps {
     missionId?: string;
-    rocket?: IRocketPopulated;
+    rocket: IRocketPopulated;
     isOpen: boolean;
     onClose: () => void;
     onSave: () => void;
@@ -23,12 +25,12 @@ const MenuProps = {
 };
 
 const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) => {
-    const { rocket } = props;
+    const { rocket, missionId, isOpen, onClose, onSave } = props;
     const [missionName, setMissionName] = useState<string>();
-    const [latitude, setLatitude] = useState<string>();
-    const [longitude, setLongitude] = useState<string>();
+    const [latitude, setLatitude] = useState<number>();
+    const [longitude, setLongitude] = useState<number>();
     const [launchDate, setLaunchDate] = useState<Date>();
-    const [altitude, setAltitude] = useState<string>();
+    const [altitude, setAltitude] = useState<number>();
     const [selectedComponents, setSelectedComponents] = useState<string[]>([]);
     const [components, setComponents] = useState<string[]>([]);
 
@@ -44,10 +46,29 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
         } 
     }, []);
 
+    const handleSave = useCallback(async() => {
+        const payload: IMission = {
+            Name: missionName,
+            Date: launchDate,
+            IsTest: false,
+            Coordinates: {
+                Longitude: longitude,
+                Latitude: latitude
+            },
+            LaunchAltitude: altitude,
+            Published: false,
+            Components: selectedComponents
+        } as IMission;
+        if (missionId) {
+            await api.updateMission(missionId, payload);
+        } else {
+            await api.createMission(payload, rocket);
+        }
+        // const [missionData, rocketData] = response;
+        onClose();
+    }, []);
+
     const handleChange = (e: any, setState: Function) => {
-		// if (!editMode) {
-		// 	setEditMode(true);
-		// }
 		setState(e.target.value as string);
 	};
 
@@ -76,7 +97,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                         <Tooltip title="Data Collected is for testing purposes">
                             <FormControlLabel 
                                 value="Test" 
-                                control={<Checkbox color="error" defaultChecked />} 
+                                control={<Checkbox defaultChecked />} 
                                 label="Test"
                                 labelPlacement="start"
                             />
@@ -175,8 +196,8 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                 </Stack>
             </DialogContent>
             <DialogActions>
-                <Button color={"error"} onClick={props.onClose}>Cancel</Button>
-                <Button onClick={props.onSave}>Save</Button>
+                <Button onClick={props.onClose}>Cancel</Button>
+                <Button onClick={handleSave}>Save</Button>
             </DialogActions>
         </Dialog>
     );
