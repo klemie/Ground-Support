@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
-import { IMission, IMissionPopulated, IRocket, IRocketPopulated } from '../../utils/entities';
+import { IMission, IRocketPopulated } from '../../utils/entities';
 import MUIDataTable, { MUIDataTableOptions } from 'mui-datatables';
 
 interface FormattedMissionData {

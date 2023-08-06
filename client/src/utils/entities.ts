@@ -30,6 +30,7 @@ interface ICoordinates {
 export interface IMission {
     _id?: string;
     Name: string;
+    IsActive: boolean;
     IsTest: boolean
     Date: Date;
     Coordinates: ICoordinates;

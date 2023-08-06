@@ -80,6 +80,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 
     const [rocketData, setRocketData] = useState<IRocketPopulated>({} as IRocketPopulated);
     const [selectedMission, setSelectedMission] = useState<string>('');
+    const [isMissionActive, setIsMissionActive] = useState<boolean>(false);
     
     const handleSelectedMission = (mission: string) => {
         setSelectedMission(mission);
@@ -96,8 +97,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
     };
 
     const handleContinueMission = () => {
-        console.log("Continue Mission");
-        props.openActiveMission("START_UP");
+        openActiveMission("START_UP");
     };
 
     const handleRocketPopupSave = () => {
@@ -155,7 +155,13 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                                     {rocketData?.Name || 'Rocket Not found'}
                                 </Typography>
                             </Stack>
-                            <Button variant="contained" size={'large'} startIcon={<LaunchIcon/>} onClick={handleContinueMission}>
+                            <Button 
+                                variant="contained" 
+                                size={'large'} 
+                                startIcon={<LaunchIcon/>} 
+                                onClick={handleContinueMission} 
+                                disabled={!isMissionActive}
+                            >
                                 Continue Mission
                             </Button>
                         </Stack>

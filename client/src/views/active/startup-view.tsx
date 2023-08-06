@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
 // Components UI
-import Header, { Breadcrumb } from '../components/Header';
-import TelemetryLog from '../components/TelemetryLog';
+import Header, { Breadcrumb } from '../../components/Header';
+import TelemetryLog from '../../components/TelemetryLog';
 import { 
 	Grid, 
 	Paper, 
@@ -18,9 +18,9 @@ import {
 } from '@mui/material';
 
 
-import { IDataConfig, IMission, IModule, IRocketPopulated } from '../utils/entities';
+import { IDataConfig, IMission, IModule, IRocketPopulated } from '../../utils/entities';
 import axios from 'axios';
-import Module from '../components/Module';
+import Module from '../../components/Module';
 
 interface StartUpViewProps {
 	rocket?: IRocketPopulated;

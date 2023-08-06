@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Card, CardActions, CardContent, CardHeader, Chip, IconButton, Stack, Typography } from '@mui/material';
-import { IComponent, IComponentPopulated, IRocket, IRocketPopulated } from '../utils/entities';
+import { IComponentPopulated, IRocket, IRocketPopulated } from '../utils/entities';
 import EditIcon from '@mui/icons-material/Edit';
 import ComponentModal from './modals/ComponentModal';
 import { Delete } from '@mui/icons-material';
@@ -80,7 +80,7 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
                 </CardContent>
                 <CardActions>
                     <Stack direction={'row'} alignContent={'center'} justifyContent="space-between" width={'100%'}>
-                        <Button onClick={handleDataConfig}>
+                        <Button onClick={handleDataConfig} disabled={!!component.DataConfig}>
                             Data Config
                         </Button>
                         <ButtonGroup variant="outlined"  >
