@@ -1,5 +1,4 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { Button, Grid, Step, StepButton, Stepper } from '@mui/material';
 
 import '../root/App.css'
 // Views
@@ -8,6 +7,7 @@ import ComponentDocs from '../views/component-docs-view';
 import RocketDetailsView from '../views/rocket-details-view';
 import DataConfigView from '../views/data-config-view';
 import ActiveMissionView from '../views/active-mission';
+import { ActiveMissionProvider, useActiveMission } from './ActiveMissionContext';
 
 const ROCKET_SELECT_KEY = 'ROCKET_SELECT';
 const COMPONENT_DOCUMENT_KEY = 'COMPONENT_DOCUMENT';
@@ -26,26 +26,43 @@ interface ViewProviderProps {
 
 export default function ViewProvider(props: ViewProviderProps) {
 	const [currentViewKey, setCurrentViewKey] = useState<string>(ROCKET_SELECT_KEY);
-    const [currentRocketID, setCurrentRocketID] = useState<string>("");
+    const [currentRocketId, setCurrentRocketId] = useState<string>("");
 	const [currentMissionId, setCurrentMissionId] = useState<string>("");
+	const [currentDataConfigId, setCurrentDataConfigId] = useState<string>("");
+
+	const activeMissionContext = useActiveMission()
 
     const updateView = (key: string) => {
         setCurrentViewKey(key);
-    }
+    };
 
 	const updateMissionId = (id: string) => {
 		setCurrentMissionId(id);
-	}
+	};
 
     const updateRocketID = (id: string) => {
-        setCurrentRocketID(id);
-    }
+        setCurrentRocketId(id);
+    };
 
-	const handleBackToRocketSelect = () => {
+	const handleToDataConfig = (id: string) => {
+		setCurrentDataConfigId(id);
+		viewDispatch({ type: DATA_CONFIG_KEY });
+	};
+
+	const handleToComponentDocs = () => {
+		viewDispatch({ type: COMPONENT_DOCUMENT_KEY });
+	};
+
+	const handleToActiveFlight = () => {
+		viewDispatch({ type: ACTIVE_FLIGHT_KEY });
+	};
+
+	const handleToRocketSelect = () => {
 		viewDispatch({ type: ROCKET_SELECT_KEY });
 	};
 
-	const handleBackToRocketDetails = () => {
+	const handleToRocketDetails = (): any => {
+		console.log("handleToRocketDetails");
 		viewDispatch({ type: ROCKET_DETAILS_KEY });
 	};
 
@@ -54,7 +71,7 @@ export default function ViewProvider(props: ViewProviderProps) {
 			case ROCKET_SELECT_KEY:
 				return {
 					view: ROCKET_SELECT_KEY,
-					currentView: <RocketSelectionView setCurrentView={updateView} setRocketID={updateRocketID}/>
+					currentView: <RocketSelectionView setCurrentView={handleToRocketDetails} setRocketID={updateRocketID}/>
 				}
 			case COMPONENT_DOCUMENT_KEY:
 				return {
@@ -64,17 +81,22 @@ export default function ViewProvider(props: ViewProviderProps) {
 			case ROCKET_DETAILS_KEY:
 				return {
 					view: ROCKET_DETAILS_KEY,
-					currentView: <RocketDetailsView setActiveView={updateView} openActiveMission={updateMissionId} rocketID={currentRocketID}/>
+					currentView: <RocketDetailsView 
+						toDataConfig={handleToDataConfig} 
+						setActiveView={handleToActiveFlight} 
+						openActiveMission={updateMissionId} 
+						rocketID={currentRocketId}
+					/>
 				}
 			case DATA_CONFIG_KEY:
 				return {
 					view: DATA_CONFIG_KEY,
-					currentView: <DataConfigView DataConfigID='648d526bd3eb5ecf4a4cb14b'/>
+					currentView: <DataConfigView onClickBack={handleToRocketDetails} DataConfigID={currentDataConfigId}/>
 				}
 			case ACTIVE_FLIGHT_KEY:
 				return {
 					view: ACTIVE_FLIGHT_KEY,
-					currentView: <ActiveMissionView rocketId={currentRocketID} missionId={currentMissionId} backToRocketSelection={handleBackToRocketSelect}/>
+					currentView: <ActiveMissionView rocketId={currentRocketId} missionId={currentMissionId} backToRocketSelection={handleToRocketDetails}/>
 				}
 			default:
 				throw Error(`Unknown action type: ${action.type}`);
@@ -83,7 +105,7 @@ export default function ViewProvider(props: ViewProviderProps) {
 
 	const [viewState, viewDispatch] = useReducer(viewReducer, {
 		view: ROCKET_SELECT_KEY,
-		currentView: <RocketSelectionView setCurrentView={updateView} setRocketID={updateRocketID}/>
+		currentView: <RocketSelectionView setCurrentView={handleToRocketDetails} setRocketID={updateRocketID}/>
 	});
 
     useEffect(() => {
@@ -92,14 +114,9 @@ export default function ViewProvider(props: ViewProviderProps) {
 
     return (
 		<div className='app'>
-			{viewState.currentView}
-            {currentViewKey === (ACTIVE_FLIGHT_KEY)  && (
-				<ActiveMissionView 
-					backToRocketSelection={handleBackToRocketDetails}
-					rocketId={currentRocketID} 
-					missionId={currentMissionId}
-				/>
-			)}
+			<ActiveMissionProvider>
+				{viewState.currentView}
+			</ActiveMissionProvider>
         </div>
     );
 }

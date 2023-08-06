@@ -1,18 +1,21 @@
-import React, { useEffect, useState, useReducer } from "react";
+import React, { useEffect, useState, useReducer, useCallback } from "react";
 
 // Utils
-import { ActiveMissionProvider } from "../utils/ActiveMissionContext";
+import { ActiveMissionProvider, useActiveMission } from "../utils/ActiveMissionContext";
 import { IMissionPopulated, IRocketPopulated } from "../utils/entities";
+import api from "../services/api";
+
+// Icons
 import TuneIcon from '@mui/icons-material/Tune';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import api from "../services/api";
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 
 // Views
 import StartUpView from './active/startup-view';
 import FlightView from './active/flight-view';
 
 // Components UI
-import { Button, Grid, Step, StepButton, Stepper } from "@mui/material";
+import { Button, Grid, Stack, Step, StepButton, Stepper, IconButton } from "@mui/material";
 import SettingsDialog from "../components/SettingsDialog";
 
 // Active Mission Keys
@@ -35,7 +38,7 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
             case START_UP_KEY:
                 return {
                     phase: START_UP_KEY,
-                    currentView: <StartUpView />
+                    currentView: <StartUpView rocket={rocket} />
                 }
             case FLIGHT_KEY:
                 return {
@@ -56,10 +59,11 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
                 throw Error(`Unknown action type: ${action.type}`);
             }
     }
+    const [rocket, setRocket] = useState<IRocketPopulated>({} as IRocketPopulated);
 
     const [activePhaseState, activePhaseDispatch] = useReducer(phaseReducer, {
         phase: START_UP_KEY,
-        currentView: <StartUpView />
+        currentView: <StartUpView rocket={rocket}/>
     });
 
     // Stepper State
@@ -100,68 +104,77 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
 
     // Context initial State
     const [mission, setActiveMission] = useState<IMissionPopulated>({} as IMissionPopulated);
-    const [rocket, setRocket] = useState<IRocketPopulated>({} as IRocketPopulated);
+    const activeContext = useActiveMission();
 
     const getActiveMission = async (): Promise<IMissionPopulated> => {
+        console.log(missionId)
         const response = await api.getMission(missionId);
         const data = response.data as IMissionPopulated;
+        activeContext.activeMissionDispatch({ type: 'SET_MISSION', payload: data });
         setActiveMission(data);
         return data; 
     };
 
-    const getActiveRocket = async (): Promise<IRocketPopulated> => {
-        const response = await api.getRocket(rocketId);
-        const data = response.data as IRocketPopulated;
-        setRocket(data);
-        return data;
+    const handleRocketUpdate = () => {
+        // activeContext.rocketDispatch({ type: 'SET_ROCKET', payload: rocket });
+        setRocket(rocket);
     };
 
+    const getActiveRocket = useCallback(async (): Promise<IRocketPopulated> => {
+        console.log(rocketId);
+        const response = await api.getRocket(rocketId);
+        const data = response.data as IRocketPopulated;
+        handleRocketUpdate();
+        setRocket(data);
+        return data;
+    }, [rocketId]);
+
     useEffect(() => {
-        getActiveMission();
+        // getActiveMission();
         getActiveRocket();
-    }, []);
+        // activeContext.rocketDispatch({ type: 'SET_ROCKET', payload: rocket });
+        // activeContext.activeMissionDispatch({ type: 'SET_MISSION', payload: mission });
+        console.log(activeContext);
+    }, [rocketId, missionId]);
 
     return (
-        <ActiveMissionProvider>
-            <Grid container spacing={2} direction="row">
-                {/* Any views should be rendered within this grid item */}
-                <Grid item xs={10}>
-                    {activePhaseState.currentView}
-                </Grid>
+        <Grid container spacing={2} direction="row">
+            {/* Any views should be rendered within this grid item */}
+            <Grid item xs={10}>
+                {activePhaseState.currentView}
+            </Grid>
 
-                <Grid item xs={2}>
-                    <Grid
-                        paddingX="1rem"
-                        paddingY="1rem"
-                        container
-                        direction="column"
-                        justifyContent="space-between"
-                        height="100%"
-                        style={{ height: '100vh', overflow: 'auto' }}
-                    >
-                        {/* TODO: Should call a Setting pop up */}
-                        <Grid item>
-                            <SettingsDialog isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-                            <Button variant="outlined" onClick={() => handleSettingsDialog()} startIcon={<TuneIcon />}>
-                                Settings
-                            </Button>
-                        </Grid>
+            <Grid item xs={2}>
+                <Grid
+                    paddingX="1rem"
+                    paddingY="1rem"
+                    container
+                    direction="column"
+                    justifyContent="space-between"
+                    height="100%"
+                    style={{ height: '100vh', overflow: 'auto' }}
+                >
+                    {/* TODO: Should call a Setting pop up */}
+                    <Grid item justifyContent="end" alignContent={'end'}>
+                        <SettingsDialog isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+                    </Grid>
 
-                        {/* Page change stepper */}
-                        <Grid container justifyContent="center">
-                            <Stepper nonLinear activeStep={activeStep} orientation="vertical">
-                                {activeStepKeys.map((label, index) => (
-                                    <Step key={label} completed={completedStep[index]}>
-                                        <StepButton color="inherit" onClick={handleStep(index)}>
-                                            {label}
-                                        </StepButton>
-                                    </Step>
-                                ))}
-                            </Stepper>
-                        </Grid>
+                    {/* Page change stepper */}
+                    <Grid container justifyContent="center">
+                        <Stepper nonLinear activeStep={activeStep} orientation="vertical">
+                            {activeStepKeys.map((label, index) => (
+                                <Step key={label} completed={completedStep[index]}>
+                                    <StepButton color="inherit" onClick={handleStep(index)}>
+                                        {label}
+                                    </StepButton>
+                                </Step>
+                            ))}
+                        </Stepper>
+                    </Grid>
 
-                        {/* TODO: Should terminate all data readings */}
-                        <Grid item>
+                    {/* TODO: Should terminate all data readings */}
+                    <Grid item>
+                        <Stack direction={'row'} gap={2}>
                             <Button
                                 startIcon={<NavigateBeforeIcon />}
                                 fullWidth={true}
@@ -171,11 +184,15 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
                             >
                                 Back
                             </Button>
-                        </Grid>
+                            <SettingsDialog isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+                            <IconButton color='primary' aria-label="settings" onClick={() => handleSettingsDialog()}>
+                                <TuneIcon />
+                            </IconButton>
+                        </Stack>
                     </Grid>
                 </Grid>
             </Grid>
-        </ActiveMissionProvider>
+        </Grid>
     );
 }
 

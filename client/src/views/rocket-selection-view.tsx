@@ -16,7 +16,7 @@ interface Rocket {
 }
 
 interface RocketSelectProps {
-	setCurrentView: (viewName: string) => void;
+	setCurrentView: () => void;
 	setRocketID?: (rocketID: string) => void;
 }
 
@@ -117,7 +117,7 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 				rocketProfileId={rocketProfileId}
 				isOpen={isOpen}
 				onSave={() => { 
-					props.setCurrentView('ROCKET_DETAILS');
+					props.setCurrentView();
 					if(props.setRocketID){props.setRocketID(rocketProfileId)};
 					setIsOpen(false);
 				}}

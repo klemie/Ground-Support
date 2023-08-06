@@ -53,10 +53,11 @@ interface RocketDetailsProps {
     rocketID: string;
     openActiveMission: (view: string) => void;
     setActiveView: (key: string) => void;
+    toDataConfig: (id: string) => void;
 }
 
 export default function RocketDetailsView(props: RocketDetailsProps) {
-    const { openActiveMission, setActiveView } = props;
+    const { openActiveMission, setActiveView, toDataConfig } = props;
 	const colors: string[] = [
 		'rgba(255, 197, 87, 1)',
 		'rgba(214, 91, 79, 1)',
@@ -108,9 +109,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
     const refresh = () => {
         _.delay(getRocket, 500);
     };
-
     const getRocket = useCallback(async () => {
-        console.log(rocketId);
         const response = await api.getRocket(rocketId);
         const rocket = response.data as IRocketPopulated;
         console.log(response);
@@ -199,7 +198,8 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                             />
                         </TabPanel>
                         <TabPanel value={value} index={1}>
-                            <ComponentsTab 
+                            <ComponentsTab
+                                dataConfigClick={toDataConfig}
                                 rocket={rocketData} 
                                 refresh={() => refresh} 
                                 componentIds={rocketData.Components ? rocketData.Components.map((c) => c._id as string) : []} 
