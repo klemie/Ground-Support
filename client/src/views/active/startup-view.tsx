@@ -23,6 +23,7 @@ import {
 import { IComponent, IDataConfig, IMission, IModule, IRocketPopulated } from '../../utils/entities';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
 import api from '../../services/api';
+import ModuleStatus from '../../components/ModuleNew';
 
 interface StartUpViewProps {
 	rocket: IRocketPopulated;
@@ -129,8 +130,8 @@ export default function StartUpView(props: StartUpViewProps) {
                         </Stack>
                     </Paper>
 				</Grid>
-				<Grid container direction={'row'}>
-					<Grid item width={component?.Name === 'Big Red Bee' ? '100%' : '30%'}>
+				<Grid container direction={'row'} gap={3}>
+					<Grid item width={component?.Name === 'Big Red Bee' ? '100%' : '50%'}>
 						<TelemetryLog 
 							value="
 								salads
@@ -139,15 +140,15 @@ export default function StartUpView(props: StartUpViewProps) {
 							maxRows={15}
 						/>
 					</Grid>
-					{component?.Name === 'Flight Computer' && <Grid item width={'70%'}>
-						{dataConfig && dataConfig.Modules.map((module: IModule) => {
+					{component?.Name === 'Flight Computer' && 
+						dataConfig && dataConfig.Modules.map((module: IModule) => {
 							return (
 								<Grid item>
-									{module.Name}
+									<ModuleStatus module={module} statusOnly />
 								</Grid>
 							)}
-						)}
-					</Grid>}
+						)
+					}
 				</Grid>
 			</Grid>
 		</>

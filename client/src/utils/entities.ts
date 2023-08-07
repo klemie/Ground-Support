@@ -1,8 +1,3 @@
-enum TelemetrySource {
-    lora = "LORA",
-    aprs = "APRS"
-}
-
 export interface IField {
     _id?: string;
     Name: string,
@@ -14,7 +9,7 @@ export interface IField {
 export interface IModule {
     _id?: string;
     Name: string;
-    FieldGroups: IField[];
+    FieldGroups: IFieldGroup[];
 }
 
 export interface IDataConfig {
