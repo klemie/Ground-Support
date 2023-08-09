@@ -25,6 +25,7 @@ interface ICoordinates {
 export interface IMission {
     _id?: string;
     Name: string;
+    IsActive: boolean;
     IsTest: boolean
     Date: Date;
     Coordinates: ICoordinates;
@@ -80,7 +81,7 @@ export interface IComponent {
     Name: string;
     TelemetrySource: string;
     Details: string,
-    DataConfig: string;
+    DataConfigId: string;
 }
 
 export interface IComponentPopulated {
@@ -88,7 +89,7 @@ export interface IComponentPopulated {
     Name: string;
     TelemetrySource: string;
     Details: string,
-    DataConfig: IDataConfig;
+    DataConfigId: IDataConfig;
 }
 
 export interface IFieldGroup {

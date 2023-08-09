@@ -8,10 +8,15 @@ interface ComponentProps {
 	componentIds: string[];
 	rocket: IRocketPopulated;
 	refresh: () => void;
+	dataConfigClick: (id: string) => void;
 }
 
 const ComponentsTab: React.FC<ComponentProps> = (props: ComponentProps) => {
-	const { componentIds, rocket, refresh } = props;
+	const { componentIds, rocket, refresh, dataConfigClick } = props;
+
+	const handleClickDataConfig = (id: string) => {
+		dataConfigClick(id);
+	};
 
 	return (
 		<Box sx={{ paddingBottom: 5}}>
@@ -19,7 +24,13 @@ const ComponentsTab: React.FC<ComponentProps> = (props: ComponentProps) => {
 			<Grid container spacing={3}>
 				{componentIds.map((componentId: string) => (
 					<Grid item>
-						<ComponentCard rocket={rocket} updateComponent={refresh} onDelete={refresh} componentId={componentId} />
+						<ComponentCard 
+							onDataConfigClick={handleClickDataConfig} 
+							rocket={rocket} 
+							updateComponent={refresh} 
+							onDelete={refresh} 
+							componentId={componentId} 
+						/>
 					</Grid>
 				))}
 			</Grid>

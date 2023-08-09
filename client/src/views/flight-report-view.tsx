@@ -39,7 +39,7 @@ export default function RocketSelectionView(props: FlightReportProps) {
             setMissionData(response.data.result);
             response.data.result.Components.map(async(componentId) => {
                 const componentResponse = await axios.get<IComponentResponse>(`http://127.0.0.1:9090/component/${componentId}`);
-                const response = await axios.get<IDataConfigResponse>(`http://127.0.0.1:9090/dataConfig/${componentResponse.data.result.DataConfig}`);
+                const response = await axios.get<IDataConfigResponse>(`http://127.0.0.1:9090/dataConfig/${componentResponse.data.result.DataConfigId}`);
                 setDataConfigs((prev) => [...prev, response.data.result]);
                 return componentResponse.data.result;
             });

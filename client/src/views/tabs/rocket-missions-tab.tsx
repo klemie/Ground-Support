@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
-import { IMission, IMissionPopulated, IRocket, IRocketPopulated } from '../../utils/entities';
+import { IMission, IRocketPopulated } from '../../utils/entities';
 import MUIDataTable, { MUIDataTableOptions } from 'mui-datatables';
+import { useActiveMission } from '../../utils/ActiveMissionContext';
 
 interface FormattedMissionData {
     Name: string;
@@ -56,11 +56,16 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
         setMissions([]);
         getMissions();
     }, []);
+    
+    const activeMissionContext = useActiveMission()
+
 
     const options: MUIDataTableOptions = {
         filter: true,
         responsive: 'standard',
         onRowClick: (rowData: any[], rowMeta: { dataIndex: number, rowIndex: number }) => {
+            activeMissionContext.activeMissionDispatch({type: 'SET_MISSION', payload: rocket.Missions[rowMeta.dataIndex]});
+            activeMissionContext.rocketDispatch({type: 'SET_ROCKET', payload: rocket});
             onMissionClick(missions[rowMeta.dataIndex]);
         }
     };

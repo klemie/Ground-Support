@@ -5,8 +5,8 @@ import Header, { Breadcrumb } from '../components/Header';
 // Icons
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
+import LaunchIcon from '@mui/icons-material/Launch';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-
 
 //Tabs
 import ComponentsTab from './tabs/components-tab';
@@ -51,12 +51,13 @@ function TabPanel(props: TabPanelProps) {
 
 interface RocketDetailsProps {
     rocketID: string;
-    onActiveMission: (mission: string) => void;
+    openActiveMission: (view: string) => void;
     setActiveView: (key: string) => void;
+    toDataConfig: (id: string) => void;
 }
 
 export default function RocketDetailsView(props: RocketDetailsProps) {
-    const { onActiveMission, setActiveView } = props;
+    const { openActiveMission, setActiveView, toDataConfig } = props;
 	const colors: string[] = [
 		'rgba(255, 197, 87, 1)',
 		'rgba(214, 91, 79, 1)',
@@ -80,10 +81,11 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 
     const [rocketData, setRocketData] = useState<IRocketPopulated>({} as IRocketPopulated);
     const [selectedMission, setSelectedMission] = useState<string>('');
+    const [isMissionActive, setIsMissionActive] = useState<boolean>(false);
     
     const handleSelectedMission = (mission: string) => {
         setSelectedMission(mission);
-        onActiveMission(mission);
+        openActiveMission(mission);
         setActiveView('START_UP')
     };
 
@@ -95,17 +97,19 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
         setIsRocketPopUpOpen(false);
     };
 
+    const handleContinueMission = () => {
+        openActiveMission("START_UP");
+    };
+
     const handleRocketPopupSave = () => {
         refresh();
         handleRocketPopupClose();
-    }
+    };
 
     const refresh = () => {
         _.delay(getRocket, 500);
-    }
-
+    };
     const getRocket = useCallback(async () => {
-        console.log(rocketId);
         const response = await api.getRocket(rocketId);
         const rocket = response.data as IRocketPopulated;
         console.log(response);
@@ -143,11 +147,22 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                 {/* Rocket Title */}
                 <Grid item>
 					<Paper elevation={2} sx={{ padding: 2 }}>
-                        <Stack direction="row" spacing={2} alignItems={'center'}>
-                            <RocketLaunchIcon color={'primary'} /> 
-                            <Typography marginX={"2rem"} marginY={"1rem"} align='left' variant='h6'>
-                                {rocketData?.Name || 'Rocket Not found'}
-                            </Typography>
+                        <Stack direction="row" alignItems={'center'} justifyContent={'space-between'}>
+                            <Stack direction="row" alignItems={'center'} spacing={2}>
+                                <RocketLaunchIcon color={'primary'} /> 
+                                <Typography align='left' variant='h6'>
+                                    {rocketData?.Name || 'Rocket Not found'}
+                                </Typography>
+                            </Stack>
+                            <Button 
+                                variant="contained" 
+                                size={'large'} 
+                                startIcon={<LaunchIcon/>} 
+                                onClick={handleContinueMission} 
+                                disabled={!isMissionActive}
+                            >
+                                Continue Mission
+                            </Button>
                         </Stack>
                     </Paper>
 				</Grid>
@@ -183,7 +198,8 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                             />
                         </TabPanel>
                         <TabPanel value={value} index={1}>
-                            <ComponentsTab 
+                            <ComponentsTab
+                                dataConfigClick={toDataConfig}
                                 rocket={rocketData} 
                                 refresh={() => refresh} 
                                 componentIds={rocketData.Components ? rocketData.Components.map((c) => c._id as string) : []} 
