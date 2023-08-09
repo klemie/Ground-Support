@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Grid, Chip, Stack } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import addRocket from '../static/images/AddRocket.svg';
-import axios from 'axios';
 
 import '../styles/rocketSelection.css';
 import RocketProfilePopup from '../components/RocketProfilePopup';
+import api from '../services/api';
+import { IRocketPopulated } from '../utils/entities';
 
 interface Rocket {
 	id: string;
@@ -34,10 +35,9 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 	const [rocketProfileId, setRocketProfileId] =  useState<string>('');
 	useEffect(() => {
 		async function getMissionData() {
-			//make an API call when component first mounts and setRocketData with response
-			const response = await axios.get(`http://127.0.0.1:9090/rocket/`);
-			// const data = response.data.result;
-			const rockets: Rocket[] = response.data.results.map((rocket: any) => {
+			const response = await api.getRockets();
+			const data = response.data as IRocketPopulated[];
+			const rockets: Rocket[] = data.map((rocket: any) => {
 				return {
 					id: rocket._id,
 					image: 'Xenia1.svg',

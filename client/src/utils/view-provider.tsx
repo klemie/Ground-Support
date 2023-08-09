@@ -10,6 +10,7 @@ import ComponentDocs from '../views/component-docs-view';
 import SettingsDialog from '../components/SettingsDialog';
 import FlightReportView from '../views/flight-report-view';
 import RocketDetailsView from '../views/rocket-details-view';
+import DataConfigView from '../views/data-config-view';
 
 const ROCKET_SELECT_KEY = 'ROCKET_SELECT';
 const COMPONENT_DOCUMENT_KEY = 'COMPONENT_DOCUMENT';
@@ -17,9 +18,7 @@ const COMPONENT_DOCUMENT_KEY = 'COMPONENT_DOCUMENT';
 
 // Rocket Details
 const ROCKET_DETAILS_KEY = 'ROCKET_DETAILS';
-// const COMPONENT_DETAILS_KEY = 'COMPONENT_DETAILS';
-// const MISSION_DETAILS_KEY = 'MISSION_DETAILS';
-// const DATA_CONFIG_KEY = 'DATA_CONFIG';
+const DATA_CONFIG_KEY = 'DATA_CONFIG';
 
 // Active Flight
 const TELEMETRY_KEY = 'START_UP';
@@ -34,12 +33,12 @@ interface ViewProviderProps {
 export default function ViewProvider (props: ViewProviderProps) {
     const [currentViewKey, setCurrentViewKey] = useState<string>(ROCKET_SELECT_KEY);
 	const [missionId, setMissionId] = useState<string>('');
+    const [currentRocketID, setCurrentRocketID] = useState<string>("");
 
 	const updateMissionId = (id: string) => {
 		// currently no way to set this
 		setMissionId(id);
 	};
-    const [currentRocketID, setCurrentRocketID] = useState<string>("");
 
     const updateView = (key: string) => {
         setCurrentViewKey(key);
@@ -47,7 +46,7 @@ export default function ViewProvider (props: ViewProviderProps) {
 
     const updateRocketID = (id: string) => {
         setCurrentRocketID(id);
-    }
+    };
 
     const fullHeight = {
 		height: '100vh',
@@ -87,13 +86,15 @@ export default function ViewProvider (props: ViewProviderProps) {
             case COMPONENT_DOCUMENT_KEY:
                 return <ComponentDocs />;
 			case ROCKET_DETAILS_KEY:
-				return <RocketDetailsView rocketID={currentRocketID}/>;
+				return <RocketDetailsView setActiveView={updateView} onActiveMission={updateMissionId} rocketID={currentRocketID}/>;
             case TELEMETRY_KEY:
                 return <TelemetryView />;
 			case FLIGHT_REPORT_KEY:
 				return <FlightReportView missionId={missionId} />
             case FLIGHT_KEY:
                 return <ModulesView />;
+			case DATA_CONFIG_KEY:
+				return <DataConfigView DataConfigID='648d526bd3eb5ecf4a4cb14b'/>;
             default:
                 return <RocketSelectionView setCurrentView={updateView} setRocketID={updateRocketID} />;
         }   
@@ -105,9 +106,9 @@ export default function ViewProvider (props: ViewProviderProps) {
 
     return (
 		<div className='app'>
-
             {currentViewKey === (ROCKET_SELECT_KEY)  && currentView(ROCKET_SELECT_KEY)}
 			{currentViewKey === (ROCKET_DETAILS_KEY) && currentView(ROCKET_DETAILS_KEY)}
+			{currentViewKey === (DATA_CONFIG_KEY) && currentView(DATA_CONFIG_KEY)}
             {currentViewKey === (TELEMETRY_KEY || FLIGHT_KEY || RECOVERY_KEY || FLIGHT_REPORT_KEY)  && (
 				<Grid container spacing={2} direction="row">
 					{/* Any views should be rendered within this grid item */}

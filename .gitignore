@@ -4,3 +4,4 @@ yarn.lock
 client/package-lock.json
 client/package.json
 services/server-service/src/index.js
+.DS_STORE

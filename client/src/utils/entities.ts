@@ -1,10 +1,5 @@
-enum TelemetrySource {
-    lora = "LORA",
-    aprs = "APRS"
-}
-
 export interface IField {
-    Id: string;
+    _id?: string;
     Name: string,
     Range: number[],
     Units: string,
@@ -12,12 +7,13 @@ export interface IField {
 }
 
 export interface IModule {
+    _id?: string;
     Name: string;
     FieldGroups: IFieldGroup[];
 }
 
 export interface IDataConfig {
-    Id: string;
+    _id?: string;
     Modules: IModule[];
 }
 
@@ -27,13 +23,24 @@ interface ICoordinates {
 }
 
 export interface IMission {
-    Id: string;
+    _id?: string;
     Name: string;
     IsTest: boolean
     Date: Date;
     Coordinates: ICoordinates;
     LaunchAltitude: Number;
-    Components: [];
+    Components: string[];
+    Published: boolean;
+}
+
+export interface IMissionPopulated {
+    _id?: string;
+    Name: string;
+    IsTest: boolean
+    Date: Date;
+    Coordinates: ICoordinates;
+    LaunchAltitude: Number;
+    Components: IComponentPopulated[];
     Published: boolean;
 }
 
@@ -43,10 +50,11 @@ enum MotorType {
     hybrid = "Hybrid"
 };
 
+
 export interface IRocket{
-    Id?: string;
+    _id?: string;
     Name: string;
-    Missions: [];
+    Missions: string[];
     Components: string[];
     Mass: number;
     Height: number;
@@ -55,14 +63,36 @@ export interface IRocket{
     Motor: string;
 }
 
-export interface IComponent {
-    Id?: string;
+export interface IRocketPopulated {
+    _id?: string;
     Name: string;
-    TelemetrySource:  string;
+    Missions: IMission[];
+    Components: IComponent[];
+    Mass: number;
+    Height: number;
+    Class: string;
+    MotorType: MotorType;
+    Motor: string;
+}
+
+export interface IComponent {
+    _id?: string;
+    Name: string;
+    TelemetrySource: string;
     Details: string,
     DataConfig: string;
 }
+
+export interface IComponentPopulated {
+    _id?: string;
+    Name: string;
+    TelemetrySource: string;
+    Details: string,
+    DataConfig: IDataConfig;
+}
+
 export interface IFieldGroup {
+    _id?: string;
     Name: String;
     Fields: IField[];
 }
@@ -73,7 +103,7 @@ interface IDataPoint {
 }
 
 export interface IFieldData {
-    Id: string;
+    _id?: string;
     Name: string;
     Range: number[];
     Units: string;

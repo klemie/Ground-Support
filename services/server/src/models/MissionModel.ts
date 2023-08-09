@@ -78,4 +78,9 @@ const MissionSchema: Schema = new Schema(
     }
 );
 
+MissionSchema.pre('findOne', function (next) { 
+    this.populate("Components", { options: { strictPopulate: false }});
+    next();
+});
+
 export default mongoose.model<IMission>('Mission', MissionSchema);

@@ -1,21 +1,13 @@
 import { Card, CardContent, CardHeader, Grid, Stack, TextField } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { IRocket } from '../../utils/entities';
+import React from 'react';
+import { IRocketPopulated } from '../../utils/entities';
 interface Props {
-    rocketDetails: IRocket  
-// Define the props for your view component
+    rocketDetails: IRocketPopulated ; 
 }
 const RocketDetailsTab: React.FC<Props> = (props: Props) => {
 const { rocketDetails } = props
-    useEffect(() => {        
-    // Perform any initialization or side effects here       
-        return () => {           
-        // Clean up any resources or subscriptions here
-               
-        };    
-    }, []);    // Render your view component here    
-   return (       
-    <Stack>
+    return (       
+        <Stack>
             <Card>
                 <CardHeader title="Rocket Profile" />
                 <CardContent>
@@ -24,14 +16,16 @@ const { rocketDetails } = props
                             <TextField fullWidth={true} label="Name"
                                 defaultValue={rocketDetails.Name}
                                 value={rocketDetails.Name}
-                                variant="outlined" InputLabelProps={{ shrink: true}}/>
+                                variant="outlined" InputLabelProps={{ shrink: true}}
+                            />
                                 
                         </Grid>
                         <Grid item xs={4}>
                             <TextField fullWidth={true} label="Height"
                                 defaultValue={rocketDetails.Height}
                                 value={rocketDetails.Height}
-                                variant="outlined" InputLabelProps={{ shrink: true}}/>
+                                variant="outlined" InputLabelProps={{ shrink: true}}
+                            />
                         </Grid>
                         <Grid item xs={4}>
                             <TextField fullWidth={true} label="Mass"
@@ -61,7 +55,7 @@ const { rocketDetails } = props
                 </CardContent>
             </Card>
         </Stack>   
-   );
+    );
 };
 
 export default RocketDetailsTab;

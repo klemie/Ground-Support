@@ -43,6 +43,12 @@ const ComponentModel: Schema = new Schema(
     }
 );
 
+// Populate DataConfig
+ComponentModel.pre('findOne', function (next) { 
+    this.populate("DataConfigId", { options: { strictPopulate: false }});
+    next();
+});
+
 ComponentModel.pre<IComponentModel>('deleteOne', { document: true, query: false }, async function (next) {
     console.log('Deleting all references to component');
     const componentId = this._id;

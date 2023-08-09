@@ -1,91 +1,51 @@
 import React, { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Card, CardActions, CardContent, CardHeader, Chip, IconButton, Stack, Typography } from '@mui/material';
-import { IComponent, IRocket } from '../utils/entities';
+import { IComponent, IComponentPopulated, IRocket, IRocketPopulated } from '../utils/entities';
 import EditIcon from '@mui/icons-material/Edit';
-import axios from 'axios';
 import ComponentModal from './modals/ComponentModal';
 import { Delete } from '@mui/icons-material';
-
-interface RocketDetails extends IRocket {
-	Id?: string;
-}
-
-interface ComponentDetails extends IComponent {
-    Id?: string;
-}
+import api from '../services/api';
 
 interface ComponentCardProps {
     componentId: string;
-    rocket: RocketDetails;
+    rocket: IRocketPopulated;
     onDelete: () => void;
     updateComponent: () => void;
 }
 
-interface IComponentDetails {
-	result: IComponent;
-}
-
 const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) => {
-    const {  componentId, onDelete, updateComponent, rocket } = props;
+    const { componentId, onDelete, updateComponent, rocket } = props;
     const [componentModalOpen, setComponentModalOpen] = useState<boolean>(false);
-
-    const [component, setComponent] = useState<ComponentDetails>({
-        Id: componentId,
-        Name: '',
-        Details: '',
-        TelemetrySource: '',
-        DataConfig: ''
-    });
-
-    // TODO: this is a temporary fix to remove all references to the component from the rocket on delete
-    // once the backend is updated to handle this, this can be removed
-    const detachComponentFromRocket = async () => {
-        const removedId = rocket.Components.filter((cId, idx, arr) => {
-            if (cId === componentId) {
-                arr.splice(idx, 1);
-                return true;
-            } 
-            return false;
-        });
-
-        console.log(removedId);
-
-        try {
-            await axios.patch(`http://127.0.0.1:9090/rocket/${rocket?.Id}`, rocket);
-        } catch (error) {
-            console.log(error);
-        }
-        
-    };
+    const [component, setComponent] = useState<IComponentPopulated>({} as IComponentPopulated);
 
 	const deleteComponent = async () => {
-        console.log("Delete component");
-		try {
-			await axios.delete(`http://127.0.0.1:9090/component/${componentId}`);
-            await detachComponentFromRocket();
-		} catch (error) {
-            console.log(error);
-		}
+        const r: IRocket = {
+            _id: rocket._id,
+            Name: rocket.Name,
+            Mass: rocket.Mass,
+            Height: rocket.Height,
+            Class: rocket.Class,
+            Motor: rocket.Motor,
+            MotorType: rocket.MotorType,
+            Components: rocket.Components.map(c => c._id as string),
+            Missions: rocket.Missions.map(m => m._id as string)
+        };
+        api.deleteComponent(componentId, r);
         onDelete();
 	};
 
     useEffect(() => {
 		async function getComponent() {
-			try {
-                const response = await axios.get<IComponentDetails>(`http://localhost:9090/component/${componentId}`);
-                console.log(response.data.result)
-                if (response.data.result) {
-                    setComponent({
-                        Id: componentId,
-                        Name: response.data.result.Name,
-                        Details: response.data.result.Details,
-                        TelemetrySource: response.data.result.TelemetrySource,
-                        DataConfig: response.data.result.DataConfig
-                    });
-                }
-			} catch (error: any) {
-				console.log(error);
-			}
+            const response = await api.getComponent(componentId);
+            const data = response.data as IComponentPopulated;
+            setComponent({
+                _id: componentId,
+                Name: data.Name,
+                Details: data.Details,
+                TelemetrySource: data.TelemetrySource,
+                DataConfig: data.DataConfig
+            });
+		
 		}
 		getComponent();
 	}, [componentId]);
