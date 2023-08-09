@@ -1,54 +1,44 @@
 import { useState, useEffect } from 'react';
-import { IComponent, IDataConfig, IMission } from '../utils/entities';
-import axios from 'axios';
+import { IDataConfig, IMission } from '../utils/entities';
+
 import { Grid, Typography } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import ModuleSummary from '../components/ModuleSummary';
+import { useActiveMission } from '../utils/ActiveMissionContext';
+import api from '../services/api';
 
-interface FlightReportProps {
-	missionId: string;
-}
-
-interface IMissionResponse {
-    result: IMission;
-}
-
-interface IDataConfigResponse {
-    result: IDataConfig;
-}
-
-interface IComponentResponse {
-    result: IComponent;
-}
-
-export default function RocketSelectionView(props: FlightReportProps) {
-    const { missionId } = props;
+export default function RocketSelectionView() {
     const [missionData, setMissionData] = useState<IMission>();
     const [dataConfigs, setDataConfigs] = useState<IDataConfig[]>([]);
     const breadCrumbs: Breadcrumb[] = [
 		{ name: missionData?.Name || "New Mission", path: "/", active: false },
 		{ name: "Flight Report", path: "/", active: true }
 	];
+
+    const context = useActiveMission()
+
     useEffect(()=> {
         // reset state 
         setMissionData(undefined);
         setDataConfigs([]);
 
         const getDataConfigs = async () => {
-            const response = await axios.get<IMissionResponse>(`http://127.0.0.1:9090/mission/${missionId}`);
-            setMissionData(response.data.result);
-            response.data.result.Components.map(async(componentId) => {
-                const componentResponse = await axios.get<IComponentResponse>(`http://127.0.0.1:9090/component/${componentId}`);
-                const response = await axios.get<IDataConfigResponse>(`http://127.0.0.1:9090/dataConfig/${componentResponse.data.result.DataConfigId}`);
-                setDataConfigs((prev) => [...prev, response.data.result]);
-                return componentResponse.data.result;
-            });
+            setMissionData(context.activeMission); 
+
+            if (context.rocket.Components) { 
+                context.rocket.Components.map(async(component) => {
+                    if (!component.DataConfigId) return;
+                    const response = await api.getDataConfig(component.DataConfigId)
+                    const data = response.data as IDataConfig
+                    console.log(data);
+                    setDataConfigs((prev) => [...prev, data]);
+                });
+            }
         };
-
         getDataConfigs();
-        console.log('Mission Data:', missionData);
+        console.log(context.rocket.Components);
 
-    }, [missionId, missionData]);
+    }, [missionData]);
 
 
     return (
@@ -65,9 +55,10 @@ export default function RocketSelectionView(props: FlightReportProps) {
             <Grid item >
                 <Typography variant='h4'>{missionData?.Name} Flight Report</Typography>
             </Grid>
-            <Grid container style={{ height: '80vh', overflowY: 'scroll' }}>
+            <Grid container style={{ height: '100vh', overflowY: 'scroll' }}>
                 {dataConfigs.map((dataConfig: IDataConfig) => {
                     return dataConfig.Modules.map((module) => {
+                        // return module.Name;
                         return <ModuleSummary Module={module} />
                     });
                 })}

@@ -13,7 +13,7 @@ export default function FlightView() {
 	
 	const breadCrumbs: Breadcrumb[] = [
 		{ name: "New Mission", path: "/", active: false },
-		{ name: "Module View", path: "/", active: true }
+		{ name: "Flight", path: "/", active: true }
 	];
 
 	// const formattedModules = dataConfig.map((module) => {

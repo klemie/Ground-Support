@@ -13,6 +13,7 @@ import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 // Views
 import StartUpView from './active/startup-view';
 import FlightView from './active/flight-view';
+import RocketSelectionView from './flight-report-view';
 
 // Components UI
 import { Button, Grid, Stack, Step, StepButton, Stepper, IconButton } from "@mui/material";
@@ -53,7 +54,7 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
             case FLIGHT_REPORT_KEY:
                 return {
                     phase: FLIGHT_REPORT_KEY,
-                    currentView: <></>
+                    currentView: <RocketSelectionView />
                 }
             default:
                 throw Error(`Unknown action type: ${action.type}`);
