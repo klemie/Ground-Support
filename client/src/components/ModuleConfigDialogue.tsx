@@ -30,8 +30,6 @@ const SettingsDialog: React.FC<SettingsDialogProps> = (props: SettingsDialogProp
                         <FormControlLabel control={<Checkbox defaultChecked />} label="Airbrakes" />
                         <FormControlLabel control={<Checkbox defaultChecked />} label="MaG-Pi" />
                         <FormControlLabel control={<Checkbox defaultChecked />} label="Strain Gauges" />
-                        <Stack direction="row" spacing={1}> <AddCircleOutlineRoundedIcon /> <Typography variant="button"> Configure more </Typography>
-                        </Stack>
                         <Divider />
                         
                 </FormGroup>
