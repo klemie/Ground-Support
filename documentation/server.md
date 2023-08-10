@@ -85,6 +85,13 @@ export const EntityName = mongoose.model('entity', entitySchema);
 
 ⚠️ When calling entities only use `Entity.findById().save()` so the validator will run on it.
 
+### Real Time Operation
+A key feature of the application is showing real time data during flight. In order to do this we use sockets. A socket is an interface that allows two processes to communicate with each other over a network. This protocol follows a client-server model, where one program acts as the client that initiates the communication, and the other program acts as the server that listens for incoming connections and responds to client requests. In this case the client receives telemetry packets after they have been decoded. 
+
+<p align="center">
+<img src="./assets/socket.png" width="600"/>
+</p>
+
 # Server Backend
 
 Entity's from the database are updated to the database through mongoose queries, the private API or the public API. The
@@ -308,12 +315,4 @@ To be filled in by the person who takes on
 
 To be filled in by the person who takes on
 
-
-
-## Real Time Operation
-A key feature of the application is showing real time data during flight. In order to do this we use sockets. A socket is an interface that allows two processes to communicate with each other over a network. This protocol follows a client-server model, where one program acts as the client that initiates the communication, and the other program acts as the server that listens for incoming connections and responds to client requests. In this case the client receives telemetry packets after they have been decoded. 
-
-<p align="center">
-<img src="./assets/socket.png" width="500"/>
-</p>
 
