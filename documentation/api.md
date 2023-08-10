@@ -1,11 +1,15 @@
-# Client side API Docs
+# API Documentation
+
+The api is a REST API that currently has support for the following HTTP verbs (`GET`, `POST`, `PATCH`, `DELETE`)
+
+## Client side API Docs
 
 The can be found in the file `client/src/services/api.ts`. The API is a simple REST API that uses the following HTTP verbs:
 
 All GET by ids will return an object with all of the nested entities populated.  For example, a GET on `/rocket/:id` will return a rocket object with the missions and components objects populated. This is done to reduce the number of calls to the server.  
 
 :TODO: (query parameters): If you do not want the nested objects populated, you can use the `?populate=false` query string parameter.  For example, `/api/mission/1?populate=false` will return a mission object with the rocket and component objects not populated.
-## Type Security
+### Type Security
 
 The API uses TypeScript to ensure type safety.  The API uses the following interfaces:
 
@@ -48,7 +52,7 @@ interface IAxiosResponse {
 
 Each endpoint returns an `IResponse` object. The data property will contain the data returned from the server. The error property will contain an `IError` object if there was an error. 
 
-## Error Handling and Logging
+### Error Handling and Logging
 
 Each axios call is wrapped in a try catch block. That status is checked in the `handleError` function which returns a `IError` object. IError contains the following properties:
 
@@ -72,7 +76,7 @@ interface IError {
 }
 ```
 
-## Endpoints
+### Endpoints
 
 Each of the following endpoints have the four basic CRUD operations.  The following endpoints are available:
 

@@ -98,9 +98,8 @@ are nested as sub documents and might not populate there collection.
 <p align="center">
 <img src="./assets/ER Diagram.png" />
 </p>
-
-This structure has the `Rocket` Entity at the top of the hierarchy where all other entities an childeren and
-grandchildern of it. The two main entities off of Rocket entity is the `Component` and `Mission`. The
+Each entity has its own schema file, in which we define attributes and methods of the entity, similar to objects in Object Oriented Programming. Each entity has a corresponding document in the Database. Each entity has its own CRUD (Create Read Update Delete) api endpoints which allows external users to interface with the database collections. This structure has the `Rocket` Entity at the top of the hierarchy where all other entities an childeren and
+grandchildern of it. The two main entities off of Rocket entity is the `Component` and `Mission`.
 
 ### Rocket
 
@@ -118,8 +117,7 @@ grandchildern of it. The two main entities off of Rocket entity is the `Componen
 
 `Description`
 
-This entity stores all the important details of the rocket and stores references to the rockets child documents missions
-and components.
+The Rocket entity stores all the important details of the rocket and stores references to the missions and components.
 
 `API ✅`
 
@@ -136,10 +134,7 @@ and components.
 
 `Description`
 
-This entity creates allow the rocket to be compartmentalized into smaller pieces. Due to the experimental structure of
-UVRs rockets there maybe may be different payloads with unique modules. For example a flight computer with a sensor bay
-and a deployable payload may have different telemetry systems and modules therefore they will be stored and structured
-differently in the application.
+The Component entity allows the rocket to be compartmentalized into smaller pieces. Due to the experimental structure of UVRs rockets, there may be different payloads with unique modules. For example: a flight computer with a sensor bay and a deployable payload may have different telemetry systems and modules, therefore they will be stored and structured differently in the application.
 
 `API ✅`
 
@@ -160,9 +155,7 @@ differently in the application.
 
 `Description`
 
-The mission entity contains information relevant to a launch and or test of the rocket. Each Mission can be configured
-with. Mission only exist as a child of a rocket they cannot exist on there own. The components attribute configures
-which components from the rocket are active for this mission. ie which components are to be recorded.
+The mission entity contains information relevant to a launch and or test of the rocket. Missions only exist as a child of a rocket, they cannot exist on their own. The Components attribute configures which components from the rocket are active and will be recorded for that mission.
 
 `API ✅`
 
@@ -196,8 +189,7 @@ This document is a made up of sub documents. Structure is below. You can learn m
 
 `Description`
 
-Modules are used to break up group fields that come from one source. For example if you have a sensor that can read
-multiple values you would create a module for that component.
+The Module entity is used to break up group fields that come from one source. For example: if you have a sensor that can read multiple values, you would create a module for that component.
 
 `API ❌`
 
@@ -212,8 +204,7 @@ multiple values you would create a module for that component.
 
 `Description`
 
-Field Groups are used to group fields that fall under one reading. for example a sensor reading can have 3 axis of data.
-each of quite would be a single field hence grouping like fields.
+The Field Groups entity is used to group fields that have multiple readings, such as a sensor reading that can have 3 axes of data. 
 
 `API ❌`
 
@@ -230,8 +221,7 @@ each of quite would be a single field hence grouping like fields.
 
 `Description`
 
-Fields are the lowest object in the data config hierarchy. These entities are used to define the information for a
-single data type (data point).
+The Field entity is the lowest object in the data config hierarchy. These entities are used to define the information for a single data type (data point).
 
 `API ❌`
 
@@ -250,8 +240,7 @@ single data type (data point).
 
 `Description`
 
-A field data uses fields a constructor for the type. All of these attributes except for data is inherited from a sub
-document of data config. These attributes are only created by the data constructor function.
+A field data entity uses fields as a constructor for the type. All of these attributes except for data are inherited from sub documents of data config. These attributes are only created by the data constructor function on mission creation.
 
 `API ❌`
 
@@ -266,7 +255,7 @@ document of data config. These attributes are only created by the data construct
 
 `Description`
 
-This allows for time stamps on data
+This allows for time stamps on data.
 
 `API ❌`
 
@@ -319,7 +308,7 @@ To be filled in by the person who takes on
 
 To be filled in by the person who takes on
 
-# Gateway
+
 
 ## Real Time Operation
 A key feature of the application is showing real time data during flight. In order to do this we use sockets. A socket is an interface that allows two processes to communicate with each other over a network. This protocol follows a client-server model, where one program acts as the client that initiates the communication, and the other program acts as the server that listens for incoming connections and responds to client requests. In this case the client receives telemetry packets after they have been decoded. 

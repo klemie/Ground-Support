@@ -26,11 +26,6 @@ You can import any component through `import ComponentName from "'@mui/material/
 TODO: After MVP
 
 refer to there docs there pretty good
-#### 
-
-
-#### Interfaces
-
 
 ### Styling
 
