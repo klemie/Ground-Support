@@ -4,7 +4,6 @@ import random
 import time
 import threading
 
-from socket_helper import socketio
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins='*', async_mode='threading')
 # Function to emit random data every 2 seconds
