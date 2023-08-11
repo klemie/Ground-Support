@@ -1,6 +1,5 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
 // import { socket } from './socket-config';
-import { Server } from 'socket.io';
 import { io } from 'socket.io-client';
 
 export interface SocketContext {
@@ -39,12 +38,12 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 		const socket = io('http://localhost:8086/data2');
 
 		socket.on('loRa_packet', (packet: string) => {
-			console.log('sss', packet);
+			console.log('LORA', packet);
 			setLoRaPacket(packet);
 		});
 
 		socket.on('aprs_packet', (packet: string) => {
-			console.log('sas', packet);
+			console.log('APRS', packet);
 			setAprsPacket(packet);
 		});
 

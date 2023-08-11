@@ -2,10 +2,10 @@ from flask import Flask, send_file
 from flask_socketio import SocketIO, emit
 import random
 import time
-import threading
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins='*', async_mode='threading')
+
 # Function to emit random data every 2 seconds
 def emit_random_data():
     with app.test_request_context('/'):
@@ -26,6 +26,7 @@ def send_APRS_packet(packet):
     with app.test_request_context('/'):
         socketio.emit('aprs_packet', packet, namespace='/data2')
 # Route to serve the frontend
+
 @app.route('/')
 def index():
     return send_file('templates/index.html')
@@ -57,10 +58,4 @@ def on_disconnect():
     print('Client disconnected 2')
 
 if __name__ == '__main__':
-    # Start the background thread to emit data
-    # data_thread = threading.Thread(target=emit_random_data)
-    # data_thread.daemon = True
-    # data_thread.start()
-
-    # Start the SocketIO server
     socketio.run(app, host='0.0.0.0', port=8086, debug=True)

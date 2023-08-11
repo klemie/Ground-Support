@@ -35,7 +35,7 @@ ARPS_PACKET = {
 def aprs_loop():
     packet = direwolf_mock().splitlines() if MOCK else sys.stdin
     try:
-        sio.connect("http://localhost:8086", namespaces=['/data'])
+        sio.connect("http://127.0.0.1:8086", namespaces=['/data'])
         
         while True:
             currentData = {
@@ -58,7 +58,6 @@ def aprs_loop():
                 if "alt " in line:
                     print('alt: ', line[29:])
                     currentData["alt"] = line[29:]
-                    # currentData["alt"] = currentData["alt"][0:-4]
                 if "Invalid character in compressed longitude" in line:
                     print("error: GPS is not locked")
 
@@ -67,7 +66,6 @@ def aprs_loop():
                     "Type": "APRS",
                     "Data": currentData
                 }
-            # send_APRS_packet("asdf")
             print(telemetry_packet)
             sio.emit('aprs_packet_telemetry', telemetry_packet, namespace='/data')
     except KeyboardInterrupt:
@@ -78,6 +76,3 @@ def aprs_loop():
 if __name__ == "__main__":
     aprs_loop()
     sio.disconnect()
-# async def loRa_loop(): 
-#     return
-    
