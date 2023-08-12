@@ -107,7 +107,6 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
     const activeContext = useActiveMission();
 
     const getActiveMission = async (): Promise<IMissionPopulated> => {
-        console.log(missionId)
         const response = await api.getMission(missionId);
         const data = response.data as IMissionPopulated;
         activeContext.activeMissionDispatch({ type: 'SET_MISSION', payload: data });
@@ -116,7 +115,6 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
     };
 
     const handleRocketUpdate = () => {
-        // activeContext.rocketDispatch({ type: 'SET_ROCKET', payload: rocket });
         setRocket(rocket);
     };
 
@@ -130,11 +128,7 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
     }, [rocketId]);
 
     useEffect(() => {
-        // getActiveMission();
         getActiveRocket();
-        // activeContext.rocketDispatch({ type: 'SET_ROCKET', payload: rocket });
-        // activeContext.activeMissionDispatch({ type: 'SET_MISSION', payload: mission });
-        console.log(activeContext);
     }, [rocketId, missionId]);
 
     return (
@@ -154,7 +148,6 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
                     height="100%"
                     style={{ height: '100vh', overflow: 'auto' }}
                 >
-                    {/* TODO: Should call a Setting pop up */}
                     <Grid item justifyContent="end" alignContent={'end'}>
                         <SettingsDialog isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
                     </Grid>
@@ -172,7 +165,6 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
                         </Stepper>
                     </Grid>
 
-                    {/* TODO: Should terminate all data readings */}
                     <Grid item>
                         <Stack direction={'row'} gap={2}>
                             <Button

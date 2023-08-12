@@ -52,7 +52,6 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
 	}, [componentId]);
 
     const handleDataConfig = () => {
-        console.log('data config click', component);
         onDataConfigClick(component.DataConfigId._id as string);
     }
 
