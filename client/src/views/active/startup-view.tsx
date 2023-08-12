@@ -61,18 +61,6 @@ export default function StartUpView(props: StartUpViewProps) {
 		getDataConfig();
 	}, [getDataConfig]);
 
-	useEffect(() => {
-		console.log(activeContext);
-	}, [activeContext]);
-
-	useEffect(() => {
-		console.log(dataConfig);
-	}, [dataConfig]);
-
-	useEffect(() => {
-		console.log(aprsPacket);
-	}, [aprsPacket]);
-
 	return (
 		<>
 			<Grid container direction="column" paddingX="2rem" paddingY="2rem" gap={3}>
