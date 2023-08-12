@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { IDataConfig, IMission } from '../utils/entities';
 
-import { Grid, Typography } from '@mui/material';
+import { Grid, Paper, Stack, Typography } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import ModuleSummary from '../components/ModuleSummary';
 import { useActiveMission } from '../utils/ActiveMissionContext';
@@ -52,10 +52,19 @@ export default function RocketSelectionView() {
 			<Grid container>
 				<Header breadCrumbs={breadCrumbs} />
 			</Grid>
-            <Grid item >
-                <Typography variant='h4'>{missionData?.Name} Flight Report</Typography>
+            <Grid item>
+                <Paper elevation={2} sx={{ padding: 2 }}>
+                    <Stack direction="row" spacing={5} justifyContent={'space-between'} alignItems={'center'}>
+                        <Stack direction="row" alignItems={'center'} spacing={2}>
+                            <Typography align='left' variant='h6'>
+                                {context.activeMission.Name + ' Flight Report'|| 'Mission Not found'}
+                            </Typography>
+                        </Stack>
+                    </Stack>
+                </Paper>
             </Grid>
-            <Grid container style={{ height: '100vh', overflowY: 'scroll' }}>
+
+            <Grid container style={{ height: '78vh', overflowY: 'scroll' }}>
                 {dataConfigs.map((dataConfig: IDataConfig) => {
                     return dataConfig.Modules.map((module) => {
                         // return module.Name;
