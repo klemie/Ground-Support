@@ -119,7 +119,6 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
     };
 
     const getActiveRocket = useCallback(async (): Promise<IRocketPopulated> => {
-        console.log(rocketId);
         const response = await api.getRocket(rocketId);
         const data = response.data as IRocketPopulated;
         handleRocketUpdate();
