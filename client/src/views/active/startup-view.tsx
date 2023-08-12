@@ -19,19 +19,22 @@ import {
 	TextField
 } from '@mui/material';
 
-
+// Utils
 import { IComponent, IDataConfig, IMission, IModule, IRocketPopulated } from '../../utils/entities';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
 import api from '../../services/api';
 import ModuleStatus from '../../components/ModuleNew';
+import { useSocketContext } from '../../utils/socket-context';
 
 interface StartUpViewProps {
 	rocket: IRocketPopulated;
 	mission?: IMission;
 }
 
+
 export default function StartUpView(props: StartUpViewProps) {
 	const [component, setComponent] = useState<IComponent>();
+	const { aprsPacket } = useSocketContext();
 
 	const activeContext = useActiveMission();
 
@@ -65,6 +68,10 @@ export default function StartUpView(props: StartUpViewProps) {
 	useEffect(() => {
 		console.log(dataConfig);
 	}, [dataConfig]);
+
+	useEffect(() => {
+		console.log(aprsPacket);
+	}, [aprsPacket]);
 
 	return (
 		<>
