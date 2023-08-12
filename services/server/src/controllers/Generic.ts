@@ -72,10 +72,31 @@ const update = (model: Model<any>, populate?: string[]) => async (req: Request, 
     }
 };
 
+const put = (model: Model<any>, populate?: string[]) => async (req: Request, res: Response, next: NextFunction) => {
+    console.log(`Updating documents from ${model.modelName} by id`);
+    const id = req.params.id;
+    try {
+        const result = await model
+            .findOneAndUpdate<Document>({ _id: id  })
+            .populate(populate || []);
+        
+        if (!result) {
+            console.log('Not found');
+            return res.status(404).json({ message: `${model.modelName} with ${id} Not found` });
+        }
+        result.set(req.body);
+        result.save();
+        return res.status(200).json({ result });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error });
+    }
+};
+
 const deleteOne = (model: Model<any>) => async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.params.id;
-        const results = await model.findByIdAndDelete(id);
+        const results = await model.deleteOne({_id: id});
         if (!results) {
             res.status(404).json({ message: 'Not Found' });
         }

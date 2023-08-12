@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Grid, Chip, Stack } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import addRocket from '../static/images/AddRocket.svg';
-import axios from 'axios';
 
 import '../styles/rocketSelection.css';
 import RocketProfilePopup from '../components/RocketProfilePopup';
 import { SocketGateway } from '../utils/socket-context';
+import api from '../services/api';
+import { IRocketPopulated } from '../utils/entities';
 
 interface Rocket {
 	id: string;
@@ -17,6 +18,7 @@ interface Rocket {
 
 interface RocketSelectProps {
 	setCurrentView: (viewName: string) => void;
+	setRocketID?: (rocketID: string) => void;
 }
 
 export default function RocketSelectionView(props: RocketSelectProps) {
@@ -33,11 +35,10 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 	const [rocketData, setRocketData] = useState<Rocket[]>([]);
 	const [rocketProfileId, setRocketProfileId] = useState<string>('');
 	useEffect(() => {
-		async function getMissionData() {
-			//make an API call when component first mounts and setRocketData with response
-			const response = await axios.get(`http://127.0.0.1:9090/rocket/`);
-			// const data = response.data.result;
-			const rockets: Rocket[] = response.data.results.map((rocket: any) => {
+		async function getRocketData() {
+			const response = await api.getRockets();
+			const data = response.data as IRocketPopulated[];
+			const rockets: Rocket[] = data.map((rocket: any) => {
 				return {
 					id: rocket._id,
 					image: 'Xenia1.svg',
@@ -47,7 +48,7 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 			});
 			setRocketData(rockets);
 		}
-		// getMissionData();
+		getRocketData();
 	}, []);
 
 	const addNewRocket = () => {
@@ -124,6 +125,16 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 					onClose={() => setIsOpen(false)}
 				/>
 			</div>
+			<RocketProfilePopup
+				rocketProfileId={rocketProfileId}
+				isOpen={isOpen}
+				onSave={() => { 
+					props.setCurrentView('ROCKET_DETAILS');
+					if(props.setRocketID){props.setRocketID(rocketProfileId)};
+					setIsOpen(false);
+				}}
+				onClose={() => setIsOpen(false)}
+			/>
 		</SocketGateway>
 	);
 }

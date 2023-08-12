@@ -283,22 +283,12 @@ mission calling the configured mission .
 <img src="./assets/Data Constructor.png" width="500"/>
 </p>
 
-## Telemetry
+# Telemetry
 
 The Telemetry Service is an iteration of UVic Rocketry's [groundstation](https://github.com/UVicRocketry/groundstation)
-proof of concept. Based on a deep dive into the old code we have determined ...
+proof of concept. 
 
-### SDR Windows Configuration
-1. Go to that guide
-2. Download rtlsharp from the website
-3. Run the install-rtlsdr.bat file
-4. Run zadig and install the winusb driver (see the guide linked)
-5. Open rtlsharp and select RTLSDR in devices
-6. Hit play and you should see the waterfall graph thing and if you have a device transmitting you should see spikes when it transmits.
-7. Then run the script (currently having issues with it complaining about device permissions).
-
-https://www.rtl-sdr.com/rtl-sdr-quick-start-guide/
-
+Both of the telemetry systems start by using the RTL-provided command line utility to take the incoming wave data from the RTL-SDRs and output the incoming signal. For the 434 MHz primary system we are using a nearly identical program as before using direwolf to take the incoming wave data and translate that into the APRS data. The team’s ground station backend then takes the output from Direwolf and makes the data available to the front end. For the 915 MHz signal, the software similarly uses a different piece of software written using GNU Radio to take the wave signal and convert and decode the FSK. The binary data is given to a Python program that decodes the binary data into something that the back and front ends can use.
 ### How to Run Telemetry service for testing:
 
 1. Have a Windows PC.
@@ -327,14 +317,20 @@ rtl-sdr/rtl_fm.exe -f 441.35M -r 24k -s 260k -o 4 -p 93 -g 49.6 - | direwolf-1.6
  ```
 11. **smiles*\*! "No way it's working perfectly!"
 
-### Packets
+### Receiving
 
-#### Packet API format
+To be filled in by the person who takes on
 
 ### Decoding
 
 To be filled in by the person who takes on
 
-### Receiving
+# Gateway
 
-To be filled in by the person who takes on
+## Real Time Operation
+A key feature of the application is showing real time data during flight. In order to do this we use sockets. A socket is an interface that allows two processes to communicate with each other over a network. This protocol follows a client-server model, where one program acts as the client that initiates the communication, and the other program acts as the server that listens for incoming connections and responds to client requests. In this case the client receives telemetry packets after they have been decoded. 
+
+<p align="center">
+<img src="./assets/socket.png" width="500"/>
+</p>
+

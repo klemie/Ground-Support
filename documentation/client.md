@@ -4,6 +4,15 @@
 
 Uses a MCV architecture.
 Component based design.
+
+## Dynamic UI
+When designing Ground Support, much consideration was put towards the longevity and adaptability of the application. Not every rocket is guaranteed to use the same hardware and components. Hardcoding the software to match the needs of the rocket year to year introduces unnecessary work, increases the risk of errors and lessens any incentive to use the application. To avoid this, we designed the application to have a dynamic UI. This is most present in the module configuration. Modules require a DataConfig that the user creates and the UI dynamically updates to reflect the structure of the DataConfig. As a result, less updates to the code are needed, the application accommodates a wide variety of hardware, the modules are easily configurable and its ease of use lessens the barrier of entry for any new users.
+
+<p align="center">
+    <img src="./assets/data-config-to-module.png" width="600"/>
+</p>
+A DataConfig is a JSON file that is used to interface with the app and communicate different configurations for different rockets. This file will generate what the modules will look like in the app. Telemetry data coming into the app must have exactly the same fields as specified on the data config.
+
 ## MUI
 
 Material User Interface (MUI) is a react component library that builds off of the material design standard regulated by Google. All our styling is made in accordance with these standards. To make sure we follow these standards we will be refraining from creating our own styles as much as possible. This lessing the amount of work on our developers and generally following a proven styling standard.
@@ -17,23 +26,32 @@ You can import any component through `import ComponentName from "'@mui/material/
 TODO: After MVP
 
 refer to there docs there pretty good
+#### 
+
+
+#### Interfaces
+
 
 ### Styling
 
 Only style when necessary component library should handle most of it.
 
-However if custom styling is necessary we will be using SASS. Each component will have a separate styling sheet.
+
+Global Theming is done in `src/theme.tsx`. This is provided by MUI and allows us to change the theme of the app. This is where we will be changing the color scheme of the app. The theme is then passed down to the `ThemeProvider` which is a wrapper around the app. This allows us to use the theme in any component. To use the theme in a component you can use the `useTheme` hook. This will give you access to the theme object. You can then use the theme object to style your component. For more information on how to use the theme object refer to the [MUI docs](https://mui.com/customization/theming/)
+
+
+
 ## Views
 
-View are defined by the content inside of full view port. A view is meant to be modular they should only contain HTML code for layout and structure while components fill up the content. The file name is the same name as the component in the definition but is under
+View are defined by the content inside of full view port. A view is meant to be modular they should only contain code for layout, state and structure while components fill up the content. The file name is the same name as the component in the definition but is under kebab-case, which is the general convention for HTML files.
 
 ## Components
 
-Components are independent and reusable bits of code. They serve the same purpose as JavaScript functions, but work in isolation and return HTML. Components will be built as functional components as it is the status quo for most modern React applications.
+Components are independent and reusable bits of code. They serve the same purpose as JavaScript functions, but work in isolation and return HTML. Components will be built as functional components as it is the status quo for most modern React applications. Components will be defined in the `components` folder. The file name is defined using PascalCase, which is the general convention for Txs component files.
 
 ## Component Life Cycle
 
-For a react component there are three main phases
+For a react component there are three main phases:
 
 - Mounting
 - Updating
@@ -48,14 +66,13 @@ Since we are using Functional components we will use React Hooks to deal with th
 </p>
 
 Mounting phase:
-- New component is created and inserted into the DOM
+- New component is created and inserted into the DOM.
 
 Updating phase:
-- Rerenders compute when new state is updated
-
+- Rerenders compute when new state is updated.
 
 Unmounting:
-- Removed from the DOM
+- Removed from the DOM tree.
 
 
 
@@ -111,6 +128,3 @@ const {Name}: React.FC<{Name}Props> = ({ {Param} }) => {
 
 export default {Name}
 ```
-
-## Flight Report
-TODO: After MVP

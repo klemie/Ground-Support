@@ -21,7 +21,7 @@ An array of breadcrumbs. renders in the order of the array.
 Each of the breadcrumbs come in this interface. 
 
 ```ts
-interface HeaderProps {
+interface breadCrumbs {
     name: string;
     path?: string;
     active: boolean;
