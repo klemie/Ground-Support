@@ -5,6 +5,7 @@ import addRocket from '../static/images/AddRocket.svg';
 
 import '../styles/rocketSelection.css';
 import RocketProfilePopup from '../components/RocketProfilePopup';
+import { SocketGateway } from '../utils/socket-context';
 import api from '../services/api';
 import { IRocketPopulated } from '../utils/entities';
 
@@ -32,9 +33,9 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 
 	const [isOpen, setIsOpen] = useState(false);
 	const [rocketData, setRocketData] = useState<Rocket[]>([]);
-	const [rocketProfileId, setRocketProfileId] =  useState<string>('');
+	const [rocketProfileId, setRocketProfileId] = useState<string>('');
 	useEffect(() => {
-		async function getMissionData() {
+		async function getRocketData() {
 			const response = await api.getRockets();
 			const data = response.data as IRocketPopulated[];
 			const rockets: Rocket[] = data.map((rocket: any) => {
@@ -43,11 +44,11 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 					image: 'Xenia1.svg',
 					name: rocket.Name,
 					active: true
-				} as Rocket
+				} as Rocket;
 			});
 			setRocketData(rockets);
 		}
-		getMissionData();
+		getRocketData();
 	}, []);
 
 	const addNewRocket = () => {
@@ -74,44 +75,55 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 	});
 
 	return (
-		<div style={{ width: '100vw', height: '99vh' }}>
-			<Grid
-				container
-				direction="column"
-				paddingX="2rem"
-				paddingY="2rem"
-				gap={3}
-				sx={{ height: '100%', width: '100%' }}
-			>
-				{/* Page Header */}
-				<Grid item>
-					<Header breadCrumbs={breadCrumbs} />
-				</Grid>
+		<SocketGateway>
+			<div style={{ width: '100vw', height: '99vh' }}>
+				<Grid
+					container
+					direction="column"
+					paddingX="2rem"
+					paddingY="2rem"
+					gap={3}
+					sx={{ height: '100%', width: '100%' }}
+				>
+					{/* Page Header */}
+					<Grid item>
+						<Header breadCrumbs={breadCrumbs} />
+					</Grid>
 
-				{/* Rocket Selection */}
-				<Grid container justifyContent="center" alignItems="center" style={{ height: '80%' }}>
-					<Stack direction="row" justifyContent="center" spacing={8} alignItems="flex-end">
-						{rockets}
-						<Stack direction="column" spacing={1} onClick={addNewRocket}>
-							<img src={addRocket} alt="Add Rocket" width={40}></img>
-							<Chip label="New Rocket" color="primary" sx={{ fontWeight: 'bold' }} />
+					{/* Rocket Selection */}
+					<Grid container justifyContent="center" alignItems="center" style={{ height: '80%' }}>
+						<Stack direction="row" justifyContent="center" spacing={8} alignItems="flex-end">
+							{rockets}
+							<Stack direction="column" spacing={1} onClick={addNewRocket}>
+								<img src={addRocket} alt="Add Rocket" width={40}></img>
+								<Chip label="New Rocket" color="primary" sx={{ fontWeight: 'bold' }} />
+							</Stack>
 						</Stack>
-					</Stack>
+					</Grid>
 				</Grid>
-			</Grid>
-			<div>
-				{colors.map((color) => {
-					return (
-						<div
-							style={{
-								backgroundColor: color,
-								width: '25%',
-								height: '1vh',
-								float: 'left'
-							}}
-						/>
-					);
-				})}
+				<div>
+					{colors.map((color) => {
+						return (
+							<div
+								style={{
+									backgroundColor: color,
+									width: '25%',
+									height: '1vh',
+									float: 'left'
+								}}
+							/>
+						);
+					})}
+				</div>
+				<RocketProfilePopup
+					rocketProfileId={rocketProfileId}
+					isOpen={isOpen}
+					onSave={() => {
+						props.setCurrentView('Active_Rocket');
+						setIsOpen(false);
+					}}
+					onClose={() => setIsOpen(false)}
+				/>
 			</div>
 			<RocketProfilePopup
 				rocketProfileId={rocketProfileId}
@@ -123,6 +135,6 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 				}}
 				onClose={() => setIsOpen(false)}
 			/>
-		</div>
+		</SocketGateway>
 	);
 }
