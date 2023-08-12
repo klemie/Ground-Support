@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 
 // Components
 import {
+    Button,
     Grid,
     Stack,
     TableCell,
@@ -16,21 +17,23 @@ import Header, { Breadcrumb } from '../components/Header';
 
 // Utils
 import { IDataConfig } from '../utils/entities';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import api from '../services/api';
 
 interface Props {
     DataConfigID: string;
+    onClickBack: () => void;
 }
 
 export default function DataConfigView(props: Props) {
-    const { DataConfigID } = props;
+    const { DataConfigID, onClickBack } = props;
     const breadCrumbs: Breadcrumb[] = [
         { name: 'Rocket Selection', path: '/', active: false },
         { name: 'Rocket Details', path: '/', active: false },
         { name: 'Data Configuration', path: '/', active: true }
     ];
 
-    const[dataConfig, setDataConfig] = useState<IDataConfig>({} as IDataConfig);
+    const[dataConfig, setDataConfig] = useState<IDataConfig>({Modules: []} as IDataConfig);
 
     const getDataConfig = useCallback(async () => {
         const dataConfigResponse = await api.getDataConfig(DataConfigID);
@@ -109,6 +112,14 @@ export default function DataConfigView(props: Props) {
                     options={options}
                     components={components}
                 />
+                <Button
+                    variant="contained" 
+                    color="primary" 
+                    onClick={onClickBack} 
+                    startIcon={<NavigateBeforeIcon />}
+                >
+                    Back
+                </Button>
             </Stack>
         </div>
         );  

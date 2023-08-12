@@ -9,6 +9,7 @@ interface ICoordinates {
 
 export interface IMission {
     Name: string;
+    IsActive: boolean;
     IsTest: boolean;
     Date: Date;
     Coordinates: ICoordinates;
@@ -48,6 +49,11 @@ const MissionSchema: Schema = new Schema(
         IsTest: {
             type: Boolean,
             required: true
+        },
+        IsActive: {
+            type: Boolean,
+            required: true,
+            default: false
         },
         LaunchAltitude: {
             type: Number,
