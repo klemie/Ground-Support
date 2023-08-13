@@ -23,6 +23,7 @@
 		"mui-datatables": "^4.3.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
+		"react-material-file-upload": "^0.0.4",
 		"react-scripts": "5.0.1",
 		"react-syntax-highlighter": "^15.5.0",
 		"socket-io": "^1.0.0",
