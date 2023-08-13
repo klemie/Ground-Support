@@ -115,7 +115,6 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 
 	const graph = (
 		<>
-			{/* <RealTimeChart module={mo}/> */}
 		</>
 	);
 
@@ -123,7 +122,6 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 		<>
 			<Card variant="outlined">
 				<CardHeader
-					 
 					title={props.title || 'Default'} 
 					titleTypographyProps={{ variant: 'h6' }} 
 					sx={{ padding: 2, textAlign: 'center' }} 
