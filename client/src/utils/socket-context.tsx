@@ -54,7 +54,7 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 	const [logs, setLogs] = useState<string[]>([]);
 	const [aprsPacket, aprsDispatch] = useReducer(aprsReducer, {} as IPacket);
 	const [loRaPacket, loraDispatch] = useReducer(loraReducer, {} as IPacket);
-	const socket = io('http://localhost:8086/data2');
+	const socket = io('http://localhost:8086/toClient');
 
 	const setAprsFrequency = (frequency: number) => {
 		// socket.emit('set_aprs_frequency', { frequency });
@@ -72,6 +72,7 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 
 		socket.on('aprs_packet', (packet: IPacket) => {
 			const p = packet as IPacket;
+			console.log('APRS PACKET:', p);
 			aprsDispatch({ type: 'SET_PACKET', payload: p});
 		});
 
