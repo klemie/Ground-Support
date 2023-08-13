@@ -16,7 +16,7 @@ import Longitude from '../../utils/Longitude.svg';
 import Latitude from '../../utils/Latitude.svg'
 import longLat from '../../utils/coordnates-graphic.png';
 import InfoIcon from '@mui/icons-material/Info';
-import { map } from 'lodash';
+import RouteIcon from '@mui/icons-material/Route';
 
 export default function RecoveryView() {
 	const breadCrumbs: Breadcrumb[] = [
@@ -51,7 +51,7 @@ export default function RecoveryView() {
                 <Paper elevation={2} sx={{ padding: 2 }}>
                     <Stack direction="row" spacing={5} justifyContent={'space-between'} alignItems={'center'}>
                         <Stack direction="row" alignItems={'center'} spacing={2}>
-                            <RocketLaunchIcon color={'primary'} /> 
+                            <RouteIcon color={'primary'} /> 
                             <Typography align='left' variant='h6'>
                                 {activeContext.activeMission.Name || 'Mission Not found'}
                             </Typography>

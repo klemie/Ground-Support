@@ -90,7 +90,6 @@ export default function FlightView() {
 								return (
 									<Grid item>
 										<ModuleStatus module={module} statusOnly />
-										{/* { module.Name } */}
 									</Grid>
 								)})
 							)}
