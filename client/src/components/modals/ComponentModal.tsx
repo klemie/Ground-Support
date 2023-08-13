@@ -36,7 +36,6 @@ const MenuProps = {
 	}
 };
 
-
 interface ComponentModalProps {
 	component?: IComponentPopulated;
 	rocket?: IRocket;

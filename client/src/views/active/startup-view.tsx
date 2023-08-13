@@ -40,7 +40,7 @@ export default function StartUpView(props: StartUpViewProps) {
 
 	const breadCrumbs: Breadcrumb[] = [
 		{ name: 'New Mission', path: '/', active: false },
-		{ name: 'Telemetry View', path: '/', active: true }
+		{ name: 'Start Up', path: '/', active: true }
 	];
 
 	const [dataConfig, setDataConfig] = useState<IDataConfig>();
