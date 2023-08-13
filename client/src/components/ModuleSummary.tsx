@@ -5,6 +5,8 @@ import MUIDataTable from "mui-datatables";
 import Graph from "./RealTimeGraph";
 import DataConstructor from '../utils/data-constructor';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SensorsIcon from '@mui/icons-material/Sensors';
+import ScienceIcon from '@mui/icons-material/Science';
 
 interface ModuleSummaryProps {
     Module: IModule;
@@ -17,10 +19,11 @@ const ModuleSummary: React.FC<ModuleSummaryProps> = (props: ModuleSummaryProps) 
     return (
         <Container>
             <Paper elevation={2} sx={{ marginY: 2, padding: 2 }}>
-                <Stack direction="row" alignItems={'center'} spacing={2}>
+                <Stack direction="row" justifyContent={'space-between'} alignItems={'center'} spacing={2}>
                     <Typography align='left' variant='h5'>
                         {Module.Name || 'Mission Not found'}
                     </Typography>
+                    <SensorsIcon />
                 </Stack>
             </Paper>        
         <Stack direction={'column'} spacing={0}>

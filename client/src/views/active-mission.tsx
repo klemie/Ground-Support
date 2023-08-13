@@ -13,7 +13,7 @@ import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 // Views
 import StartUpView from './active/startup-view';
 import FlightView from './active/flight-view';
-import RocketSelectionView from './flight-report-view';
+import RocketSelectionView from './active/flight-report-view';
 
 // Components UI
 import { Button, Grid, Stack, Step, StepButton, Stepper, IconButton } from "@mui/material";
