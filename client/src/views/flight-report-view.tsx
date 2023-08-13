@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { IDataConfig, IMission } from '../utils/entities';
 
-import { Grid, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Grid, Stack, Typography } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import ModuleSummary from '../components/ModuleSummary';
 import { useActiveMission } from '../utils/ActiveMissionContext';
 import api from '../services/api';
+import { Paper } from '@material-ui/core';
 
 export default function RocketSelectionView() {
     const [missionData, setMissionData] = useState<IMission>();
@@ -53,10 +54,10 @@ export default function RocketSelectionView() {
             <Grid item >
                 <Typography variant='h4'>{missionData?.Name} Flight Report</Typography>
             </Grid>
-            <Grid container style={{ height: '100vh', overflowY: 'scroll' }}>
+            <Grid container style={{ overflowY: 'scroll' }}>
                 {dataConfigs.map((dataConfig: IDataConfig) => {
                     return dataConfig.Modules.map((module) => {
-                        return <ModuleSummary Module={module} />
+                        return <ModuleSummary Module={module} />;
                     });
                 })}
             </Grid>
