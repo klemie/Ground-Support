@@ -36,8 +36,6 @@ export default function RocketSelectionView() {
             }
         };
         getDataConfigs();
-        console.log(context.rocket.Components);
-
     }, [missionData]);
 
 
@@ -58,7 +56,6 @@ export default function RocketSelectionView() {
             <Grid container style={{ height: '100vh', overflowY: 'scroll' }}>
                 {dataConfigs.map((dataConfig: IDataConfig) => {
                     return dataConfig.Modules.map((module) => {
-                        // return module.Name;
                         return <ModuleSummary Module={module} />
                     });
                 })}

@@ -12,7 +12,6 @@ import { IModule } from '../utils/entities';
 
 interface GraphProps {
 	dataKeys: string[];
-	// fieldsToRender: string[];
 	staticData: any[];
 	realTime: boolean;
 }
@@ -28,8 +27,6 @@ const Graph: React.FC<GraphProps> = (props: GraphProps) => {
 		} else {
 			setData(staticData);
 		}
-		console.log('Data:', data);
-		console.log(dataKeys);
 	}, [realTime, staticData]);
 
 	return (
