@@ -115,7 +115,6 @@ const Module: React.FC<ModuleProps> = (props: ModuleProps) => {
 
 	const graph = (
 		<>
-			{/* <RealTimeChart module={mo}/> */}
 		</>
 	);
 

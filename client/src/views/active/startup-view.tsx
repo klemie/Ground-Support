@@ -34,7 +34,7 @@ interface StartUpViewProps {
 
 export default function StartUpView(props: StartUpViewProps) {
 	const [component, setComponent] = useState<IComponent>();
-	const { aprsPacket } = useSocketContext();
+	const sc = useSocketContext();
 
 	const activeContext = useActiveMission();
 
@@ -44,7 +44,7 @@ export default function StartUpView(props: StartUpViewProps) {
 	];
 
 	const [dataConfig, setDataConfig] = useState<IDataConfig>();
-
+	const [log, setLog] = useState<string[]>(['Not Data']);
 	const getDataConfig = useCallback(async () => {
 		try {
 			if (component?.DataConfigId === undefined) return console.log('No Data Config Id');
@@ -62,17 +62,9 @@ export default function StartUpView(props: StartUpViewProps) {
 	}, [getDataConfig]);
 
 	useEffect(() => {
-		console.log(activeContext);
-	}, [activeContext]);
-
-	useEffect(() => {
-		console.log(dataConfig);
-	}, [dataConfig]);
-
-	useEffect(() => {
-		console.log(aprsPacket);
-	}, [aprsPacket]);
-
+		if (sc.aprsPacket.Data === undefined) return 
+		setLog(prev => [...prev, JSON.stringify(sc.aprsPacket.Data) as string || '']);
+	}, [sc.aprsPacket.Data]);
 	return (
 		<>
 			<Grid container direction="column" paddingX="2rem" paddingY="2rem" gap={3}>
@@ -140,9 +132,7 @@ export default function StartUpView(props: StartUpViewProps) {
 				<Grid container direction={'row'} gap={3}>
 					<Grid item width={component?.Name === 'Big Red Bee' ? '100%' : '50%'}>
 						<TelemetryLog 
-							value="
-								salads
-							" 
+							value={log.toString()}
 							width='100%' 
 							maxRows={15}
 						/>

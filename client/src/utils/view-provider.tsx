@@ -62,7 +62,6 @@ export default function ViewProvider(props: ViewProviderProps) {
 	};
 
 	const handleToRocketDetails = (): any => {
-		console.log("handleToRocketDetails");
 		viewDispatch({ type: ROCKET_DETAILS_KEY });
 	};
 

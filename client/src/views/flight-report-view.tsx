@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { IDataConfig, IMission } from '../utils/entities';
-
 import { Grid, Paper, Stack, Typography } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import ModuleSummary from '../components/ModuleSummary';
@@ -36,8 +35,6 @@ export default function RocketSelectionView() {
             }
         };
         getDataConfigs();
-        console.log(context.rocket.Components);
-
     }, [missionData]);
 
 
@@ -63,12 +60,10 @@ export default function RocketSelectionView() {
                     </Stack>
                 </Paper>
             </Grid>
-
-            <Grid container style={{ height: '78vh', overflowY: 'scroll' }}>
+            <Grid container style={{ overflowY: 'scroll' }}>
                 {dataConfigs.map((dataConfig: IDataConfig) => {
                     return dataConfig.Modules.map((module) => {
-                        // return module.Name;
-                        return <ModuleSummary Module={module} />
+                        return <ModuleSummary Module={module} />;
                     });
                 })}
             </Grid>

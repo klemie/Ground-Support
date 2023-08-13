@@ -15,8 +15,8 @@ def emit_random_data():
             lora_packet = "LoRa Data: " + str(random.uniform(50.0, 200.0))
 
             # Emit the data to the clients
-            socketio.emit('aprs_packet', aprs_packet, namespace='/data2')
-            socketio.emit('loRa_packet', lora_packet, namespace='/data2')
+            socketio.emit('aprs_packet', aprs_packet, namespace='/toClient')
+            socketio.emit('loRa_packet', lora_packet, namespace='/toClient')
             
             # Wait for 2 seconds before emitting again
             time.sleep(2)
@@ -24,7 +24,7 @@ def emit_random_data():
 def send_APRS_packet(packet):
     print('sending packet')
     with app.test_request_context('/'):
-        socketio.emit('aprs_packet', packet, namespace='/data2')
+        socketio.emit('aprs_packet', packet, namespace='/toClient')
 # Route to serve the frontend
 
 @app.route('/')
@@ -32,28 +32,29 @@ def index():
     return send_file('templates/index.html')
 
 # SocketIO event to handle client connection
-@socketio.on('aprs_packet_telemetry', namespace='/data')
+@socketio.on('aprs_packet_telemetry', namespace='/fromDirewolf')
 def aprs_relay(packet):
+    print("got packet")
     print(packet)
     send_APRS_packet(packet)
 
 # SocketIO event to handle client connection
-@socketio.on('connect', namespace='/data')
+@socketio.on('connect', namespace='/fromDirewolf')
 def on_connect():
-    print('Client connected')
+    print('direwolf connected')
 
 # SocketIO event to handle client connection
-@socketio.on('connect', namespace='/data2')
+@socketio.on('connect', namespace='/toClient')
 def on_connect():
     print('Client connected')
 
 # SocketIO event to handle client disconnection
-@socketio.on('disconnect', namespace='/data')
+@socketio.on('disconnect', namespace='/fromDirewolf')
 def on_disconnect():
-    print('Client disconnected')
+    print('direwolf disconnected')
 
 # SocketIO event to handle client disconnection
-@socketio.on('disconnect', namespace='/data2')
+@socketio.on('disconnect', namespace='/toClient')
 def on_disconnect():
     print('Client disconnected 2')
 

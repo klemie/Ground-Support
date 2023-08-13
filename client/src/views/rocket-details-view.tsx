@@ -112,7 +112,6 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
     const getRocket = useCallback(async () => {
         const response = await api.getRocket(rocketId);
         const rocket = response.data as IRocketPopulated;
-        console.log(response);
         setRocketData({
             _id: rocketId,
             Name: rocket.Name,

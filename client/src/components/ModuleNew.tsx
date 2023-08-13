@@ -55,8 +55,6 @@ const processStatus = (module: any, dataPoints: number[]) => {
         const statuses = fg.Fields.map((f: IField) => {
             return [f.Name, dataPoints.every((point) => gt(point, f.Range[1]) || lt(point, f.Range[0]))];
         });
-        // overall status of the group
-        // statuses.push([module.Name, statuses.every((s) => s[1])]);
         return statuses;
     });
 
@@ -85,13 +83,7 @@ const ModuleStatus: React.FC<ModuleProps> = (props: ModuleProps) => {
     const { module, statusOnly } = props;
 
     const data = [2.5, 2.5, 2.5];
-    // const [telemetryStatusState, telemetryStatusDispatch] = useReducer<
-    //     Reducer<
-    //         StatusTypes.InActive | 
-    //         StatusTypes.TelemetryLocked | 
-    //         StatusTypes.Failed, 
-    //         any>
-    //     >(statusReducer, StatusTypes.InActive);
+
 
         const [status, statusDispatch] = useReducer<
         Reducer<
