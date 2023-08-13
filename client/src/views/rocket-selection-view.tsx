@@ -75,66 +75,64 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 	});
 
 	return (
-		<SocketGateway>
-			<div style={{ width: '100vw', height: '99vh' }}>
-				<Grid
-					container
-					direction="column"
-					paddingX="2rem"
-					paddingY="2rem"
-					gap={3}
-					sx={{ height: '100%', width: '100%' }}
-				>
-					{/* Page Header */}
-					<Grid item>
-						<Header breadCrumbs={breadCrumbs} />
-					</Grid>
-
-					{/* Rocket Selection */}
-					<Grid container justifyContent="center" alignItems="center" style={{ height: '80%' }}>
-						<Stack direction="row" justifyContent="center" spacing={8} alignItems="flex-end">
-							{rockets}
-							<Stack direction="column" spacing={1} onClick={addNewRocket}>
-								<img src={addRocket} alt="Add Rocket" width={40}></img>
-								<Chip label="New Rocket" color="primary" sx={{ fontWeight: 'bold' }} />
-							</Stack>
-						</Stack>
-					</Grid>
+		<div style={{ width: '100vw', height: '99vh' }}>
+			<Grid
+				container
+				direction="column"
+				paddingX="2rem"
+				paddingY="2rem"
+				gap={3}
+				sx={{ height: '100%', width: '100%' }}
+			>
+				{/* Page Header */}
+				<Grid item>
+					<Header breadCrumbs={breadCrumbs} />
 				</Grid>
-				<div>
-					{colors.map((color) => {
-						return (
-							<div
-								style={{
-									backgroundColor: color,
-									width: '25%',
-									height: '1vh',
-									float: 'left'
-								}}
-							/>
-						);
-					})}
-				</div>
-				<RocketProfilePopup
-					rocketProfileId={rocketProfileId}
-					isOpen={isOpen}
-					onSave={() => {
-						props.setCurrentView();
-						setIsOpen(false);
-					}}
-					onClose={() => setIsOpen(false)}
-				/>
+
+				{/* Rocket Selection */}
+				<Grid container justifyContent="center" alignItems="center" style={{ height: '80%' }}>
+					<Stack direction="row" justifyContent="center" spacing={8} alignItems="flex-end">
+						{rockets}
+						<Stack direction="column" spacing={1} onClick={addNewRocket}>
+							<img src={addRocket} alt="Add Rocket" width={40}></img>
+							<Chip label="New Rocket" color="primary" sx={{ fontWeight: 'bold' }} />
+						</Stack>
+					</Stack>
+				</Grid>
+			</Grid>
+			<div>
+				{colors.map((color) => {
+					return (
+						<div
+							style={{
+								backgroundColor: color,
+								width: '25%',
+								height: '1vh',
+								float: 'left'
+							}}
+						/>
+					);
+				})}
 			</div>
 			<RocketProfilePopup
 				rocketProfileId={rocketProfileId}
 				isOpen={isOpen}
-				onSave={() => { 
+				onSave={() => {
 					props.setCurrentView();
-					if(props.setRocketID){props.setRocketID(rocketProfileId)};
 					setIsOpen(false);
 				}}
 				onClose={() => setIsOpen(false)}
 			/>
-		</SocketGateway>
+		<RocketProfilePopup
+			rocketProfileId={rocketProfileId}
+			isOpen={isOpen}
+			onSave={() => { 
+				props.setCurrentView();
+				if(props.setRocketID){props.setRocketID(rocketProfileId)};
+				setIsOpen(false);
+			}}
+			onClose={() => setIsOpen(false)}
+		/>
+		</div>
 	);
 }

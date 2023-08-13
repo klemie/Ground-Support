@@ -9,7 +9,7 @@ if [ $# -ge 1 ]
 then
   FREQ=$1
 else
-  FREQ=144.39M
+  FREQ=433.92M
 fi
 #For APRS: usually 432.9M or 144.39M
 
