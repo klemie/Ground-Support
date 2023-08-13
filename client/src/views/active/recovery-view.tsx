@@ -16,6 +16,7 @@ import Longitude from '../../utils/Longitude.svg';
 import Latitude from '../../utils/Latitude.svg'
 import longLat from '../../utils/coordnates-graphic.png';
 import InfoIcon from '@mui/icons-material/Info';
+import { map } from 'lodash';
 
 export default function RecoveryView() {
 	const breadCrumbs: Breadcrumb[] = [
@@ -66,13 +67,18 @@ export default function RecoveryView() {
                     }}
                     >
                     <CardHeader title="Recovery Details" />
+                    <Stack direction={'row'} bottom={0}>
+                        {[
+                            'uvr.red',
+                            'uvr.yellow',
+                            'uvr.lightBlue',
+                            'uvr.darkBlue'
+                        ].map((c) => <Box sx={{backgroundColor: c}} width={'25%'} height={10}/>)}
+                    </Stack>
                     <CardContent>
-                        <Stack direction={'row'}>
-
-                        </Stack>
-                        <Stack direction={'column'} gap={2}>
+                        <Stack direction={'column'} gap={2} paddingY={1}>
                             <Stack direction={'row'} gap={1}>
-                                <RocketLaunchIcon />
+                                <RocketLaunchIcon sx={{ color: 'uvr.lightBlue' }}/>
                                 Launch Location
                             </Stack>
                             <Stack direction={'row'} gap={2}>
@@ -90,7 +96,7 @@ export default function RecoveryView() {
                                 />
                             </Stack>
                             <Stack direction={'row'} gap={1}>
-                                <RocketIcon />
+                                <RocketIcon sx={{ color: 'uvr.red' }}/>
                                 Recovery Location
                             </Stack>
                             <Stack direction={'row'} gap={2}>
@@ -135,16 +141,6 @@ export default function RecoveryView() {
                 <DialogTitle>Coordinates Details</DialogTitle>
                 <DialogContent>
                     <img src={longLat} style={{borderRadius: 5, maxWidth: 550}}/>
-                    {/* <Stack direction={'row'} spacing={2}>
-                        <Stack direction={'column'}>
-                            <Typography variant={'h6'}>Longitude</Typography>
-                            <img src={Longitude} alt="Longitude" width={400}></img>
-                        </Stack>
-                        <Stack direction={'column'}>
-                            <Typography variant={'h6'}>Latitude</Typography>
-                            <img src={Latitude} alt="Latitude" width={400}></img>
-                        </Stack> */}
-                    {/* </Stack> */}
                 </DialogContent>
             </Dialog>
 		</Grid>

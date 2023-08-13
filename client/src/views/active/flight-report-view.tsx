@@ -82,7 +82,7 @@ export default function RocketSelectionView() {
                     </Stack>
                 </Paper>
             </Grid>
-            <Grid container style={{ overflowY: 'scroll' }}>
+            <Grid container style={{ height: '60vh', overflowY: 'scroll' }}>
                 {dataConfigs.map((dataConfig: IDataConfig) => {
                     return dataConfig.Modules.map((module, idx) => {
                         return <ModuleSummary Index={idx} Module={module} />;

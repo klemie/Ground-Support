@@ -43,13 +43,21 @@ const TelemetryLog: React.FC<TelemetryLogProps> = (props: TelemetryLogProps) => 
                 /> 
                 <Button 
                     variant={"contained"} 
-                    color="error"
+                    color="primary"
                     style={{
                         width: "150px",
                         margin: "20px"
                     }}
                     startIcon={<Download />}
                 > Packet Log </Button>
+                <Stack direction={'row'} bottom={0}>
+                    {[
+                        'uvr.red',
+                        'uvr.yellow',
+                        'uvr.lightBlue',
+                        'uvr.darkBlue'
+                    ].map((c) => <Box sx={{backgroundColor: c}} width={'25%'} height={10}/>)}
+                    </Stack>
             </Stack>
         </Box>
     );
