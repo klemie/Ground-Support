@@ -16,7 +16,7 @@ import FlightView from './active/flight-view';
 import RocketSelectionView from './active/flight-report-view';
 
 // Components UI
-import { Button, Grid, Stack, Step, StepButton, Stepper, IconButton } from "@mui/material";
+import { Button, Grid, Stack, Step, StepButton, Stepper, IconButton, styled } from "@mui/material";
 import SettingsDialog from "../components/SettingsDialog";
 import { SocketGateway } from "../utils/socket-context";
 
@@ -31,6 +31,12 @@ interface ViewProviderProps {
     missionId: string;
     backToRocketSelection: () => void;
 }
+
+const StyledStepper = styled(Stepper)`
+    .MuiStepper-root {
+        backgroundcolor: uvr.yellow;
+    }
+`;
 
 const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps) => {
     const { rocketId, missionId, backToRocketSelection } = props;
@@ -156,15 +162,20 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
     
                         {/* Page change stepper */}
                         <Grid container justifyContent="center">
-                            <Stepper nonLinear activeStep={activeStep} orientation="vertical">
+                            <StyledStepper 
+                                nonLinear 
+                                activeStep={activeStep} 
+                                orientation="vertical" 
+                                sx={{ 'ActiveColor': 'uvr.yellow', '--completed-color': 'uvr.yellow'}}
+                            >
                                 {activeStepKeys.map((label, index) => (
-                                    <Step key={label} completed={completedStep[index]}>
-                                        <StepButton color="inherit" onClick={handleStep(index)}>
+                                    <Step key={label}  completed={completedStep[index]} >
+                                        <StepButton onClick={handleStep(index)}>
                                             {label}
                                         </StepButton>
                                     </Step>
                                 ))}
-                            </Stepper>
+                            </StyledStepper>
                         </Grid>
     
                         <Grid item>

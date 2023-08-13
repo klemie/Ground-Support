@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { IDataConfig, IMission } from '../../utils/entities';
 
-import { Accordion, AccordionDetails, AccordionSummary, Grid, Stack, Typography, Paper, Button } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Grid, Stack, Typography, Paper, Button, useTheme } from '@mui/material';
 import Header, { Breadcrumb } from '../../components/Header';
 import ModuleSummary from '../../components/ModuleSummary';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
@@ -14,14 +14,12 @@ export default function RocketSelectionView() {
     const [missionData, setMissionData] = useState<IMission>();
     const [dataConfigs, setDataConfigs] = useState<IDataConfig[]>([]);
     const [isDataUploadOpen, setIsDataUploadOpen] = useState<boolean>(false);
-
     const breadCrumbs: Breadcrumb[] = [
 		{ name: missionData?.Name || "New Mission", path: "/", active: false },
 		{ name: "Flight Report", path: "/", active: true }
 	];
 
     const context = useActiveMission()
-
     useEffect(()=> {
         // reset state 
         setMissionData(undefined);
@@ -86,8 +84,8 @@ export default function RocketSelectionView() {
             </Grid>
             <Grid container style={{ overflowY: 'scroll' }}>
                 {dataConfigs.map((dataConfig: IDataConfig) => {
-                    return dataConfig.Modules.map((module) => {
-                        return <ModuleSummary Module={module} />;
+                    return dataConfig.Modules.map((module, idx) => {
+                        return <ModuleSummary Index={idx} Module={module} />;
                     });
                 })}
             </Grid>
