@@ -30,10 +30,10 @@ export default function RecoveryView() {
 
     const defaultProps = {
         center: {
-          lat: activeContext.activeMission.Coordinates.Latitude || 28.538336,
-          lng: activeContext.activeMission.Coordinates.Latitude || -81.202853
+          lat: activeContext.activeMission.Coordinates.Latitude || 48.461223,
+          lng: activeContext.activeMission.Coordinates.Longitude || -123.309765
         },
-        zoom: 11
+        zoom: 15
       };
       
 	return (
