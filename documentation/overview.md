@@ -3,7 +3,7 @@
 </p>
 
 ## Project Motivation
-After the flight of Xenia-1 concerns were brought up about the current state of the ground station. Ground station it self was not used on the day of the flight and stopped working due to overdraw on the battery system, as a replacement a laptop with a usb SDR was used and worked perfectly. Since the internals of the original ground station was basically the same as a laptop it was determined that a SRAD hardware ground station was redundant. The current software requires a decent amount of setup and tuning of the SDR. The goal of an app would be to handle all the more technical setup in a more approachable way.
+After the flight of Xenia-1 concerns were brought up about the current state of the ground station. Ground station itself was not used on the day of the flight and stopped working due to overdraw on the battery system. As a replacement a laptop with a USB SDR was used and worked perfectly. Since the internals of the original ground station were basically the same as a laptop, it was determined that an SRAD hardware ground station was redundant. The current software requires a decent amount of setup and tuning of the SDR. The goal of an app would be to handle all the more technical setup in a more approachable way.
 
 <p align="center">
     <img src="./assets/x-ground-station.png\" width="600"/>

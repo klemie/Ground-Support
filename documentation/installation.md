@@ -126,7 +126,7 @@ In the `.env` file fill in the password and username with the credentials above
 In Here you can setup which IP addresses can access your database. For now click add new IP address and select
 `add current ip address` button.
 
-⚠️ Do not click allow access anywhere. That is reserved for he production version.
+⚠️ Do not click allow access anywhere. That is reserved for the production version.
 
 <p align="center">
     <img src="./assets/add-new-ip.png" width=300/>
