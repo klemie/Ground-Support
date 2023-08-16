@@ -36,7 +36,6 @@ const MenuProps = {
 	}
 };
 
-
 interface ComponentModalProps {
 	component?: IComponentPopulated;
 	rocket?: IRocket;
@@ -103,7 +102,7 @@ const ComponentModal = (props: ComponentModalProps) => {
 		let dataConfigResponse: dataConfigStructure;
 		if (componentId && configFile) {
 			dataConfigResponse = await axios.patch(
-				`http://127.0.0.1:9090/DataConfig/${component?.DataConfig}`, 
+				`http://127.0.0.1:9090/DataConfig/${component?.DataConfigId}`, 
 				parsedConfigFile.current
 			);
 		} else {	
@@ -127,7 +126,7 @@ const ComponentModal = (props: ComponentModalProps) => {
 
 		const payload: IComponent = {
 			Name: name,
-			DataConfig: dataConfigId,
+			DataConfigId: dataConfigId,
 			TelemetrySource: sourceType,
 			Details: details
 		};
@@ -328,7 +327,7 @@ const ComponentModal = (props: ComponentModalProps) => {
 									startIcon={<CloudUpload />}
 									fullWidth
 								>
-									{!configFile && (component?.DataConfig ? 'overwrite config' : 'Data Configuration')}
+									{!configFile && (component?.DataConfigId ? 'overwrite config' : 'Data Configuration')}
 								</Button>
 							</label>
 							<Tooltip

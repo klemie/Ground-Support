@@ -1,0 +1,13 @@
+[
+    {
+        "module": {
+            "name": "Accelerometer",
+            "telemetryId": "0100"
+        },
+        "acceleration": [
+            { "field": "x", "range": [2 , 3], "units": "G" } ,
+            { "field": "y", "range": [10 , 19], "units": "G" },
+            { "field": "z", "range": [16 , 19], "units": "G" }
+        ]
+    }
+]

@@ -4,8 +4,9 @@ export interface IFieldData {
     Name: string;
     Range: [number];
     Units: string;
-    ParentModuleName: Types.ObjectId;
-    ParentFieldGroupName: Types.ObjectId;
+    MissionId: Types.ObjectId;
+    ParentModuleId: Types.ObjectId;
+    ParentFieldGroupId: Types.ObjectId;
     TelemetryId: Buffer;
     Data: [typeof DataPoint];
 };
@@ -37,7 +38,12 @@ export const FieldDataSchema: Schema = new Schema(
             type: String,
             required: true
         },
-        ParentModuleName: {
+        ParentMission {
+            type: Types.ObjectId,
+            ref: 'Mission',
+            required: true
+        },
+        ParentModule: {
             type: Types.ObjectId,
             ref: 'Module',
             required: true

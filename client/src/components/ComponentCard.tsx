@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Card, CardActions, CardContent, CardHeader, Chip, IconButton, Stack, Typography } from '@mui/material';
-import { IComponent, IComponentPopulated, IRocket, IRocketPopulated } from '../utils/entities';
+import { IComponentPopulated, IRocket, IRocketPopulated } from '../utils/entities';
 import EditIcon from '@mui/icons-material/Edit';
 import ComponentModal from './modals/ComponentModal';
 import { Delete } from '@mui/icons-material';
@@ -11,10 +11,11 @@ interface ComponentCardProps {
     rocket: IRocketPopulated;
     onDelete: () => void;
     updateComponent: () => void;
+    onDataConfigClick: (id: string) => void;
 }
 
 const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) => {
-    const { componentId, onDelete, updateComponent, rocket } = props;
+    const { componentId, onDelete, updateComponent, rocket, onDataConfigClick } = props;
     const [componentModalOpen, setComponentModalOpen] = useState<boolean>(false);
     const [component, setComponent] = useState<IComponentPopulated>({} as IComponentPopulated);
 
@@ -43,7 +44,7 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
                 Name: data.Name,
                 Details: data.Details,
                 TelemetrySource: data.TelemetrySource,
-                DataConfig: data.DataConfig
+                DataConfigId: data.DataConfigId
             });
 		
 		}
@@ -51,7 +52,7 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
 	}, [componentId]);
 
     const handleDataConfig = () => {
-        return;
+        onDataConfigClick(component.DataConfigId._id as string);
     }
 
     const handleEdit = () => {
@@ -80,7 +81,7 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
                 </CardContent>
                 <CardActions>
                     <Stack direction={'row'} alignContent={'center'} justifyContent="space-between" width={'100%'}>
-                        <Button onClick={handleDataConfig}>
+                        <Button onClick={handleDataConfig} disabled={!component.DataConfigId}>
                             Data Config
                         </Button>
                         <ButtonGroup variant="outlined"  >

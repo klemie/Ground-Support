@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Button, Dialog, TextField, Stack, DialogContent, Typography, Checkbox, FormControlLabel, InputAdornment, Tooltip, IconButton, DialogActions, Select, MenuItem, OutlinedInput, Box, Chip, FormControl, InputLabel  } from "@mui/material";
 import { IComponent, IMission, IRocket, IRocketPopulated } from "../utils/entities";
 import api from "../services/api";
-import { MUIDataTableOptions } from "mui-datatables";
 
 interface MissionConfigProps {
     missionId?: string;
@@ -51,6 +50,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
             Name: missionName,
             Date: launchDate,
             IsTest: false,
+            IsActive: false,
             Coordinates: {
                 Longitude: longitude,
                 Latitude: latitude

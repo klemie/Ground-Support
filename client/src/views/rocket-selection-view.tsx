@@ -5,6 +5,7 @@ import addRocket from '../static/images/AddRocket.svg';
 
 import '../styles/rocketSelection.css';
 import RocketProfilePopup from '../components/RocketProfilePopup';
+import { SocketGateway } from '../utils/socket-context';
 import api from '../services/api';
 import { IRocketPopulated } from '../utils/entities';
 
@@ -16,7 +17,7 @@ interface Rocket {
 }
 
 interface RocketSelectProps {
-	setCurrentView: (viewName: string) => void;
+	setCurrentView: () => void;
 	setRocketID?: (rocketID: string) => void;
 }
 
@@ -32,9 +33,9 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 
 	const [isOpen, setIsOpen] = useState(false);
 	const [rocketData, setRocketData] = useState<Rocket[]>([]);
-	const [rocketProfileId, setRocketProfileId] =  useState<string>('');
+	const [rocketProfileId, setRocketProfileId] = useState<string>('');
 	useEffect(() => {
-		async function getMissionData() {
+		async function getRocketData() {
 			const response = await api.getRockets();
 			const data = response.data as IRocketPopulated[];
 			const rockets: Rocket[] = data.map((rocket: any) => {
@@ -43,11 +44,11 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 					image: 'Xenia1.svg',
 					name: rocket.Name,
 					active: true
-				} as Rocket
+				} as Rocket;
 			});
 			setRocketData(rockets);
 		}
-		getMissionData();
+		getRocketData();
 	}, []);
 
 	const addNewRocket = () => {
@@ -116,13 +117,22 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 			<RocketProfilePopup
 				rocketProfileId={rocketProfileId}
 				isOpen={isOpen}
-				onSave={() => { 
-					props.setCurrentView('ROCKET_DETAILS');
-					if(props.setRocketID){props.setRocketID(rocketProfileId)};
+				onSave={() => {
+					props.setCurrentView();
 					setIsOpen(false);
 				}}
 				onClose={() => setIsOpen(false)}
 			/>
+		<RocketProfilePopup
+			rocketProfileId={rocketProfileId}
+			isOpen={isOpen}
+			onSave={() => { 
+				props.setCurrentView();
+				if(props.setRocketID){props.setRocketID(rocketProfileId)};
+				setIsOpen(false);
+			}}
+			onClose={() => setIsOpen(false)}
+		/>
 		</div>
 	);
 }

@@ -1,8 +1,3 @@
-enum TelemetrySource {
-    lora = "LORA",
-    aprs = "APRS"
-}
-
 export interface IField {
     _id?: string;
     Name: string,
@@ -14,7 +9,7 @@ export interface IField {
 export interface IModule {
     _id?: string;
     Name: string;
-    FieldGroups: IField[];
+    FieldGroups: IFieldGroup[];
 }
 
 export interface IDataConfig {
@@ -30,6 +25,7 @@ interface ICoordinates {
 export interface IMission {
     _id?: string;
     Name: string;
+    IsActive: boolean;
     IsTest: boolean
     Date: Date;
     Coordinates: ICoordinates;
@@ -85,7 +81,7 @@ export interface IComponent {
     Name: string;
     TelemetrySource: string;
     Details: string,
-    DataConfig: string;
+    DataConfigId: string;
 }
 
 export interface IComponentPopulated {
@@ -93,7 +89,7 @@ export interface IComponentPopulated {
     Name: string;
     TelemetrySource: string;
     Details: string,
-    DataConfig: IDataConfig;
+    DataConfigId: IDataConfig;
 }
 
 export interface IFieldGroup {
