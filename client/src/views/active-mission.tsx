@@ -189,10 +189,10 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
                                 >
                                     Back
                                 </Button>
-                                <SettingsDialog isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+                                {/* <SettingsDialog isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
                                 <IconButton color='primary' aria-label="settings" onClick={() => handleSettingsDialog()}>
                                     <TuneIcon />
-                                </IconButton>
+                                </IconButton> */}
                             </Stack>
                         </Grid>
                     </Grid>

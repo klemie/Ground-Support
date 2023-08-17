@@ -9,6 +9,7 @@ import api from '../../services/api';
 import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DataUpload from '../../components/DataUpload';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 
 export default function RocketSelectionView() {
     const [missionData, setMissionData] = useState<IMission>();
@@ -57,6 +58,7 @@ export default function RocketSelectionView() {
                 <Paper elevation={2} sx={{ padding: 2 }}>
                     <Stack direction="row" spacing={5} justifyContent={'space-between'} alignItems={'center'}>
                         <Stack direction="row" alignItems={'center'} spacing={2}>
+                            <AssessmentIcon sx={{ color: 'uvr.darkBlue' }} />
                             <Typography align='left' variant='h6'>
                                 {context.activeMission.Name + ' Flight Report'|| 'Mission Not found'}
                             </Typography>

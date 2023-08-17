@@ -16,7 +16,8 @@ import {
 	Box,
 	Chip,
 	Typography,
-	TextField
+	TextField,
+	Button
 } from '@mui/material';
 
 // Utils
@@ -25,6 +26,8 @@ import { useActiveMission } from '../../utils/ActiveMissionContext';
 import api from '../../services/api';
 import ModuleStatus from '../../components/ModuleNew';
 import { useSocketContext } from '../../utils/socket-context';
+import SensorsOffIcon from '@mui/icons-material/SensorsOff';
+import SensorsIcon from '@mui/icons-material/Sensors';
 
 interface StartUpViewProps {
 	rocket: IRocketPopulated;
@@ -34,6 +37,8 @@ interface StartUpViewProps {
 
 export default function StartUpView(props: StartUpViewProps) {
 	const [component, setComponent] = useState<IComponent>();
+	const [connected, setConnected] = useState<boolean>(false);
+
 	const sc = useSocketContext();
 
 	const activeContext = useActiveMission();
@@ -78,7 +83,7 @@ export default function StartUpView(props: StartUpViewProps) {
 					<Paper elevation={2} sx={{ padding: 2 }}>
                         <Stack direction="row" spacing={5} justifyContent={'space-between'} alignItems={'center'}>
 							<Stack direction="row" alignItems={'center'} spacing={2}>
-                                <RocketLaunchIcon color={'primary'} /> 
+                                <RocketLaunchIcon sx={{ color: 'uvr.yellow' }} /> 
                                 <Typography align='left' variant='h6'>
                                     {activeContext.rocket.Name || 'Mission Not found'}
                                 </Typography>
@@ -86,7 +91,7 @@ export default function StartUpView(props: StartUpViewProps) {
 							<Stack direction="row" alignItems={'center'} spacing={2}>
 								<TextField 
 										label='Mission' 
-										size='medium'
+										size='small'
 										value={activeContext.activeMission.Name} 
 										defaultValue={activeContext.activeMission.Name}                                 
 										InputLabelProps={{ shrink: true}}
@@ -94,7 +99,7 @@ export default function StartUpView(props: StartUpViewProps) {
 								<FormControl sx={{ minWidth: 200 }}>
 									<InputLabel id="telemetry-source-select-title">Component Details</InputLabel>
 									<Select
-										size="medium"
+										size="small"
 										labelId="telemetry-source-select-label"
 										id="telemetry-source-select"
 										value={component?.Name || ''}
@@ -125,6 +130,13 @@ export default function StartUpView(props: StartUpViewProps) {
 										))}							
 									</Select>
 								</FormControl>
+								<Button
+									startIcon={connected ? <SensorsIcon /> : <SensorsOffIcon />}
+									variant='contained'
+									onClick={() => setConnected(!connected)}
+								>
+									Connect
+								</Button>
 							</Stack>
                         </Stack>
                     </Paper>
