@@ -8,11 +8,11 @@ import api from "../services/api";
 // Icons
 import TuneIcon from '@mui/icons-material/Tune';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 
 // Views
 import StartUpView from './active/startup-view';
 import FlightView from './active/flight-view';
+import RecoveryView from './active/recovery-view';
 import RocketSelectionView from './active/flight-report-view';
 
 // Components UI
@@ -56,7 +56,7 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
             case RECOVERY_KEY:
                 return {
                     phase: RECOVERY_KEY,
-                    currentView: <></>
+                    currentView: <RecoveryView />
                 }
             case FLIGHT_REPORT_KEY:
                 return {
