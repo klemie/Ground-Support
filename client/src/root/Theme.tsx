@@ -5,9 +5,14 @@ export const getDesignTokens = (mode: PaletteMode) => ({
         mode,
         ...(mode === 'light'
         ? {
+            uvr: {
+                lightBlue: '#4588C9',
+                darkBlue: '#005EB8',
+                yellow: '#FFC557',
+                red: '#D65B4F'
+            }
         }
         : {
-            // Dark Mode
             primary: {
                 main: '#4588C9',
             },
@@ -18,19 +23,12 @@ export const getDesignTokens = (mode: PaletteMode) => ({
                 default: '#22272E',
                 paper: '#23282F',
             },
-            uvrLightBlue: {
-                main: '#4588C9',
-            },
-            uvrDarkBlue: {
-                main: '#005EB8',
-            },
-            uvrYellow: {
-                main: '#FFC557',
-            },
-            uvrRed: {
-                main: '#D65B4F',
-            },
-
+            uvr: {
+                lightBlue: '#4588C9',
+                darkBlue: '#005EB8',
+                yellow: '#FFC557',
+                red: '#D65B4F'
+            }
         })
     }
 });

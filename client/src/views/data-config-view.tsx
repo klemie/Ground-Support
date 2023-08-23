@@ -93,7 +93,7 @@ export default function DataConfigView(props: Props) {
     }, []);
 
     return (
-            <div style={{width:'100vw',height:'100vw'}}>   
+            <div style={{width:'100vw',height:'100%'}}>   
                 <Stack
                     height={'100%'}
                     padding={3}
