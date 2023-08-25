@@ -12,7 +12,7 @@ import DataConfigRoute from './routes/DataConfigRoute';
 const router = express();
 
 // Only change the connection String
-mongoose.connect(config.mongo.url, { w: 'majority', retryWrites: true })
+mongoose.connect(config.mongo.url)
     .then(() => {
         Logging.info('Connected to database');
         StartServer();
