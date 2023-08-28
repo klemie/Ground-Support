@@ -26,13 +26,13 @@ ARPS_PACKET = {
     "alt": ""
 }
 def aprs_loop():
-    packet = direwolf_mock().splitlines() if MOCK else sys.stdin
     
     # try:
     sio.connect("http://127.0.0.1:8086", namespaces=['/fromDirewolf'])
         
     while True:
-        packet = sys.stdin.readline().splitlines()
+        packet = direwolf_mock().splitlines() if MOCK else sys.stdin
+        # packet = sys.stdin.readline().splitlines()
         print(packet)
         currentData = {
             "Position": "",

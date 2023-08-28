@@ -49,7 +49,7 @@ export default function StartUpView(props: StartUpViewProps) {
 	];
 
 	const [dataConfig, setDataConfig] = useState<IDataConfig>();
-	const [log, setLog] = useState<string[]>(['Not Data']);
+	const [log, setLog] = useState<string[]>(activeContext.logs);
 	const getDataConfig = useCallback(async () => {
 		try {
 			if (component?.DataConfigId === undefined) return console.log('No Data Config Id');
@@ -68,7 +68,8 @@ export default function StartUpView(props: StartUpViewProps) {
 
 	useEffect(() => {
 		if (sc.aprsPacket.Data === undefined) return 
-		setLog(prev => [...prev, JSON.stringify(sc.aprsPacket.Data) as string || '']);
+		activeContext.updateLogs(JSON.stringify(sc.aprsPacket.Data) as string || '');
+		setLog((prev) => [...prev, JSON.stringify(sc.aprsPacket.Data) as string]);
 	}, [sc.aprsPacket.Data]);
 	return (
 		<>

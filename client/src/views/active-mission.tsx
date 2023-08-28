@@ -117,7 +117,7 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
     const getActiveMission = async (): Promise<IMissionPopulated> => {
         const response = await api.getMission(missionId);
         const data = response.data as IMissionPopulated;
-        activeContext.activeMissionDispatch({ type: 'SET_MISSION', payload: data });
+        activeContext.updateMission(data);
         setActiveMission(data);
         return data; 
     };
