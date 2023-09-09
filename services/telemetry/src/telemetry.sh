@@ -27,8 +27,5 @@ else
   PPM=93
 fi
 
-# ( rtl-sdr/rtl_fm.exe -f $FREQ -r 24k -s 260k -o 4 -p $PPM -g $GAIN - | direwolf/direwolf.exe -n 1 -r 24000 -b 16 - > /dev/null ) | python telemetry.py
-# ( rtl-sdr/rtl_fm.exe -f $FREQ -r 24k -s 260k -o 4 -p $PPM -g $GAIN - | direwolf/direwolf.exe -n 1 -r 24000 -b 16 - ) 2>/dev/null | python telemetry.py
 rtl-sdr/rtl_fm.exe -f $FREQ -r 48k -s 260k -p $PPM -g $GAIN - | direwolf/direwolf.exe -n 1 -r 48000 -b 16 -t 0 - | python telemetry.py
 
-# rtl-sdr/rtl_fm.exe -f $FREQ -s 260k -g $GAIN -r 48k -p $PPM - | direwolf -n 1 -r 48000 -b 16 -t 0 -

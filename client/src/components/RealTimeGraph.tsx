@@ -9,33 +9,41 @@ import {
 	Legend, 
 	ResponsiveContainer
 } from 'recharts';
-import { IModule } from '../utils/entities';
+import { IAprsTelemetryPacket } from '../utils/TelemetryTypes';
+import { useActiveMission } from '../utils/ActiveMissionContext';
 
 interface GraphProps {
 	dataKeys: string[];
-	staticData: any[];
+	packet?: IAprsTelemetryPacket;
+	staticData: any[]
 	realTime: boolean;
 }
 
 const Graph: React.FC<GraphProps> = (props: GraphProps) => {
-	const { realTime, dataKeys, staticData } = props;
-
+	const { dataKeys, staticData, realTime, packet } = props;
 	const [data, setData] = useState<any[]>([]);
 
 	useEffect(() => {
-		if (realTime) {
-			//TODO: change to socket connection
-		} else {
-			setData(staticData);
+		if (realTime && packet?.Parsed.altitude !== 0) {
+			setData((prev) => [
+				...prev, 
+				{
+					Altitude: packet?.Parsed.altitude
+				}
+			]);
 		}
-	}, [realTime, staticData]);
+	}, [packet]);
+
+	useEffect(() => {
+		setData(staticData);
+	}, [])
 
 	return (
-		<ResponsiveContainer width="100%" height={400}>
-			<LineChart height={400} data={data}>
+		<ResponsiveContainer width="100%" height={"50%"}>
+			<LineChart  data={data}>
 				<CartesianGrid strokeDasharray="3 3" />
 				<XAxis dataKey="Time" />
-				<YAxis />
+				<YAxis domain={[]}/>
 				<Tooltip />
 				<Legend align='center' />
 				{dataKeys && dataKeys.map((key, index) => {

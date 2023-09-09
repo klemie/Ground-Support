@@ -3,6 +3,7 @@ import { IField, IModule, IFieldGroup } from "../utils/entities"
 import { telemetryStatus, StatusTypes, TelemetryStatus, moduleStatus } from "../utils/statusTypes";
 import { Reducer, useEffect, useReducer, useState } from "react";
 import _ from "lodash";
+import DataConstructor from "../utils/data-constructor";
 
 interface ModuleProps {
     module: IModule;
@@ -31,8 +32,6 @@ const statusReducer = (
             return StatusTypes.InActive;
     }
 }
-
-
 
 /**
  * @param module IModule object
@@ -95,9 +94,10 @@ const ModuleStatus: React.FC<ModuleProps> = (props: ModuleProps) => {
         >(statusReducer, StatusTypes.InActive);
     useEffect(() => {
         const st = processStatus(module, data);
-
         statusDispatch({ type: st.status });
     }, []);
+
+    // const data = new DataConstructor(module);
 
     return (
         <Card sx={{ minWidth: 150 }}>
@@ -108,6 +108,11 @@ const ModuleStatus: React.FC<ModuleProps> = (props: ModuleProps) => {
             />
             <CardContent sx={{ paddingBlockStart: 0, paddingBlockEnd: 0, textAlign: 'center' }}>
                 {!statusOnly &&<Divider variant="fullWidth" sx={{ mb: 2 }} />}
+                    {/* <Graph 
+                        dataKeys={data.graph.keys[index]} 
+                        realTime={false} 
+                        staticData={data.graph.data[index]}
+                    /> */}
                 {!statusOnly && <Divider variant="fullWidth" sx={{ mb: 2 }} />}
                 <Chip 
                     sx={{ backgroundColor: moduleStatus[status].color }}

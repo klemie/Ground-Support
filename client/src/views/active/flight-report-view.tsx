@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { IDataConfig, IMission } from '../../utils/entities';
+import { IDataConfig, IMission, IMissionPopulated } from '../../utils/entities';
 
 import { Accordion, AccordionDetails, AccordionSummary, Grid, Stack, Typography, Paper, Button, useTheme } from '@mui/material';
 import Header, { Breadcrumb } from '../../components/Header';
@@ -27,15 +27,14 @@ export default function RocketSelectionView() {
         setDataConfigs([]);
 
         const getDataConfigs = async () => {
+            const mid = context.activeMission._id || '';
+            const response = await api.getMission(mid)
+            const missionData = response.data as IMissionPopulated
             setMissionData(context.activeMission); 
 
-            if (context.rocket.Components) { 
-                context.rocket.Components.map(async(component) => {
-                    if (!component.DataConfigId) return;
-                    const response = await api.getDataConfig(component.DataConfigId)
-                    const data = response.data as IDataConfig
-                    console.log(data);
-                    setDataConfigs((prev) => [...prev, data]);
+            if (missionData.Components) { 
+                missionData.Components.map(async(component) => {
+                    setDataConfigs((prev) => [...prev, component.DataConfigId]);
                 });
             }
         };

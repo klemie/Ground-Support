@@ -9,14 +9,15 @@ import {
     IMissionPopulated,
     IRocketPopulated 
 } from './entities';
+import { formatPacket, IAprsTelemetryPacket, ILoggedTelemetryPacket } from './TelemetryTypes';
 
 export interface IActiveMissionContext {
     activeMission: IMission;
     updateMission: (payload: IMissionPopulated | IMission) => void;
     rocket: IRocketPopulated;
     updateRocket: (payload: IRocketPopulated) => void;
-    logs: string[];
-    updateLogs: (payload: string) => void;
+    logs: ILoggedTelemetryPacket[];
+    updateLogs: (payload: IAprsTelemetryPacket) => void;
 }
 
 export const ActiveContext = createContext<IActiveMissionContext>({
@@ -25,7 +26,7 @@ export const ActiveContext = createContext<IActiveMissionContext>({
     rocket: {} as IRocketPopulated,
     updateRocket: (payload: IRocketPopulated) => null,
     logs: [],
-    updateLogs: (payload: string) => null
+    updateLogs: (payload: IAprsTelemetryPacket) => null
 });
 
 function rocketReducer(state: IRocketPopulated, action: {type: string, payload: any}) {
@@ -46,10 +47,16 @@ function missionReducer(state: IMissionPopulated | IMission, action: {type: stri
     }
 }
 
-function logsReducer(state: string[], action: {type: string, payload: any}) {
+function logsReducer(state: ILoggedTelemetryPacket[], action: {type: string, payload: IAprsTelemetryPacket}) {
     switch (action.type) {
         case 'addLog':
-            return [...state, action.payload];
+            const formatted = formatPacket(action.payload);
+            const payload: ILoggedTelemetryPacket = {
+                Parsed: action.payload.Parsed,
+                Raw: action.payload.Raw,
+                Log: formatted
+            }
+            return [...state, payload];
         default:
             throw Error(`Unknown action type: ${action.type}`);
     }
@@ -58,9 +65,9 @@ function logsReducer(state: string[], action: {type: string, payload: any}) {
 export const ActiveMissionProvider = ({ children }: PropsWithChildren<any>) => {
     const [rocket, rocketDispatch] = useReducer(rocketReducer, {} as IRocketPopulated);
     const [activeMission, activeMissionDispatch] = useReducer(missionReducer, {} as IMissionPopulated);
-    const [logs, logsDispatch] = useReducer(logsReducer, []);
+    const [logs, logsDispatch] = useReducer(logsReducer, [] as ILoggedTelemetryPacket[]);
 
-    const updateLogs = (log: string) => {
+    const updateLogs = (log: IAprsTelemetryPacket) => {
         logsDispatch({type: 'addLog', payload: log});
     }
 

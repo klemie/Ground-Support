@@ -65,20 +65,24 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 	};
 
 	useEffect(() => {
-		socket.on('loRa_packet', (packet: IPacket) => {
-			const p = packet as IPacket;
-			loraDispatch({ type: 'SET_PACKET', payload: p});
-		});
-
-		socket.on('aprs_packet', (packet: IPacket) => {
-			const p = packet as IPacket;
-			console.log('APRS PACKET:', p);
-			aprsDispatch({ type: 'SET_PACKET', payload: p});
-		});
-
-		socket.on('logs', (data: any) => {
-			setLogs((prev) => [...prev, JSON.stringify(data)]);
-		});
+		try {
+			socket.on('loRa_packet', (packet: IPacket) => {
+				const p = packet as IPacket;
+				loraDispatch({ type: 'SET_PACKET', payload: p});
+			});
+	
+			socket.on('aprs_packet', (packet: IPacket) => {
+				const p = packet as IPacket;
+				console.log('APRS PACKET:', p);
+				aprsDispatch({ type: 'SET_PACKET', payload: p});
+			});
+	
+			socket.on('logs', (data: any) => {
+				setLogs((prev) => [...prev, JSON.stringify(data)]);
+			});
+		} catch (error) {
+			
+		}
 
 		return () => {
 			socket.disconnect();

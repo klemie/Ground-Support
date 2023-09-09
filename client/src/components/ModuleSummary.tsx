@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Stack, Typography, Container, AccordionDetails, AccordionSummary, Accordion, Paper, useTheme } from "@mui/material";
-import { IFieldData, IFieldGroup, IModule } from "../utils/entities";
+import { IDataPoint, IFieldGroup, IModule } from "../utils/entities";
 import MUIDataTable from "mui-datatables";
 import Graph from "./RealTimeGraph";
 import DataConstructor from '../utils/data-constructor';
@@ -10,7 +10,7 @@ import ScienceIcon from '@mui/icons-material/Science';
 
 interface ModuleSummaryProps {
     Module: IModule;
-    Data?: IFieldData[];
+    Data?: IDataPoint[];
     Index: number;
 };
 

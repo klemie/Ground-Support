@@ -1,80 +1,50 @@
 #!/usr/bin/env python
-import os
 import sys
-import shutil
-from subprocess import Popen, PIPE, run
-import requests
- 
-from utils.random_packet_generator import direwolf_mock
-import time
+from utils.bigRedBeeDecoder import parse_aprs
+from utils.random_packet_generator import aprs_mock
 
 import socketio
 
-# standard Python
 sio = socketio.Client()
-
 URL = 'http://127.0.0.1:8080/gateway/'
-FREQUENCY_ONE = "433.92M"
-FREQUENCY_TWO = "194.3M"
-TEST = False
-MOCK = False
 
-ARPS_PACKET = {
-    "Position": "",
-    "N": "",
-    "W": "",
-    "alt": ""
-}
 def aprs_loop():
     
-    # try:
-    sio.connect("http://127.0.0.1:8086", namespaces=['/fromDirewolf'])
+    try:
+        sio.connect("http://127.0.0.1:8086", namespaces=['/fromDirewolf'])
+    except:
+        print("Error: Could not connect to socket gateway")
+
+    raw_packet_list = []
         
-    while True:
-        packet = direwolf_mock().splitlines() if MOCK else sys.stdin
-        # packet = sys.stdin.readline().splitlines()
-        print(packet)
+    while True: 
+        input = []
         currentData = {
-            "Position": "",
-            "N": "",
-            "W": "",
-            "alt": ""
+            "Parsed": {},
+            "Raw": []
         }
-        if MOCK:
-            time.sleep(3)
+        
+        for line in sys.stdin.readline().splitlines():
+            input.append(line)
+  
+        raw_packet_list.append('\n'.join(input))
 
-        for line in packet:
-            print(line)
-            if "Position" in line:
-                LOCK = True
-                currentData["Position"] = line[10:]
-                currentData["Position"] = currentData["Position"][0:-1]
-            if "N " in line:
-                currentData["N"] = line[2:12]
-            if "W " in line:
-                currentData["W"] = line[14:25]
-            if "alt " in line:
-                print('alt: ', line[29:])
-                currentData["alt"] = line[29:]
-            if "Invalid character in compressed longitude" in line:
-                LOCK = False
-                telemetry_packet = {
-                    "Type": "APRS",
-                    "Data": {
-                        "Locked": "error GPS not locked"  
-                    }
-                }
-                print("error: GPS is not locked")
-
-        # if currentData != ARPS_PACKET:
-        telemetry_packet = {
+        if input == ['']:  # Start of packet
+            parsed_packet = parse_aprs(','.join(raw_packet_list))
+            currentData["Parsed"] = parsed_packet
+            currentData["Raw"] = raw_packet_list
+            telemetry_packet = {
                 "Type": "APRS",
-            "Data": currentData
-        }
-        print(telemetry_packet)
-        sio.emit('aprs_packet_telemetry', telemetry_packet, namespace='/fromDirewolf')
-
-
+                "Data": currentData,
+            }
+            print(raw_packet_list)
+            try:
+                sio.emit('aprs_packet_telemetry', telemetry_packet, namespace='/fromDirewolf')
+            except:
+                print('\n')
+                print(telemetry_packet)
+                print("Error: Could not send packet over socket gateway \n")
+            raw_packet_list = []
 
 
 if __name__ == "__main__":
