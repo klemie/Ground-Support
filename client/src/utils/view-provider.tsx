@@ -32,7 +32,7 @@ interface ViewProviderProps {
 }
 
 export default function ViewProvider(props: ViewProviderProps) {
-    const [currentViewKey, setCurrentViewKey] = useState<string>(DATA_CONFIG_KEY);
+	const [currentViewKey, setCurrentViewKey] = useState<string>(ROCKET_SELECT_KEY);
     const [currentRocketID, setCurrentRocketID] = useState<string>("");
 
     const updateView = (key: string) => {

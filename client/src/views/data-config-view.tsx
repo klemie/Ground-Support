@@ -29,14 +29,10 @@ export default function DataConfigView(props: Props) {
 
     const[dataConfig, setDataConfig] = useState<IDataConfig>({Modules:[]});
     const getDataConfig = useCallback(async () => {
-        console.log(DataConfigID)
-
         try {
             const response = await axios.get<IDataConfigResponse>(`http://127.0.0.1:9090/dataConfig/${DataConfigID}`);
             const data = response.data.result;
-            
             setDataConfig({ Modules: data.Modules })
-            console.log(data);
         } catch (error) {
             console.log(error);
         }
@@ -82,8 +78,8 @@ export default function DataConfigView(props: Props) {
 
         );
       },
-      onRowExpansionChange: (curExpanded: any, allExpanded: any, rowsExpanded: any) =>
-        console.log(curExpanded, allExpanded, rowsExpanded),
+    //   onRowExpansionChange: (curExpanded: any, allExpanded: any, rowsExpanded: any) =>
+    //     console.log(curExpanded, allExpanded, rowsExpanded),
     };
 
     const components = {
@@ -180,17 +176,17 @@ function NestedTable({ module }: { module: any }) {
     };
 
     return (
-        <div style={{ display: 'flex', width: '50vw' }}>
+        <Grid container style={{ width: '100%' }} justifyContent={'space-between'}>
             {module.FieldGroups.map((fieldGroup: any, index: number) => (
-                <div key={index} style={{ flex: 1, marginRight: '50px', minWidth: '400px' }}>
+                <Grid key={index} item xs={10} sm={8} md={6} lg={4} style={{ padding: '8px' }}>
                     <MUIDataTable
                         title={fieldGroup.Name}
                         data={fieldData[index]}
                         columns={fieldColumns}
                         options={fieldOptions}
                     />
-                </div>
+                </Grid>
             ))}
-        </div>
+        </Grid>
     );
 }
