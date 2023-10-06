@@ -21,5 +21,11 @@
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4"
+  },
+  "scripts": {
+    "client": "cd client && npm start",
+    "server": "cd services/server && npm run server",
+    "dev": "npm run client & npm run server",
+    "start": "npm run dev"
   }
 }
