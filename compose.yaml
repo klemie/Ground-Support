@@ -12,7 +12,7 @@ services:
       - 3000:3000
     depends_on:
       - server
- 
+
   server:
     container_name: express-server
     build:
@@ -22,5 +22,3 @@ services:
       - ./services/server:/app
     ports:
       - 9090:9090
-
-    
