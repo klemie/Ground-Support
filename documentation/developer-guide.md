@@ -6,6 +6,7 @@ Please see the [installation guide](installation.md#developer-installation) for 
 ## Resources
 - [Git Tutorial](https://www.figma.com/proto/LAxam3HVit5yoHmCxu2xa2/Git?page-id=0%3A1&type=design&node-id=1-796&viewport=554%2C653%2C0.24&t=YB0SXZsT8TWyvT93-1&scaling=min-zoom&starting-point-node-id=1%3A19&mode=design) - UVic Rocketry Git reference guide
 - [Software Process](https://docs.google.com/presentation/d/1gkJjfWnc6jsr0PQ29cYPVdIOYFZum4SubFt4X8ovL-o/edit#slide=id.g146cc2337ed_0_4) - UVic Rocketry Software Process guidelines
+- [Ground Support](https://www.figma.com/proto/FmNk8xeKIUDAEmA377DV3l/Rocketry-Software?page-id=0%3A1&type=design&node-id=2085-5509&viewport=-1610%2C-611%2C0.11&t=cZkbvCD7xCJrTlDc-1&scaling=min-zoom&starting-point-node-id=2085%3A5509&show-proto-sidebar=1&mode=design) - Presentation on high level overview
 ## Standards
 
 ### Code Style
