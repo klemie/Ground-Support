@@ -1,12 +1,26 @@
-version: '3.5'
+version: '3'
 
 services:
-  ground-support:
+  client:
+    container_name: react-client
     build:
-      context: .
+      context: ./client
       target: dev
+    volumes:
+      - ./client:/app
     ports:
       - 3000:3000
-      - 9090:9090
+    depends_on:
+      - server
+ 
+  server:
+    container_name: express-server
+    build:
+      context: ./services/server
+      target: dev
     volumes:
-      - .:/app 
+      - ./services/server:/app
+    ports:
+      - 9090:9090
+
+    
