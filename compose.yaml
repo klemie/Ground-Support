@@ -7,7 +7,7 @@ services:
       context: ./client
       target: dev
     volumes:
-      - ./client:/app
+      - ./client/src:/app/src
     ports:
       - 3000:3000
     depends_on:
@@ -19,6 +19,6 @@ services:
       context: ./services/server
       target: dev
     volumes:
-      - ./services/server:/app
+      - ./services/server/src:/app/src
     ports:
       - 9090:9090
