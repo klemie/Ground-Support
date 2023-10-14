@@ -24,7 +24,9 @@ npm -v
 node -version
 ```
 
-If they don't give you errors then installation of node was successful. **TypeScript**
+If they don't give you errors then installation of node was successful. 
+
+**TypeScript**
 
 ```bash
 npm i -g typescript
@@ -42,9 +44,7 @@ Go to [python](https://www.python.org/downloads/release/python-3100/) and instal
 
 **Docker**
 
-_Not necessary for MVP_
-
-Go to there website and install ... (finish once docker is up and runner on local instance)
+Go to the [Docker Desktop documentation](https://docs.docker.com/desktop/install/linux-install) and follow the installation instructions for your OS. Docker desktop contains the Docker Engine and other Docker software required for running Ground Support in a container.
 
 **MongoDB Atlas**
 
@@ -60,18 +60,9 @@ Now if you haven't already you can clone the repository
 ```bash
 git clone https://github.com/UVicRocketry/Ground-Support.git
 ```
+**Server Environment File**
 
-**Dependencies**
-
-Next to get everything set up all node module dependencies must be installed.
-
-To do this run
-
-```bash
-npm install && cd client && npm i && cd ../services/server && npm i
-```
-
-in the `/services/server` directory create a `.env` file
+In the `/services/server` directory create a `.env` file
 
 and paste
 
@@ -81,21 +72,9 @@ MONGO_PASSWORD = '<password>'
 MONGO_DB_STRING = '<db name>'
 SERVER_PORT = '<server port>'
 ```
+**Create Remote Database**
 
-This will install and update all dependencies and setup the environment variables
-
-Now for telemetry
-
-First navigate to `/services/telemetry/` and install all python dependencies with
-
-```bash
-pip install -r requirements.txt
-```
-
-**Create Database**
-
-To use the app you must first create a remote database for your environment to do this go to mongoBD Atlas and create a
-new dataBase.
+To use the app you must first create a remote database for your environment to do this go to mongoBD Atlas and create a new database.
 
 <p align="center">
     <img src="./assets/Create%20a%20database.png" width="300"/>
@@ -123,8 +102,7 @@ In the `.env` file fill in the password and username with the credentials above
 
 **Network Access**
 
-In Here you can setup which IP addresses can access your database. For now click add new IP address and select
-`add current ip address` button.
+In Here you can setup which IP addresses can access your database. For now click add new IP address and select `add current ip address` button.
 
 ⚠️ Do not click allow access anywhere. That is reserved for the production version.
 
@@ -134,8 +112,7 @@ In Here you can setup which IP addresses can access your database. For now click
 
 Next click on the database tab on the left and click the `Connect` button for the `GroundSupport` database.
 
-A popup will appear, click `connect your application`. This will give you a **Connection String**. All connection
-strings are different.
+A popup will appear, click `connect your application`. This will give you a **Connection String**. All connection strings are different.
 
 <p align="center">
     <img src="./assets/connect-database.png" width=300/>
@@ -153,12 +130,7 @@ replace with environment variables
 `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@groundsupport.${MONGO_DB_STRING}.mongodb.net/`;
 ```
 
----
-
-Depending on what type of development your doing you can either transpile just the backend, the frontend or both
-concurrently.
-
-**Create Database Local**
+**Create Local Database**
 
 If you are JJ and scared of Hosting your data you can install a local database for development
 
@@ -182,6 +154,42 @@ alter the path to `MongoDB/Server/6.0/bin`
 Navigate to that path in your favorite terminal
 
 copy connection string into `.env` file
+
+
+#### Docker Dev Setup
+
+From the project root, run the following in a terminal
+```bash
+$ docker compose up --build 
+```
+
+This command will build and run the Ground Support container. Unless removed, the Ground Support container will persist and can be started and stopped as needed. After the initial build, the `--build` flag can be omitted when starting the container.
+
+Once running, the Ground Support client will be available at `localhost:3000`, and the container will update when changes are made to the local source.
+
+If developing through Docker, a local dev setup is not required.
+
+#### Local Dev Setup
+
+**Dependencies**
+
+Next to get everything set up all node module dependencies must be installed.
+
+To do this run
+
+```bash
+npm install && cd client && npm i && cd ../services/server && npm i
+```
+
+This will install and update all dependencies and setup the environment variables
+
+Now for telemetry
+
+First navigate to `/services/telemetry/` and install all python dependencies with
+
+```bash
+pip install -r requirements.txt
+```
 
 **Backend**
 
