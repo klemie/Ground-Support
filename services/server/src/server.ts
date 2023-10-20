@@ -8,6 +8,7 @@ import RocketRoute from './routes/RocketRoute';
 import ComponentRoute from './routes/ComponentRoute';
 import MissionRoute from './routes/MissionRoute';
 import DataConfigRoute from './routes/DataConfigRoute';
+import RocketSimRoute from './routes/RocketSimRoute';
 
 const router = express();
 
@@ -58,6 +59,7 @@ const StartServer = () => {
     router.use('/component', ComponentRoute);
     router.use('/dataConfig', DataConfigRoute);
     router.use('/mission', MissionRoute);
+    router.use('/rocketSim', RocketSimRoute);
 
     /** Healthcheck */
     router.get('/ping', (req, res, next) => res.status(200).json({ ping: 'pong' }));

@@ -113,3 +113,50 @@ export interface IFieldData {
     TelemetryId: Buffer;
     Data: IDataPoint[];
 }
+
+/* ------- Skilldev ------ */
+
+enum NoseConeShape {
+    Elliptical = "Elliptical",
+    Conical = "Conical",
+    Parabolic = "Parabolic",
+    PowerSeries = "PowerSeries"
+};
+
+interface IAeroDimensions {
+    NoseCone: {
+        Length: number;
+        Diameter: number;
+        TipRadius: number;
+        Shape: NoseConeShape;
+    },
+    BoatTail: {
+        Length: number;
+        ForeDiameter: number;
+        AftDiameter: number;
+    },
+    Fins: {
+        Count: number;
+        Span: number;
+        RootChord: number;
+        TipChord: number;
+        Sweep: number;
+        Thickness: number;
+    }
+}
+
+export interface IRocketSimModel {
+    _id?: string;
+    Name: string;
+    DryMass: number;
+    WetMass: number;
+    RocketDiameter: number;
+    CenterOfGravity: number;
+    CenterOfPressure: number;
+    RocketLength: number;
+    FuselageLength: number;
+    FuselageDiameter: number;
+    AeroDimensions?: IAeroDimensions;
+};
+
+/* ------- Skilldev ------ */
