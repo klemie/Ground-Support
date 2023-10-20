@@ -21,7 +21,7 @@ npm -v
 ```
 
 ```bash
-node -version
+node --version
 ```
 
 If they don't give you errors then installation of node was successful. 
@@ -38,9 +38,9 @@ verify installation
 tsc --version
 ```
 
-**Python**
+**Rust**
 
-Go to [python](https://www.python.org/downloads/release/python-3100/) and install python >3.9
+Go to [rust](https://doc.rust-lang.org/book/ch01-01-installation.html) and follow the instructions to install rust.
 
 **Docker**
 
@@ -48,8 +48,7 @@ Go to the [Docker Desktop documentation](https://docs.docker.com/desktop/install
 
 **MongoDB Atlas**
 
-We will be cloud hosting for our development environment. Our database will be hosted by MongoDB itself on MongoDB
-Atlas.
+One option for database hosting is using cloud resources, if you prefer not to use cloud tool or need offline capabilities skip this and use the local database hoster `mongodb compass`. Our  database will be hosted by MongoDB itself on MongoDB Atlas.
 
 First go to [Atlas sign in](https://account.mongodb.com/account/login) and sign up for an account.
 
@@ -62,16 +61,15 @@ git clone https://github.com/UVicRocketry/Ground-Support.git
 ```
 **Server Environment File**
 
-In the `/services/server` directory create a `.env` file
-
-and paste
+In the `/services/server` directory create a `.env` file. If not called exactly `.env`, create one and copy and paste
 
 ```ts
-MONGO_USERNAME = '<mongo username>'
-MONGO_PASSWORD = '<password>'
-MONGO_DB_STRING = '<db name>'
-SERVER_PORT = '<server port>'
+MONGO_USERNAME = ''
+MONGO_PASSWORD = ''
+MONGO_DB_STRING = ''
+SERVER_PORT = ''
 ```
+
 **Create Remote Database**
 
 To use the app you must first create a remote database for your environment to do this go to mongoBD Atlas and create a new database.
@@ -118,17 +116,11 @@ A popup will appear, click `connect your application`. This will give you a **Co
     <img src="./assets/connect-database.png" width=300/>
 </p>
 
-Paste that in `./services/server-service/src/config/config.ts` on line 5
+The connection string will look something like this
 
-```ts
-const MONGO_URL = ``;
-```
-
-replace with environment variables
-
-```ts
 `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@groundsupport.${MONGO_DB_STRING}.mongodb.net/`;
-```
+
+Copy the part in the place of `${MONGO_DB_STRING}` and paste it into the `.env` file in the `MONGO_DB_STRING` variable.
 
 **Create Local Database**
 
@@ -177,23 +169,24 @@ Next to get everything set up all node module dependencies must be installed.
 
 To do this run
 
-```bash
-npm install && cd client && npm i && cd ../services/server && npm i
+```bash 
+npm install && cd client && npm --force install && cd ../services/server && npm i
 ```
+There is currently a bug when installing the dependencies for the client, the library `react-material-file-upload` was installed using `--force`. Therefore `--force` flag is necessary to install.
 
 This will install and update all dependencies and setup the environment variables
 
 Now for telemetry
 
-First navigate to `/services/telemetry/` and install all python dependencies with
+First navigate to `/services/telemetry/` and install all rust dependencies with
 
 ```bash
-pip install -r requirements.txt
+cargo build
 ```
 
 **Backend**
 
-`Navigate` to ./services/server-service
+`Navigate` to ./services/server
 
 ```bash
 npm run server
@@ -207,19 +200,10 @@ npm run server
 npm start
 ```
 
-**Both**
-
-`Navigate` to ./client/src
-
-```bash
-npm run both
-```
 
 **Telemetry Backend**
 
-```bash
-python3 gateway.py
-```
+TBD (@JackCotter) once rust backend is more functional
 
 ## Non-technical installation
 
