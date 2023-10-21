@@ -1,10 +1,13 @@
+import api from '../services/api';
 import React, { useEffect, useState } from 'react';
-import { Button, ButtonGroup, Card, CardActions, CardContent, CardHeader, Chip, IconButton, Stack, Typography } from '@mui/material';
+import { Button, ButtonGroup, Card, CardActions, CardContent, CardHeader, Chip, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import { IComponentPopulated, IRocket, IRocketPopulated } from '../utils/entities';
 import EditIcon from '@mui/icons-material/Edit';
-import ComponentModal from './modals/ComponentModal';
+import PlusIcon from '@mui/icons-material/Add'
 import { Delete } from '@mui/icons-material';
-import api from '../services/api';
+
+import ComponentModal from './modals/ComponentModal';
+import ModuleEditor from './ModuleEditor'
 
 interface ComponentCardProps {
     componentId: string;
@@ -16,6 +19,7 @@ interface ComponentCardProps {
 
 const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) => {
     const { componentId, onDelete, updateComponent, rocket, onDataConfigClick } = props;
+    const [moduleEditorOpen, setModuleEditorOpen] = useState<boolean>(false);
     const [componentModalOpen, setComponentModalOpen] = useState<boolean>(false);
     const [component, setComponent] = useState<IComponentPopulated>({} as IComponentPopulated);
 
@@ -51,8 +55,13 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
 		getComponent();
 	}, [componentId]);
 
-    const handleDataConfig = () => {
+    const handleViewDataConfig = () => {
         onDataConfigClick(component.DataConfigId._id as string);
+    }
+
+    const handleAddDataConfig = () => {
+        // Open ComponentModuleEditor.tsx
+        setModuleEditorOpen(true)
     }
 
     const handleEdit = () => {
@@ -81,18 +90,36 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
                 </CardContent>
                 <CardActions>
                     <Stack direction={'row'} alignContent={'center'} justifyContent="space-between" width={'100%'}>
-                        <Button onClick={handleDataConfig} disabled={!component.DataConfigId}>
-                            Data Config
-                        </Button>
+                        <ButtonGroup variant='contained'>
+                            <Tooltip title="View Modules">
+                                <Button onClick={handleViewDataConfig} disabled={!component.DataConfigId}>
+                                    Modules
+                                </Button>
+                            </Tooltip>
+                            <Tooltip title="New Module">
+                                <IconButton onClick={handleAddDataConfig} disabled={!component.DataConfigId} aria-label='add module'
+                                            sx={{
+                                                borderTopRightRadius: 4, 
+                                                borderBottomRightRadius: 4,
+                                                borderTopLeftRadius: 0,
+                                                borderBottomLeftRadius: 0
+                                            }}>
+                                            <PlusIcon/>
+                                </IconButton>
+                            </Tooltip>
+                        </ButtonGroup>
                         <ButtonGroup variant="outlined"  >
-                            <IconButton onClick={handleEdit} aria-label="edit">
-                                <EditIcon />    
-                            </IconButton>
-                            <IconButton onClick={deleteComponent} aria-label="delete"><Delete/></IconButton>
+                            <Tooltip title="Edit Component">
+                                <IconButton onClick={handleEdit} aria-label="edit component"><EditIcon/></IconButton>
+                            </Tooltip>
+                            <Tooltip title="Delete Component">
+                                <IconButton onClick={deleteComponent} aria-label="delete component"><Delete/></IconButton>
+                            </Tooltip>
                         </ButtonGroup>
                     </Stack>
                 </CardActions>
             </Card>
+            <ModuleEditor component={null} isOpen={moduleEditorOpen} onClose={() => setModuleEditorOpen(false)}/>
             <ComponentModal component={component} isOpen={componentModalOpen} onSave={updateComponent} onClose={() => setComponentModalOpen(false)}/>
         </>
     );
