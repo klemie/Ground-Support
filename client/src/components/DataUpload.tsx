@@ -1,6 +1,6 @@
+import React, { useState, forwardRef, useEffect } from 'react';
 import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Slide, Stack, Tooltip, Typography } from "@mui/material";
 import { useActiveMission } from "../utils/ActiveMissionContext";
-import React, { useState, forwardRef, useEffect } from 'react';
 import { TransitionProps } from "@mui/material/transitions";
 import FileUpload from "react-material-file-upload";
 
@@ -12,7 +12,8 @@ interface IDataUploadProps {
 }
 
 
-const MissionConfig: React.FC<IDataUploadProps> = (props: IDataUploadProps) => {
+
+const DataUpload: React.FC<IDataUploadProps> = (props: IDataUploadProps) => {
     const { isOpen, onClose } = props;
     const [files, setFiles] = useState<File[]>([]);
     
@@ -70,4 +71,4 @@ const MissionConfig: React.FC<IDataUploadProps> = (props: IDataUploadProps) => {
     );
 }
 
-export default MissionConfig;
+export default DataUpload;

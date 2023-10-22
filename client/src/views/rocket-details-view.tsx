@@ -22,6 +22,8 @@ import MissionConfig from '../components/MissionConfig';
 import api from '../services/api';
 import _ from 'lodash';
 import { IRocketPopulated } from '../utils/entities';
+import RocketSimulationTab from './tabs/simulation-tab';
+import RocketSimDialog from '../components/RocketSimDailog';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -76,12 +78,14 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 
     // Popup state
 	const [componentModalOpen, setComponentModalOpen] = useState<boolean>(false);
+    const [isSimulationDialogOpen, setIsSimulationDialogOpen] = useState<boolean>(false);
     const [isRocketPopUpOpen, setIsRocketPopUpOpen] = useState<boolean>(false);
     const [isMissionConfigOpen, setIsMissionConfigOpen] = useState(false);
 
     const [rocketData, setRocketData] = useState<IRocketPopulated>({} as IRocketPopulated);
     const [selectedMission, setSelectedMission] = useState<string>('');
     const [isMissionActive, setIsMissionActive] = useState<boolean>(false);
+    const [updateSims, setUpdateSims] = useState<boolean>(false);
     
     const handleSelectedMission = (mission: string) => {
         setSelectedMission(mission);
@@ -173,6 +177,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                                     <Tab label="Details" />
                                     <Tab label="Components" />
                                     <Tab label="Missions" />
+                                    <Tab label="Simulations" />
                                 </Tabs>
                             </Paper>
                              {value===1 && (
@@ -188,6 +193,11 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                             {value===2 && (
                                 <Button variant="contained" startIcon={<AddIcon/>} onClick={()=>setIsMissionConfigOpen(true)}>
                                     Mission
+                                </Button>
+                            )}
+                             {value===3 && (
+                                <Button variant="contained" startIcon={<AddIcon/>} onClick={() => setIsSimulationDialogOpen(true)}>
+                                    Simulation
                                 </Button>
                             )}
                         </Stack>
@@ -209,6 +219,9 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                                 onMissionClick={handleSelectedMission} 
                                 rocket={rocketData} 
                             />
+                        </TabPanel>
+                        <TabPanel value={value} index={3}>
+                            <RocketSimulationTab />
                         </TabPanel>
                     </Box>
                 </Grid>
@@ -242,6 +255,13 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                         isOpen={componentModalOpen} 
                         onSave={()=> refresh} 
                         onClose={() => setComponentModalOpen(false)}
+                    />
+                    <RocketSimDialog 
+                        isOpen={isSimulationDialogOpen} 
+                        onClose={() => { 
+                            setIsSimulationDialogOpen(false);
+                            setUpdateSims(true);
+                        }} 
                     />
                 </Grid>
 			</Stack>
