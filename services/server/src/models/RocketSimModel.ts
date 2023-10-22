@@ -7,7 +7,6 @@ export interface IRocketSimModel {
     CenterOfGravity: number;
     CenterOfPressure: number;
     RocketLength: number;
-    RocketDiameter: number;
     FuselageLength: number;
     FuselageDiameter: number;
     AeroDimensions?: IAeroDimensions;

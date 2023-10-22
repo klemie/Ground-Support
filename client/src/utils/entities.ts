@@ -150,7 +150,6 @@ export interface IRocketSimModel {
     Name: string;
     DryMass: number;
     WetMass: number;
-    RocketDiameter: number;
     CenterOfGravity: number;
     CenterOfPressure: number;
     RocketLength: number;
