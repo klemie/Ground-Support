@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, DialogContent, DialogTitle, IconButton, Stack, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
-import { IDataConfig, IField, IFieldGroup, IModule } from "../utils/entities";
-import { ReactNode, useCallback, useState } from "react";
+import { IField, IFieldGroup, IModule } from "../utils/entities";
+import { useState } from "react";
 import PlusIcon from '@mui/icons-material/Add'
 import MinusIcon from '@mui/icons-material/Remove'
 import api from "../services/api";
@@ -125,7 +125,6 @@ let dummyModule2: IModule = {
 const ModuleEditor = (props: IModuleEditorProps) => {
     let { ModuleID, mode, isOpen, onClose } = props;
     
-    const[tabIndex, setTabIndex] = useState(0);
     
     // Have moduleID in props, then get module if !undefined and set our moduleObject === that module from api call
     // eg:  if (ModuleID) then async get module by ID
@@ -133,29 +132,34 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     // Might have to create a new api route for modules? Or maybe can just send DataConfigID, ModuleName from ComponentCard/other places
     // then extract correct module from DataConfig for editing
     // This might be easier (but also more fiddly) but regardless I still want to edit on a per-module basis as editing the whole config at once is dumb
-
+    
     // Right now using dummyobj since haven't implemented api module get, so
     const[moduleObject, setModuleObject] = useState<IModule>(dummyModule2);
-    const[currentFieldGroup, setCurrentFieldGroup] = useState<IFieldGroup>(moduleObject.FieldGroups[0]);
     let moduleName = moduleObject.Name
+    
+    const[tabIndex, setTabIndex] = useState(0);
 
-    // When the editor starts up, we need to set up our tabs/fields (fieldgroups and fields) from the moduleObject
-    const TabDisplay = () => {
-        const fieldGroups = moduleObject.FieldGroups
+    // This state var was definitely doing something at one point, but I don't think it's needed since we can always get the current group
+    // by using moduleObject.FieldGroups[tabIndex]
+    // const[currentFieldGroup, setCurrentFieldGroup] = useState<IFieldGroup>(moduleObject.FieldGroups[0]);
+    
+    // When the editor starts up (or on state change for moduleObject), we set up our tabs/fields (fieldgroups and fields) from the moduleObject
+    const TabDisplay = (props:any) => { // TODO make interfact for this type? maybe not strictly neccesary
+        const fieldGroups = props.fieldGroups
         return (
             <Tabs orientation={"vertical"} value={tabIndex} onChange={handleTabChange}>
-                {fieldGroups.map((group) => (
+                {fieldGroups.map((group:IFieldGroup) => (
                     <Tab label={group.Name} disableRipple/>
                 ))}
             </Tabs>
         )
     }
 
-    const FieldDisplay = (props:any) => {
+    const FieldDisplay = (props:any) => { // TODO also this type as well
         const fields = props.fields;
         return (
             <Stack direction={"column"} spacing={3} padding={2} maxHeight={"45vh"} sx={{overflow: "scroll"}}>
-                {fields.map((field:any, index:number) => (
+                {fields.map((field:IField, index:number) => (
                     <Stack direction={"row"} spacing={1}>
                         <TextField label="Name" defaultValue={field.Name || ""} size="small"/>
                         <TextField label="Range" defaultValue={`[ ${field.Range || ""} ]`} size="small"/>
@@ -169,17 +173,43 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     }
     
     const handleTabChange = (event: React.SyntheticEvent, newTabIndex: number) => {
-        setCurrentFieldGroup(moduleObject.FieldGroups[newTabIndex])
         setTabIndex(newTabIndex);
     };
 
-    const handleNewFieldGroup = () => {
-        console.log("Creating New Field Group")
+    const handleAddFieldGroup = () => {
+        const emptyField:IField = {
+            Name: 'null',
+            Range: [0, 0],
+            Units: '',
+            TelemetryId: 0
+        }
+
+        const emptyFieldGroup:IFieldGroup = {
+            Name: 'empty',
+            Fields: [
+                emptyField
+            ]
+        }
+
+        // Deref const object so we can edit and give to setModuleObject - neccessary because we're using state, otherwise no worky
+        let moduleObjectRet:IModule = JSON.parse(JSON.stringify(moduleObject))
+        moduleObjectRet.FieldGroups.push(emptyFieldGroup)
+
+        setModuleObject(moduleObjectRet)
     };
 
-    const handleAddField = () => {
-        console.log("Creating New Field")
+    const handleRemoveFieldGroup = () => {
+        if (moduleObject.FieldGroups.length > 1) {
+            let moduleObjectRet = JSON.parse(JSON.stringify(moduleObject));
+            moduleObjectRet.FieldGroups.splice(tabIndex, 1);
+            if(tabIndex > 0) {
+                setTabIndex(tabIndex - 1)
+            }
+            setModuleObject(moduleObjectRet);
+        }
+    }
 
+    const handleAddField = () => {
         const emptyField:IField = {
             Name: '',
             Range: [0, 0],
@@ -187,7 +217,6 @@ const ModuleEditor = (props: IModuleEditorProps) => {
             TelemetryId: 0
         }
 
-        // Deref const object so we can edit and give to setModuleObject - neccessary because we're using state, otherwise no worky
         let moduleObjectRet:IModule = JSON.parse(JSON.stringify(moduleObject))
         moduleObjectRet.FieldGroups[tabIndex].Fields.push(emptyField)
 
@@ -195,12 +224,11 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     };
 
     const handleRemoveField = (index:number) => {
-        console.log("Deleting Field")
-
-        // Same justification as above
-        let moduleObjectRet = JSON.parse(JSON.stringify(moduleObject));
-        moduleObjectRet.FieldGroups[tabIndex].Fields.splice(index, 1);
-        setModuleObject(moduleObjectRet);
+        if(moduleObject.FieldGroups[tabIndex].Fields.length > 1) {
+            let moduleObjectRet = JSON.parse(JSON.stringify(moduleObject));
+            moduleObjectRet.FieldGroups[tabIndex].Fields.splice(index, 1);
+            setModuleObject(moduleObjectRet);
+        }
     };
 
     const handleFieldValueChange = () => {
@@ -212,7 +240,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
             <DialogTitle marginTop={1}>
                 <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
                 <Typography variant="h5">{mode} {moduleName || "Module"}</Typography>
-                <TextField label={"Module Name"} defaultValue={moduleName || ""} size={"small"}/>
+                <TextField label={"Module Name"} defaultValue={moduleName || ""} size={"small"} required/>
                 </Stack>
             </DialogTitle>
             <DialogContent sx={{overflow: "hidden"}}>
@@ -225,7 +253,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                         <Stack 
                             direction={"row"} 
                             margin={1}
-                            spacing={1}
+                            spacing={0.5}
                             padding={1}
                             paddingLeft={2}
                             justifyContent={"space-between"}
@@ -236,9 +264,10 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                                 whiteSpace: "nowrap",
                             }}>
                             <Typography variant="subtitle1">Field Groups</Typography>
-                            <Tooltip title="New Field Group"><IconButton onClick={handleNewFieldGroup}><PlusIcon/></IconButton></Tooltip>
+                            <Tooltip title="New Field Group"><IconButton onClick={handleAddFieldGroup}><PlusIcon/></IconButton></Tooltip>
+                            <Tooltip title="Remove Current Field Group"><IconButton onClick={handleRemoveFieldGroup}><MinusIcon/></IconButton></Tooltip>
                         </Stack>
-                        <TabDisplay/>
+                        <TabDisplay fieldGroups={moduleObject.FieldGroups}/>
                     </Box>
 
                     {/*Right Editor Pane ("Fields")*/}
