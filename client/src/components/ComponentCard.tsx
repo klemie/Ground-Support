@@ -121,7 +121,7 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
                     </Stack>
                 </CardActions>
             </Card>
-            <ModuleEditor moduleID={"null"} moduleName={"BME280"} mode={"Edit"} isOpen={moduleEditorOpen} onClose={() => setModuleEditorOpen(false)}/>
+            <ModuleEditor ModuleID={"null"} mode={"Edit"} isOpen={moduleEditorOpen} onClose={() => setModuleEditorOpen(false)}/>
             <ComponentModal component={component} isOpen={componentModalOpen} onSave={updateComponent} onClose={() => setComponentModalOpen(false)}/>
         </>
     );
