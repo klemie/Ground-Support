@@ -59,8 +59,7 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
         onDataConfigClick(component.DataConfigId._id as string);
     }
 
-    const handleAddDataConfig = () => {
-        // Open ComponentModuleEditor.tsx
+    const handleAddModule = () => {
         setModuleEditorOpen(true)
     }
 
@@ -97,18 +96,21 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
                                 </Button>
                             </Tooltip>
                             <Tooltip title="New Module">
-                                <IconButton onClick={handleAddDataConfig} disabled={!component.DataConfigId} aria-label='add module'
-                                            sx={{
-                                                borderTopRightRadius: 4, 
-                                                borderBottomRightRadius: 4,
-                                                borderTopLeftRadius: 0,
-                                                borderBottomLeftRadius: 0
-                                            }}>
-                                            <PlusIcon/>
+                                <IconButton 
+                                    onClick={handleAddModule} 
+                                    disabled={!component.DataConfigId} 
+                                    aria-label='add module'
+                                    sx={{
+                                        borderTopRightRadius: 4, 
+                                        borderBottomRightRadius: 4,
+                                        borderTopLeftRadius: 0,
+                                        borderBottomLeftRadius: 0
+                                    }}>
+                                    <PlusIcon/>
                                 </IconButton>
                             </Tooltip>
                         </ButtonGroup>
-                        <ButtonGroup variant="outlined"  >
+                        <ButtonGroup variant="outlined">
                             <Tooltip title="Edit Component">
                                 <IconButton onClick={handleEdit} aria-label="edit component"><EditIcon/></IconButton>
                             </Tooltip>
@@ -119,7 +121,7 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
                     </Stack>
                 </CardActions>
             </Card>
-            <ModuleEditor component={null} isOpen={moduleEditorOpen} onClose={() => setModuleEditorOpen(false)}/>
+            <ModuleEditor moduleID={"null"} moduleName={"BME280"} mode={"Edit"} isOpen={moduleEditorOpen} onClose={() => setModuleEditorOpen(false)}/>
             <ComponentModal component={component} isOpen={componentModalOpen} onSave={updateComponent} onClose={() => setComponentModalOpen(false)}/>
         </>
     );
