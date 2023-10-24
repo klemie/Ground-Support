@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, DialogContent, DialogTitle, IconButton, Stack, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
 import { IField, IFieldGroup, IModule } from "../utils/entities";
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import PlusIcon from '@mui/icons-material/Add'
 import MinusIcon from '@mui/icons-material/Remove'
 import api from "../services/api";
@@ -10,37 +10,11 @@ interface IModuleEditorProps {
     // No module when opened from ComponentCard.tsx
     // Module populuated when opened from data-config-view.tsx, so we can edit as specified
     // OR no module if adding new module from data-config-view.tsx
-    ModuleID?: string; // TODO reeval when api calls are implemented
+    ModuleID?: string; // TODO re-eval when api calls are implemented
     mode: "New" | "Edit";
     isOpen: boolean;
     onClose: () => void; // TODO
 }
-
-// interface ITabPanelProps {
-//     children?: React.ReactNode;
-//     index: number;
-//     value: number;
-// }
-  
-// const TabPanel = (props: ITabPanelProps) => {
-//     const { children, value, index, ...other } = props;
-  
-//     return (
-//       <div
-//         role="tabpanel"
-//         hidden={value !== index}
-//         id={`vertical-tabpanel-${index}`}
-//         aria-labelledby={`vertical-tab-${index}`}
-//         {...other}
-//       >
-//         {value === index && (
-//           <Box sx={{ p: 3 }}>
-//             <Typography>{children}</Typography>
-//           </Box>
-//         )}
-//       </div>
-//     );
-// }
 
 let dummyFields1 = [
     { Name: 'x', Range: [-20, 20], Units: 'm/s^2', TelemetryId: 3 },
@@ -125,7 +99,6 @@ let dummyModule2: IModule = {
 const ModuleEditor = (props: IModuleEditorProps) => {
     let { ModuleID, mode, isOpen, onClose } = props;
     
-    
     // Have moduleID in props, then get module if !undefined and set our moduleObject === that module from api call
     // eg:  if (ModuleID) then async get module by ID
     //      else create default empty module and use in editor for "New Module"
@@ -138,102 +111,107 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     let moduleName = moduleObject.Name
     
     const[tabIndex, setTabIndex] = useState(0);
-
-    // This state var was definitely doing something at one point, but I don't think it's needed since we can always get the current group
-    // by using moduleObject.FieldGroups[tabIndex]
-    // const[currentFieldGroup, setCurrentFieldGroup] = useState<IFieldGroup>(moduleObject.FieldGroups[0]);
+    const[currentFields, setCurrentFields] = useState<IField[]>(moduleObject.FieldGroups[tabIndex].Fields)
     
-    // When the editor starts up (or on state change for moduleObject), we set up our tabs/fields (fieldgroups and fields) from the moduleObject
-    const TabDisplay = (props:any) => { // TODO make interfact for this type? maybe not strictly neccesary
-        const fieldGroups = props.fieldGroups
+    const tabDisplayRef = useRef<HTMLDivElement>(null);
+    const [tabScrollPosition, setTabScrollPosition] = useState<number>(0);
+
+    useEffect(() => {
+        // Ensures that when the tab index is updated, the tab display scroll stays the same
+        // This is kinda janky but actually works really well, I'm sure there's better way of doing this though
+        if (tabDisplayRef.current) {
+            tabDisplayRef.current.scrollTop = tabScrollPosition
+        }
+    }, [tabIndex])
+    
+    const TabDisplay = (props: any) => {
+        const fieldGroups = props.fieldGroups;
+
+        const handleTabChange = (event: React.SyntheticEvent, newTabIndex: number) => { 
+            setTabScrollPosition(tabDisplayRef.current?.scrollTop || 0)
+            setTabIndex(newTabIndex)
+        };
+
         return (
-            <Tabs orientation={"vertical"} value={tabIndex} onChange={handleTabChange}>
-                {fieldGroups.map((group:IFieldGroup) => (
-                    <Tab label={group.Name} disableRipple/>
-                ))}
-            </Tabs>
+            <div ref={tabDisplayRef} style={{ overflow: "scroll", maxHeight: "45vh", direction: "rtl"}}>
+                <Tabs orientation="vertical" value={tabIndex} onChange={handleTabChange}>
+                    {fieldGroups.map((group:IFieldGroup, index:number) => (
+                        <Tab label={group.Name} key={index} value={index} disableRipple/>
+                    ))}
+                </Tabs>
+            </div>
         )
     }
 
-    const FieldDisplay = (props:any) => { // TODO also this type as well
+    const FieldDisplay = (props:any) => {
         const fields = props.fields;
         return (
             <Stack direction={"column"} spacing={3} padding={2} maxHeight={"45vh"} sx={{overflow: "scroll"}}>
                 {fields.map((field:IField, index:number) => (
                     <Stack direction={"row"} spacing={1}>
                         <TextField label="Name" defaultValue={field.Name || ""} size="small"/>
-                        <TextField label="Range" defaultValue={`[ ${field.Range || ""} ]`} size="small"/>
+                        <Tooltip title={"[ lower, upper ]"} disableInteractive><TextField label="Range" defaultValue={`[ ${field.Range || ""} ]`} size="small"/></Tooltip>
                         <TextField label="Units" defaultValue={field.Units || ""} size="small"/>
                         <TextField label="ID" defaultValue={field.TelemetryId || ""} size="small"/>
-                        <Tooltip title="Remove Field" disableInteractive onClick={() => handleRemoveField(index)}><IconButton><MinusIcon/></IconButton></Tooltip>
+                        <Tooltip title="Remove Field" disableInteractive onClick={() => handleEditFields("remove", index)}><IconButton><MinusIcon/></IconButton></Tooltip>
                     </Stack>
                 ))}
             </Stack>
         )
     }
-    
-    const handleTabChange = (event: React.SyntheticEvent, newTabIndex: number) => {
-        setTabIndex(newTabIndex);
-    };
 
-    const handleAddFieldGroup = () => {
-        const emptyField:IField = {
-            Name: 'null',
-            Range: [0, 0],
-            Units: '',
-            TelemetryId: 0
-        }
-
-        const emptyFieldGroup:IFieldGroup = {
-            Name: 'empty',
-            Fields: [
-                emptyField
-            ]
-        }
-
+    const handleEditFieldGroups = (op:"add" | "remove") => {
         // Deref const object so we can edit and give to setModuleObject - neccessary because we're using state, otherwise no worky
         let moduleObjectRet:IModule = JSON.parse(JSON.stringify(moduleObject))
-        moduleObjectRet.FieldGroups.push(emptyFieldGroup)
+        setTabScrollPosition(tabDisplayRef.current?.scrollTop || 0)
 
-        setModuleObject(moduleObjectRet)
-    };
-
-    const handleRemoveFieldGroup = () => {
-        if (moduleObject.FieldGroups.length > 1) {
-            let moduleObjectRet = JSON.parse(JSON.stringify(moduleObject));
-            moduleObjectRet.FieldGroups.splice(tabIndex, 1);
-            if(tabIndex > 0) {
-                setTabIndex(tabIndex - 1)
+        if(op === "add") {
+            const emptyField:IField = {
+                Name: '',
+                Range: [0, 0],
+                Units: '',
+                TelemetryId: 0
             }
-            setModuleObject(moduleObjectRet);
+    
+            const emptyFieldGroup:IFieldGroup = {
+                Name: 'empty',
+                Fields: [
+                    emptyField
+                ]
+            }
+    
+            moduleObjectRet.FieldGroups.splice(tabIndex + 1, 0, emptyFieldGroup)
+            setTabIndex(tabIndex + 1)  
+
+        } else {
+            if (moduleObject.FieldGroups.length > 1) {
+                moduleObjectRet.FieldGroups.splice(tabIndex, 1);
+                if(tabIndex > 0) {
+                    setTabIndex(tabIndex - 1)
+                }
+            }
         }
-    }
-
-    const handleAddField = () => {
-        const emptyField:IField = {
-            Name: '',
-            Range: [0, 0],
-            Units: '',
-            TelemetryId: 0
-        }
-
-        let moduleObjectRet:IModule = JSON.parse(JSON.stringify(moduleObject))
-        moduleObjectRet.FieldGroups[tabIndex].Fields.push(emptyField)
-
         setModuleObject(moduleObjectRet)
     };
 
-    const handleRemoveField = (index:number) => {
-        if(moduleObject.FieldGroups[tabIndex].Fields.length > 1) {
-            let moduleObjectRet = JSON.parse(JSON.stringify(moduleObject));
-            moduleObjectRet.FieldGroups[tabIndex].Fields.splice(index, 1);
-            setModuleObject(moduleObjectRet);
+    const handleEditFields = (op:"add" | "remove", index:number) => {
+        let moduleObjectRet:IModule = JSON.parse(JSON.stringify(moduleObject))
+        if(op === "add") {
+            const emptyField:IField = {
+                Name: '',
+                Range: [0, 0],
+                Units: '',
+                TelemetryId: 0
+            }
+
+            moduleObjectRet.FieldGroups[tabIndex].Fields.push(emptyField)
+        } else {
+            if(moduleObject.FieldGroups[tabIndex].Fields.length > 1) {
+                moduleObjectRet.FieldGroups[tabIndex].Fields.splice(index, 1);
+            }
         }
+        setModuleObject(moduleObjectRet);
     };
-
-    const handleFieldValueChange = () => {
-
-    }
 
     return (
         <Dialog open={isOpen} fullWidth maxWidth={"md"} PaperProps={{sx:{maxHeight: "80vh"}}}>
@@ -243,6 +221,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                 <TextField label={"Module Name"} defaultValue={moduleName || ""} size={"small"} required/>
                 </Stack>
             </DialogTitle>
+
             <DialogContent sx={{overflow: "hidden"}}>
                 <Stack direction={"row"} justifyContent={"space-evenly"} minHeight={"55vh"}>
 
@@ -264,8 +243,8 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                                 whiteSpace: "nowrap",
                             }}>
                             <Typography variant="subtitle1">Field Groups</Typography>
-                            <Tooltip title="New Field Group"><IconButton onClick={handleAddFieldGroup}><PlusIcon/></IconButton></Tooltip>
-                            <Tooltip title="Remove Current Field Group"><IconButton onClick={handleRemoveFieldGroup}><MinusIcon/></IconButton></Tooltip>
+                            <Tooltip title="New Field Group" disableInteractive><IconButton onClick={() => handleEditFieldGroups("add")}><PlusIcon/></IconButton></Tooltip>
+                            <Tooltip title="Remove Current Field Group" disableInteractive><IconButton onClick={() => handleEditFieldGroups("remove")}><MinusIcon/></IconButton></Tooltip>
                         </Stack>
                         <TabDisplay fieldGroups={moduleObject.FieldGroups}/>
                     </Box>
@@ -288,14 +267,16 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                                 whiteSpace: "nowrap",
                             }}>
                             <Typography variant="subtitle1">Fields</Typography>
-                            <Tooltip title="New Field"><IconButton onClick={handleAddField}><PlusIcon fontSize="medium"/></IconButton></Tooltip>
+                            <Tooltip title="New Field" disableInteractive><IconButton onClick={() => handleEditFields("add", 0)}><PlusIcon fontSize="medium"/></IconButton></Tooltip>
                         </Stack>
 
                         {/*Right Editor Contents*/}
                         <FieldDisplay fields={moduleObject.FieldGroups[tabIndex].Fields}/>
                     </Box>
+
                 </Stack>
             </DialogContent>
+
             <Stack direction={"row"} spacing={1} padding={3} justifyContent={"flex-end"} alignItems={"center"}>
                 <Button onClick={() => onClose()} variant="contained">Cancel</Button>
                 <Button variant="contained">Save</Button>
