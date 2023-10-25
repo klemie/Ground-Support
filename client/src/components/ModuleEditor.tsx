@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, DialogContent, DialogTitle, IconButton, Stack, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
-import { IField, IFieldGroup, IModule } from "../utils/entities";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { IDataConfig, IField, IFieldGroup, IModule } from "../utils/entities";
+import { ChangeEventHandler, ReactEventHandler, useEffect, useLayoutEffect, useRef, useState } from "react";
 import PlusIcon from '@mui/icons-material/Add'
 import MinusIcon from '@mui/icons-material/Remove'
 import api from "../services/api";
@@ -96,6 +96,14 @@ let dummyModule2: IModule = {
     ]
 }
 
+let dummyDataConfig: IDataConfig = {
+    _id: "6535b4371b521e05c0c0e942",
+    Modules: [
+        dummyModule2,
+        dummyModule1
+    ]
+}
+
 const ModuleEditor = (props: IModuleEditorProps) => {
     let { ModuleID, mode, isOpen, onClose } = props;
     
@@ -107,31 +115,25 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     // This might be easier (but also more fiddly) but regardless I still want to edit on a per-module basis as editing the whole config at once is dumb
     
     // Right now using dummyobj since haven't implemented api module get, so
-    const[moduleObject, setModuleObject] = useState<IModule>(dummyModule2);
-    let moduleName = moduleObject.Name
+    const [moduleObject, setModuleObject] = useState<IModule>(dummyModule2);
+    let moduleName = moduleObject.Name;
     
-    const[tabIndex, setTabIndex] = useState(0);
-    const[currentFields, setCurrentFields] = useState<IField[]>(moduleObject.FieldGroups[tabIndex].Fields)
+    const [tabIndex, setTabIndex] = useState(0);
+    let currentFields:IField[] = moduleObject.FieldGroups[tabIndex].Fields // Will update when tab index changes, helpfully
     
     const tabDisplayRef = useRef<HTMLDivElement>(null);
     const [tabScrollPosition, setTabScrollPosition] = useState<number>(0);
 
     useEffect(() => {
-        // Ensures that when the tab index is updated, the tab display scroll stays the same
-        // This is kinda janky but actually works really well, I'm sure there's better way of doing this though
+        // Ensures that when the module field groups/fields are updated, the tab display scroll stays the same
+        // This is janky but actually works alright, I'm sure there's better way of doing this though
         if (tabDisplayRef.current) {
             tabDisplayRef.current.scrollTop = tabScrollPosition
         }
-    }, [tabIndex])
+    }, [moduleObject]);
     
-    const TabDisplay = (props: any) => {
+    const TabDisplay = (props:any) => {
         const fieldGroups = props.fieldGroups;
-
-        const handleTabChange = (event: React.SyntheticEvent, newTabIndex: number) => { 
-            setTabScrollPosition(tabDisplayRef.current?.scrollTop || 0)
-            setTabIndex(newTabIndex)
-        };
-
         return (
             <div ref={tabDisplayRef} style={{ overflow: "scroll", maxHeight: "45vh", direction: "rtl"}}>
                 <Tabs orientation="vertical" value={tabIndex} onChange={handleTabChange}>
@@ -141,30 +143,56 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                 </Tabs>
             </div>
         )
-    }
+    };
 
     const FieldDisplay = (props:any) => {
         const fields = props.fields;
         return (
             <Stack direction={"column"} spacing={3} padding={2} maxHeight={"45vh"} sx={{overflow: "scroll"}}>
-                {fields.map((field:IField, index:number) => (
+                {fields.map((field:IField, index:string) => (
                     <Stack direction={"row"} spacing={1}>
-                        <TextField label="Name" defaultValue={field.Name || ""} size="small"/>
-                        <Tooltip title={"[ lower, upper ]"} disableInteractive><TextField label="Range" defaultValue={`[ ${field.Range || ""} ]`} size="small"/></Tooltip>
-                        <TextField label="Units" defaultValue={field.Units || ""} size="small"/>
-                        <TextField label="ID" defaultValue={field.TelemetryId || ""} size="small"/>
-                        <Tooltip title="Remove Field" disableInteractive onClick={() => handleEditFields("remove", index)}><IconButton><MinusIcon/></IconButton></Tooltip>
+                        <TextField label="Name"        name="Name"        id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Name || ""}/>
+                        <TextField label="Range"       name="Range"       id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range || ""}/>
+                        <TextField label="Units"       name="Units"       id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Units || ""}/>
+                        <TextField label="TelemetryId" name="TelemetryId" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.TelemetryId || ""}/>
+
+                        <Tooltip title="Remove Field" disableInteractive onClick={() => handleEditFields("remove", Number(index))}><IconButton><MinusIcon/></IconButton></Tooltip>
                     </Stack>
                 ))}
             </Stack>
         )
-    }
+    };
+
+    const handleChangeCurrentFields = (e:React.ChangeEvent<HTMLInputElement>) => {
+        const fieldId = Number(e.target.id);
+        const fieldName = e.target.name;
+        const someValue = e.target.value;
+
+        currentFields[fieldId] = {
+            ...currentFields[fieldId],
+            [fieldName]: someValue,
+        };
+    };
+
+    const handleTabChange = (e:any, newTabIndex: number) => {
+        setTabScrollPosition(tabDisplayRef.current?.scrollTop || 0)
+
+        let moduleObjectRet:IModule = JSON.parse(JSON.stringify(moduleObject))
+        moduleObjectRet.FieldGroups[tabIndex].Fields = currentFields
+        
+        setModuleObject(moduleObjectRet)
+        setTabIndex(newTabIndex)
+        
+        // I can't figure out exactly why this still works without this line??
+        // currentFields = moduleObject.FieldGroups[newTabIndex].Fields
+    };
 
     const handleEditFieldGroups = (op:"add" | "remove") => {
         // Deref const object so we can edit and give to setModuleObject - neccessary because we're using state, otherwise no worky
+        // TODO Figure out less terrible way of doing this (?)
         let moduleObjectRet:IModule = JSON.parse(JSON.stringify(moduleObject))
-        setTabScrollPosition(tabDisplayRef.current?.scrollTop || 0)
-
+        let newTab = 0
+        
         if(op === "add") {
             const emptyField:IField = {
                 Name: '',
@@ -181,21 +209,25 @@ const ModuleEditor = (props: IModuleEditorProps) => {
             }
     
             moduleObjectRet.FieldGroups.splice(tabIndex + 1, 0, emptyFieldGroup)
-            setTabIndex(tabIndex + 1)  
+            newTab = tabIndex + 1  
 
         } else {
-            if (moduleObject.FieldGroups.length > 1) {
+            if (moduleObjectRet.FieldGroups.length > 1) {
                 moduleObjectRet.FieldGroups.splice(tabIndex, 1);
                 if(tabIndex > 0) {
-                    setTabIndex(tabIndex - 1)
+                    newTab = tabIndex - 1
                 }
             }
         }
         setModuleObject(moduleObjectRet)
+        setTabIndex(newTab)
+        setTabScrollPosition(tabDisplayRef.current?.scrollTop || 0)
     };
 
     const handleEditFields = (op:"add" | "remove", index:number) => {
         let moduleObjectRet:IModule = JSON.parse(JSON.stringify(moduleObject))
+        setTabScrollPosition(tabDisplayRef.current?.scrollTop || 0)
+
         if(op === "add") {
             const emptyField:IField = {
                 Name: '',
@@ -206,7 +238,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
 
             moduleObjectRet.FieldGroups[tabIndex].Fields.push(emptyField)
         } else {
-            if(moduleObject.FieldGroups[tabIndex].Fields.length > 1) {
+            if(moduleObjectRet.FieldGroups[tabIndex].Fields.length > 1) {
                 moduleObjectRet.FieldGroups[tabIndex].Fields.splice(index, 1);
             }
         }
@@ -232,7 +264,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                         <Stack 
                             direction={"row"} 
                             margin={1}
-                            spacing={0.5}
+                            spacing={0}
                             padding={1}
                             paddingLeft={2}
                             justifyContent={"space-between"}
@@ -242,7 +274,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                                 borderRadius: 1,
                                 whiteSpace: "nowrap",
                             }}>
-                            <Typography variant="subtitle1">Field Groups</Typography>
+                            <Typography variant="subtitle1" sx={{paddingRight: "20px"}}>Field Groups</Typography>
                             <Tooltip title="New Field Group" disableInteractive><IconButton onClick={() => handleEditFieldGroups("add")}><PlusIcon/></IconButton></Tooltip>
                             <Tooltip title="Remove Current Field Group" disableInteractive><IconButton onClick={() => handleEditFieldGroups("remove")}><MinusIcon/></IconButton></Tooltip>
                         </Stack>
