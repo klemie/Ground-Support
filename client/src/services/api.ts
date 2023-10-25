@@ -6,7 +6,8 @@ import {
     IRocket,
     IComponentPopulated,
     IComponent,
-    IMission
+    IMission,
+    IRocketSim
 } from '../utils/entities';
 
 const api = axios.create({
@@ -34,7 +35,9 @@ interface IApiResponse {
         IMission |
         IMission[] |
         IMissionPopulated[] | 
-        IMissionPopulated;
+        IMissionPopulated |
+        IRocketSim |
+        IRocketSim[];
     error: IError;
 }
 
@@ -757,6 +760,159 @@ async function deleteDataConfig(id: string, componentId: string): Promise<IApiRe
     return data;
 }
 
+/**
+* --------------------------------------------------------
+* |                  Rocket Sim CRUD                     |
+* -------------------------------------------------------- 
+*/
+
+/**
+ * @returns All rocket simulation
+ * 
+ * @description Gets all rockets sim
+ */
+async function getRocketSims(): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: [] as IRocketSim[],
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.get('/rocketSim');
+        data = {
+            data: response.data.results 
+                ? response.data.results 
+                : response.data.result as IRocketSim[],
+            error: handleError(response)
+        };
+    } catch (e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error getting all rockets. Full error: \n${err.message}`;
+    }
+
+    return data;
+}
+
+/**
+ * @param id Id of a rocketSim
+ * @returns The rocketSim
+ */
+async function getRocketSim(id: string): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IRocketSim,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.get(`/rocketSim/${id}`);
+        data = {
+            data: response.data.result 
+                ? response.data.result as IRocketSim
+                : response.data.results as IRocketSim,
+            error: handleError(response)
+        };
+    } catch (e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error getting rocketSim by id with ${id}. Full error: \n${err.message}`;
+    }
+
+    return data;
+}
+
+/**
+ * @param payload The rocket to create type IRocketSimModel
+ * @returns The created rocketSim
+ * 
+ * @description Creates a rocketSim
+ */
+async function createRocketSim(payload: IRocketSim): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IRocketSim,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.post('/rocketSim', payload);
+        data = {
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IRocketSim,
+            error: handleError(response)
+        };
+    } catch (e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error creating new rocketSim. Full error:\n${err.message}`;
+    }
+
+    return data;
+}
+
+/**
+ * @param id Id of a rocket
+ * @param payload The rocket to update type IRocket
+ * @returns The updated rocket
+ */
+async function updateRocketSim(id: string, payload: IRocketSim): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IRocketSim,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.patch(`/rocketSim/${id}`, payload);
+        data = {
+            data: response.data.result 
+                ? response.data.result as IRocketSim
+                : response.data.results as IRocketSim,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error updating the rocketSim with the id ${id}. Full error:\n${err.message}`;
+    }
+
+    return data;
+}
+/**
+ * @param id Id of a rocket
+ * @returns The deleted rocket
+ * 
+ * @description Deletes a rocket
+ */
+async function deleteRocketSim(id: string): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IRocketSim,
+        error: {} as IError
+    } as IApiResponse;
+
+    try {
+        response = await api.delete(`/rocketSim/${id}`);
+        data = {
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IRocketSim,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error deleting rocketSim with the id ${id}. Full error:\n${err.message}`;
+    }
+
+    return data;
+}
+
+
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
     getRockets,
@@ -778,5 +934,10 @@ export default {
     getDataConfig,
     createDataConfig,
     updateDataConfig,
-    deleteDataConfig
+    deleteDataConfig,
+    getRocketSims,
+    getRocketSim,
+    createRocketSim,
+    updateRocketSim,
+    deleteRocketSim
 };

@@ -113,3 +113,15 @@ export interface IFieldData {
     TelemetryId: Buffer;
     Data: IDataPoint[];
 }
+
+export interface IRocketSim {
+    _id?: string;
+    Name: string;
+    DryMass: number;
+    WetMass: number;
+    CenterOfGravity: number;
+    CenterOfPressure: number;
+    FuselageDiameter: number;
+    FuselageLength: number;
+    RocketLength: number;
+}
