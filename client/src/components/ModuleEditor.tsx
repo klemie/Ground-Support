@@ -10,8 +10,7 @@ interface IModuleEditorProps {
     // No module when opened from ComponentCard.tsx
     // Module populuated when opened from data-config-view.tsx, so we can edit as specified
     // OR no module if adding new module from data-config-view.tsx
-    ModuleID?: string; // TODO re-eval when api calls are implemented
-    mode: "New" | "Edit";
+    DataConfigID: string; // TODO re-eval when api calls are implemented
     isOpen: boolean;
     onClose: () => void; // TODO
 }
@@ -105,24 +104,49 @@ let dummyDataConfig: IDataConfig = {
 }
 
 const ModuleEditor = (props: IModuleEditorProps) => {
-    let { ModuleID, mode, isOpen, onClose } = props;
+    let { DataConfigID, isOpen, onClose } = props;
     
-    // Have moduleID in props, then get module if !undefined and set our moduleObject === that module from api call
-    // eg:  if (ModuleID) then async get module by ID
-    //      else create default empty module and use in editor for "New Module"
-    // Might have to create a new api route for modules? Or maybe can just send DataConfigID, ModuleName from ComponentCard/other places
-    // then extract correct module from DataConfig for editing
-    // This might be easier (but also more fiddly) but regardless I still want to edit on a per-module basis as editing the whole config at once is dumb
+    /**********************************************************************************************************************
+    MODULE-API APPROACH
+        - Must implement api verbs for modules :((
+        - Actual writing here is easy because I just setModuleObject(get(moduleID))
+          then do work on the moduleObject as done already, then
+          post/patch(moduleObject) (or however it works)
+        - Doing the api work is a major con though and I would guess frowned upon,
+          especially since this task is to "edit dataConfigs"
+        - Posting a new module is going to be a pain because where are we actually posting? Will 
+          still have to get a dataConfigID
+          Patching is easy because we have the ModuleID
+
+    DATACFG-API APPROACH
+        - Api verbs already exist :D
+        - Writing is a pain because we have to access the right part of the Modules[] inside the dataConfig
+        - However current code should still be fine
+        - Will be less readable but utilizes pre-existing code, plus I don't need to make more 
+          of a mess out of the api.ts and other files
+        - When using dataConfig approach posting will be easier, even though we need to worry about indecies
+          Patching is somewhat more of a pain because we need to worry about indecies? Maybe although we could possibly just
+          identify based on the ModuleID?
+        - Major pro: overall we never need to post a new entry because we're always patching an existing dataConfig
+
+    ***********************************************************************************************************************/
+
+    // Say we get the dataConfig from the api eg
+    // let dataConfig = getDataConfig(dataConfigID))
     
+    // -> Adding a new module can just be handled when saving by pushing onto the end, then patching this to the dataConfigID
+    // -> Editing an existing module will be harder
+
     // Right now using dummyobj since haven't implemented api module get, so
     const [moduleObject, setModuleObject] = useState<IModule>(dummyModule2);
-    let moduleName = moduleObject.Name;
     
     const [tabIndex, setTabIndex] = useState(0);
-    let currentFields:IField[] = moduleObject.FieldGroups[tabIndex].Fields // Will update when tab index changes, helpfully
+    let currentFields:IField[] = moduleObject.FieldGroups[tabIndex].Fields
     
     const tabDisplayRef = useRef<HTMLDivElement>(null);
     const [tabScrollPosition, setTabScrollPosition] = useState<number>(0);
+
+    const [namingPopupOpen, setNamingPopupOpen] = useState<boolean>(false)
 
     useEffect(() => {
         // Ensures that when the module field groups/fields are updated, the tab display scroll stays the same
@@ -134,6 +158,20 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     
     const TabDisplay = (props:any) => {
         const fieldGroups = props.fieldGroups;
+
+        const handleTabChange = (e:any, newTabIndex: number) => {
+            setTabScrollPosition(tabDisplayRef.current?.scrollTop || 0)
+    
+            let moduleObjectRet:IModule = JSON.parse(JSON.stringify(moduleObject))
+            moduleObjectRet.FieldGroups[tabIndex].Fields = currentFields
+            
+            setModuleObject(moduleObjectRet)
+            setTabIndex(newTabIndex)
+            
+            // I can't figure out exactly why this still works without this line??
+            // currentFields = moduleObject.FieldGroups[newTabIndex].Fields
+        };
+
         return (
             <div ref={tabDisplayRef} style={{ overflow: "scroll", maxHeight: "45vh", direction: "rtl"}}>
                 <Tabs orientation="vertical" value={tabIndex} onChange={handleTabChange}>
@@ -151,17 +189,66 @@ const ModuleEditor = (props: IModuleEditorProps) => {
             <Stack direction={"column"} spacing={3} padding={2} maxHeight={"45vh"} sx={{overflow: "scroll"}}>
                 {fields.map((field:IField, index:string) => (
                     <Stack direction={"row"} spacing={1}>
-                        <TextField label="Name"        name="Name"        id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Name || ""}/>
-                        <TextField label="Range"       name="Range"       id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range || ""}/>
-                        <TextField label="Units"       name="Units"       id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Units || ""}/>
-                        <TextField label="TelemetryId" name="TelemetryId" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.TelemetryId || ""}/>
+                        <TextField label="Name"        name="Name"        key="Name"  id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Name || ""}/>
+                        <TextField label="Range"       name="Range"       key="Range" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range || ""}/>
+                        <TextField label="Units"       name="Units"       key="Units" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Units || ""}/>
+                        <TextField label="TelemetryId" name="TelemetryId" key="TelID" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.TelemetryId || ""}/>
 
                         <Tooltip title="Remove Field" disableInteractive onClick={() => handleEditFields("remove", Number(index))}><IconButton><MinusIcon/></IconButton></Tooltip>
                     </Stack>
                 ))}
             </Stack>
         )
-    };
+    }
+
+    const NamingPopup = () => {
+        let nameFieldContents:string = "";
+
+        const handleClosePopup = () => {
+            handleEditFieldGroups("add", nameFieldContents);
+            setNamingPopupOpen(false);
+        }
+
+        const handleFieldChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+            nameFieldContents = e.target.value;
+        }
+
+        return (
+            <Dialog open={namingPopupOpen}>
+                <DialogTitle>
+                    <Typography variant="subtitle1">Name New Field</Typography>
+                </DialogTitle>
+                <DialogContent>
+                    <TextField onChange={handleFieldChange} label={"Field Name"} sx={{marginTop: 0.8}}/>
+                </DialogContent>
+                <Stack direction={"row"} justifyContent={"space-evenly"} marginBottom={2}>
+                    <Button onClick={() => setNamingPopupOpen(false)} fullWidth={false} variant={"contained"}>Cancel</Button>
+                    <Button onClick={handleClosePopup} fullWidth={false} variant={"contained"}>Add</Button>
+                </Stack>
+            </Dialog>
+        )
+    }
+
+    const DialogHeader = () => {
+        const [moduleName, setModuleName] = useState<string>(moduleObject.Name)
+
+        const handleChangeModuleName = (e:React.ChangeEvent<HTMLInputElement>) => {
+            setModuleName(e.target.value)
+        }
+
+        const handleDefocus = () => {
+            let moduleObjectRet:IModule = JSON.parse(JSON.stringify(moduleObject))
+            moduleObjectRet.Name = moduleName;
+            setModuleObject(moduleObjectRet)
+        }
+
+        return (
+            <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
+                <Typography variant="h5">{moduleObject.Name ? "Edit" : "New"} {moduleObject.Name || "Module"}</Typography>
+                <TextField label={"Module Name"} defaultValue={moduleName || ""} size={"small"} onBlur={handleDefocus} onChange={handleChangeModuleName} required/>
+            </Stack>
+        )
+    }
 
     const handleChangeCurrentFields = (e:React.ChangeEvent<HTMLInputElement>) => {
         const fieldId = Number(e.target.id);
@@ -174,25 +261,12 @@ const ModuleEditor = (props: IModuleEditorProps) => {
         };
     };
 
-    const handleTabChange = (e:any, newTabIndex: number) => {
-        setTabScrollPosition(tabDisplayRef.current?.scrollTop || 0)
-
-        let moduleObjectRet:IModule = JSON.parse(JSON.stringify(moduleObject))
-        moduleObjectRet.FieldGroups[tabIndex].Fields = currentFields
-        
-        setModuleObject(moduleObjectRet)
-        setTabIndex(newTabIndex)
-        
-        // I can't figure out exactly why this still works without this line??
-        // currentFields = moduleObject.FieldGroups[newTabIndex].Fields
-    };
-
-    const handleEditFieldGroups = (op:"add" | "remove") => {
+    const handleEditFieldGroups = (op:"add" | "remove", groupName?:string) => {
         // Deref const object so we can edit and give to setModuleObject - neccessary because we're using state, otherwise no worky
         // TODO Figure out less terrible way of doing this (?)
         let moduleObjectRet:IModule = JSON.parse(JSON.stringify(moduleObject))
         let newTab = 0
-        
+
         if(op === "add") {
             const emptyField:IField = {
                 Name: '',
@@ -202,7 +276,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
             }
     
             const emptyFieldGroup:IFieldGroup = {
-                Name: 'empty',
+                Name: groupName || 'New Field',
                 Fields: [
                     emptyField
                 ]
@@ -248,10 +322,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     return (
         <Dialog open={isOpen} fullWidth maxWidth={"md"} PaperProps={{sx:{maxHeight: "80vh"}}}>
             <DialogTitle marginTop={1}>
-                <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"}>
-                <Typography variant="h5">{mode} {moduleName || "Module"}</Typography>
-                <TextField label={"Module Name"} defaultValue={moduleName || ""} size={"small"} required/>
-                </Stack>
+                <DialogHeader/>
             </DialogTitle>
 
             <DialogContent sx={{overflow: "hidden"}}>
@@ -264,7 +335,6 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                         <Stack 
                             direction={"row"} 
                             margin={1}
-                            spacing={0}
                             padding={1}
                             paddingLeft={2}
                             justifyContent={"space-between"}
@@ -275,9 +345,11 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                                 whiteSpace: "nowrap",
                             }}>
                             <Typography variant="subtitle1" sx={{paddingRight: "20px"}}>Field Groups</Typography>
-                            <Tooltip title="New Field Group" disableInteractive><IconButton onClick={() => handleEditFieldGroups("add")}><PlusIcon/></IconButton></Tooltip>
+                            <Tooltip title="New Field Group" disableInteractive><IconButton onClick={() => setNamingPopupOpen(true)}><PlusIcon/></IconButton></Tooltip>
                             <Tooltip title="Remove Current Field Group" disableInteractive><IconButton onClick={() => handleEditFieldGroups("remove")}><MinusIcon/></IconButton></Tooltip>
                         </Stack>
+
+                        {/*Left Tab Display*/}
                         <TabDisplay fieldGroups={moduleObject.FieldGroups}/>
                     </Box>
 
@@ -313,7 +385,10 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                 <Button onClick={() => onClose()} variant="contained">Cancel</Button>
                 <Button variant="contained">Save</Button>
             </Stack>
+
+            <NamingPopup/>
         </Dialog>
+
     )
 }
 
