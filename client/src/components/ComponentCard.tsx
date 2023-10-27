@@ -1,7 +1,7 @@
 import api from '../services/api';
 import React, { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Card, CardActions, CardContent, CardHeader, Chip, IconButton, Stack, Tooltip, Typography } from '@mui/material';
-import { IComponentPopulated, IRocket, IRocketPopulated } from '../utils/entities';
+import { IComponent, IComponentPopulated, IRocket, IRocketPopulated } from '../utils/entities';
 import EditIcon from '@mui/icons-material/Edit';
 import PlusIcon from '@mui/icons-material/Add'
 import { Delete } from '@mui/icons-material';
@@ -91,23 +91,27 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
                     <Stack direction={'row'} alignContent={'center'} justifyContent="space-between" width={'100%'}>
                         <ButtonGroup variant='contained'>
                             <Tooltip title="View Modules">
-                                <Button onClick={handleViewDataConfig} disabled={!component.DataConfigId}>
-                                    Modules
-                                </Button>
+                                <>
+                                    <Button onClick={handleViewDataConfig} disabled={!component.DataConfigId}>
+                                        Modules
+                                    </Button>
+                                </>
                             </Tooltip>
                             <Tooltip title="New Module">
-                                <IconButton 
-                                    onClick={handleAddModule} 
-                                    disabled={!component.DataConfigId} 
-                                    aria-label='add module'
-                                    sx={{
-                                        borderTopRightRadius: 4, 
-                                        borderBottomRightRadius: 4,
-                                        borderTopLeftRadius: 0,
-                                        borderBottomLeftRadius: 0
-                                    }}>
-                                    <PlusIcon/>
-                                </IconButton>
+                                <>
+                                    <IconButton 
+                                        onClick={handleAddModule} 
+                                        disabled={!component.DataConfigId} 
+                                        aria-label='add module'
+                                        sx={{
+                                            borderTopRightRadius: 4, 
+                                            borderBottomRightRadius: 4,
+                                            borderTopLeftRadius: 0,
+                                            borderBottomLeftRadius: 0
+                                        }}>
+                                        <PlusIcon/>
+                                    </IconButton>
+                                </>
                             </Tooltip>
                         </ButtonGroup>
                         <ButtonGroup variant="outlined">
@@ -121,7 +125,9 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
                     </Stack>
                 </CardActions>
             </Card>
-            <ModuleEditor DataConfigID={component.DataConfigId._id as string} isOpen={moduleEditorOpen} onClose={() => setModuleEditorOpen(false)}/>
+            {component && component.DataConfigId && (
+                <ModuleEditor component={component} mode="New" isOpen={moduleEditorOpen} onClose={() => setModuleEditorOpen(false)} />
+            )}
             <ComponentModal component={component} isOpen={componentModalOpen} onSave={updateComponent} onClose={() => setComponentModalOpen(false)}/>
         </>
     );

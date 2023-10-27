@@ -1,5 +1,5 @@
 import { Box, Button, Dialog, DialogContent, DialogTitle, IconButton, Stack, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
-import { IDataConfig, IField, IFieldGroup, IModule } from "../utils/entities";
+import { IComponentPopulated, IDataConfig, IField, IFieldGroup, IModule } from "../utils/entities";
 import { ChangeEventHandler, ReactEventHandler, useEffect, useLayoutEffect, useRef, useState } from "react";
 import PlusIcon from '@mui/icons-material/Add'
 import MinusIcon from '@mui/icons-material/Remove'
@@ -10,16 +10,18 @@ interface IModuleEditorProps {
     // No module when opened from ComponentCard.tsx
     // Module populuated when opened from data-config-view.tsx, so we can edit as specified
     // OR no module if adding new module from data-config-view.tsx
-    DataConfigID: string; // TODO re-eval when api calls are implemented
+    component: IComponentPopulated; // TODO re-eval when api calls are implemented
+    index?: number;
+    mode: "New" | "Edit";
     isOpen: boolean;
     onClose: () => void; // TODO
-}
+};
 
 let dummyFields1 = [
     { Name: 'x', Range: [-20, 20], Units: 'm/s^2', TelemetryId: 3 },
     { Name: 'y', Range: [-20, 20], Units: 'm/s^2', TelemetryId: 4 },
     { Name: 'x', Range: [-20, 20], Units: 'm/s^2', TelemetryId: 5 }
-]
+];
 
 let dummyModule1: IModule = {
     Name: 'BME280',
@@ -47,7 +49,7 @@ let dummyModule1: IModule = {
             ]
         }
     ]
-}
+};
 
 let dummyModule2: IModule = {
     Name: 'LSM9DS1',
@@ -93,7 +95,7 @@ let dummyModule2: IModule = {
             ]
         }
     ]
-}
+};
 
 let dummyDataConfig: IDataConfig = {
     _id: "6535b4371b521e05c0c0e942",
@@ -101,56 +103,73 @@ let dummyDataConfig: IDataConfig = {
         dummyModule2,
         dummyModule1
     ]
+};
+
+const emptyModule:IModule = {
+    Name: "",
+    FieldGroups: [
+        {
+            Name: "New", 
+            Fields: [
+                {Name: "", Range: [0,0], Units: "", TelemetryId: 0}
+            ]
+        }
+    ]
+};
+const emptyDataConfig:IDataConfig = {
+    Modules: [emptyModule]
 }
 
 const ModuleEditor = (props: IModuleEditorProps) => {
-    let { DataConfigID, isOpen, onClose } = props;
+    const { component, index, mode, isOpen, onClose } = props;
     
-    /**********************************************************************************************************************
-    MODULE-API APPROACH
-        - Must implement api verbs for modules :((
-        - Actual writing here is easy because I just setModuleObject(get(moduleID))
-          then do work on the moduleObject as done already, then
-          post/patch(moduleObject) (or however it works)
-        - Doing the api work is a major con though and I would guess frowned upon,
-          especially since this task is to "edit dataConfigs"
-        - Posting a new module is going to be a pain because where are we actually posting? Will 
-          still have to get a dataConfigID
-          Patching is easy because we have the ModuleID
-
-    DATACFG-API APPROACH
-        - Api verbs already exist :D
-        - Writing is a pain because we have to access the right part of the Modules[] inside the dataConfig
-        - However current code should still be fine
-        - Will be less readable but utilizes pre-existing code, plus I don't need to make more 
-          of a mess out of the api.ts and other files
-        - When using dataConfig approach posting will be easier, even though we need to worry about indecies
-          Patching is somewhat more of a pain because we need to worry about indecies? Maybe although we could possibly just
-          identify based on the ModuleID?
-        - Major pro: overall we never need to post a new entry because we're always patching an existing dataConfig
-
-    ***********************************************************************************************************************/
-
-    // Say we get the dataConfig from the api eg
-    // let dataConfig = getDataConfig(dataConfigID))
-    
-    // -> Adding a new module can just be handled when saving by pushing onto the end, then patching this to the dataConfigID
-    // -> Editing an existing module will be harder
-
-    // Right now using dummyobj since haven't implemented api module get, so
-    const [moduleObject, setModuleObject] = useState<IModule>(dummyModule2);
+    const [dataConfig, setDataConfig] = useState<IDataConfig>(emptyDataConfig)
+    const [moduleObject, setModuleObject] = useState<IModule>(emptyModule);
+    let saveModuleIndex = 0;
     
     const [tabIndex, setTabIndex] = useState(0);
-    let currentFields:IField[] = moduleObject.FieldGroups[tabIndex].Fields
+    let currentFields:IField[] = moduleObject.FieldGroups[tabIndex].Fields;
     
     const tabDisplayRef = useRef<HTMLDivElement>(null);
     const [tabScrollPosition, setTabScrollPosition] = useState<number>(0);
 
-    const [namingPopupOpen, setNamingPopupOpen] = useState<boolean>(false)
+    const [namingPopupOpen, setNamingPopupOpen] = useState<boolean>(false);
+    
+    useEffect(() => {
+        async function getDataConfig(dataConfigID:string) {
+            const response = await api.getDataConfig(dataConfigID);
+            const data = response.data as IDataConfig;
 
+            // console.log(data);
+            setDataConfig({
+                _id: dataConfigID,
+                Modules: data.Modules
+            });
+        }
+        
+        if(component.DataConfigId) {
+            getDataConfig(component.DataConfigId._id as string)
+        }
+
+    }, [component])
+
+    useEffect(() => {
+        if (!dataConfig.Modules.length) {
+            saveModuleIndex = 0;
+            setModuleObject(emptyModule);
+        } else if (mode === "New") {
+            saveModuleIndex = dataConfig.Modules.length;
+            setModuleObject(emptyModule)
+        } else if (index && mode === "Edit") {
+            saveModuleIndex = index;
+            setModuleObject(dataConfig.Modules[saveModuleIndex]);
+        }
+    }, [dataConfig])
+    
     useEffect(() => {
         // Ensures that when the module field groups/fields are updated, the tab display scroll stays the same
         // This is janky but actually works alright, I'm sure there's better way of doing this though
+        console.log(moduleObject)
         if (tabDisplayRef.current) {
             tabDisplayRef.current.scrollTop = tabScrollPosition
         }
@@ -189,6 +208,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
             <Stack direction={"column"} spacing={3} padding={2} maxHeight={"45vh"} sx={{overflow: "scroll"}}>
                 {fields.map((field:IField, index:string) => (
                     <Stack direction={"row"} spacing={1}>
+                        {/*TODO VERY IMPORTANT make sure that datatypes are not complete bullshit here - maybe can just cast when saving but enhhhhh*/}
                         <TextField label="Name"        name="Name"        key="Name"  id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Name || ""}/>
                         <TextField label="Range"       name="Range"       key="Range" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range || ""}/>
                         <TextField label="Units"       name="Units"       key="Units" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Units || ""}/>
@@ -199,7 +219,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                 ))}
             </Stack>
         )
-    }
+    };
 
     const NamingPopup = () => {
         let nameFieldContents:string = "";
@@ -227,7 +247,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                 </Stack>
             </Dialog>
         )
-    }
+    };
 
     const DialogHeader = () => {
         const [moduleName, setModuleName] = useState<string>(moduleObject.Name)
@@ -248,16 +268,16 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                 <TextField label={"Module Name"} defaultValue={moduleName || ""} size={"small"} onBlur={handleDefocus} onChange={handleChangeModuleName} required/>
             </Stack>
         )
-    }
+    };
 
     const handleChangeCurrentFields = (e:React.ChangeEvent<HTMLInputElement>) => {
-        const fieldId = Number(e.target.id);
+        const fieldID = Number(e.target.id);
         const fieldName = e.target.name;
-        const someValue = e.target.value;
+        const newFieldValue = e.target.value;
 
-        currentFields[fieldId] = {
-            ...currentFields[fieldId],
-            [fieldName]: someValue,
+        currentFields[fieldID] = {
+            ...currentFields[fieldID],
+            [fieldName]: newFieldValue //as typeof(),
         };
     };
 
@@ -319,6 +339,10 @@ const ModuleEditor = (props: IModuleEditorProps) => {
         setModuleObject(moduleObjectRet);
     };
 
+    const handleSave = () => {
+
+    };
+
     return (
         <Dialog open={isOpen} fullWidth maxWidth={"md"} PaperProps={{sx:{maxHeight: "80vh"}}}>
             <DialogTitle marginTop={1}>
@@ -332,18 +356,17 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                     <Box sx={{background: "#22272e", borderRadius: 1}} marginRight={1}>
                         
                         {/*Left Header Bar*/}
-                        <Stack 
-                            direction={"row"} 
-                            margin={1}
-                            padding={1}
-                            paddingLeft={2}
-                            justifyContent={"space-between"}
-                            alignItems={"center"}
-                            sx={{
-                                background: "#474b51",
-                                borderRadius: 1,
-                                whiteSpace: "nowrap",
-                            }}>
+                        <Stack  direction={"row"} 
+                                margin={1}
+                                padding={1}
+                                paddingLeft={2}
+                                justifyContent={"space-between"}
+                                alignItems={"center"}
+                                sx={{
+                                    background: "#474b51",
+                                    borderRadius: 1,
+                                    whiteSpace: "nowrap",}}>
+
                             <Typography variant="subtitle1" sx={{paddingRight: "20px"}}>Field Groups</Typography>
                             <Tooltip title="New Field Group" disableInteractive><IconButton onClick={() => setNamingPopupOpen(true)}><PlusIcon/></IconButton></Tooltip>
                             <Tooltip title="Remove Current Field Group" disableInteractive><IconButton onClick={() => handleEditFieldGroups("remove")}><MinusIcon/></IconButton></Tooltip>
@@ -357,19 +380,18 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                     <Box sx={{background: "#22272e", borderRadius: 1}}>
                         
                         {/*Right Editor Header Bar*/}
-                        <Stack 
-                            direction={"row"} 
-                            margin={1}
-                            spacing={1}
-                            padding={1}
-                            paddingLeft={2}
-                            justifyContent={"space-between"}
-                            alignItems={"center"}
-                            sx={{
-                                background: "#474b51",
-                                borderRadius: 1,
-                                whiteSpace: "nowrap",
-                            }}>
+                        <Stack  direction={"row"} 
+                                margin={1}
+                                spacing={1}
+                                padding={1}
+                                paddingLeft={2}
+                                justifyContent={"space-between"}
+                                alignItems={"center"}
+                                sx={{
+                                    background: "#474b51",
+                                    borderRadius: 1,
+                                    whiteSpace: "nowrap",}}>
+
                             <Typography variant="subtitle1">Fields</Typography>
                             <Tooltip title="New Field" disableInteractive><IconButton onClick={() => handleEditFields("add", 0)}><PlusIcon fontSize="medium"/></IconButton></Tooltip>
                         </Stack>
