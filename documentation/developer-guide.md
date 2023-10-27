@@ -6,6 +6,38 @@ Please see the [installation guide](installation.md#developer-installation) for 
 ## Resources
 - [Git Tutorial](https://www.figma.com/proto/LAxam3HVit5yoHmCxu2xa2/Git?page-id=0%3A1&type=design&node-id=1-796&viewport=554%2C653%2C0.24&t=YB0SXZsT8TWyvT93-1&scaling=min-zoom&starting-point-node-id=1%3A19&mode=design) - UVic Rocketry Git reference guide
 - [Software Process](https://docs.google.com/presentation/d/1gkJjfWnc6jsr0PQ29cYPVdIOYFZum4SubFt4X8ovL-o/edit#slide=id.g146cc2337ed_0_4) - UVic Rocketry Software Process guidelines
+
+## Docker
+
+With the Docker engine running, start the Ground Support containers by running the following command in your terminal: 
+
+``` bash
+$ docker compose up
+```
+
+You will see the logs from the containers. To shut the containers down, hit `ctl-C` in the terminal.
+
+To start the containers in detached (background) mode, which will hide the container logs, add the `--detach` flag to the command above. If the containers are running in detached mode, you can stop them with the following command:
+
+``` bash
+$ docker stop <container-name>
+```
+
+Where `container-name` can be found by running `docker ps`.
+
+See the screenshot below for an example of starting the containers in detached mode, and inspecting the names of the the containers. In this screenshot, `react-client` is a container name.
+
+<p align="center">
+    <img src="./assets/docker-detached-example.png" width="700"/>
+</p>
+
+To attach a terminal (`ash`) to a running container, use the following command:
+``` bash
+$ docker exec -it <container-name> ash
+```
+
+See the Docker CLI and Compose CLI [documentation here](https://docs.docker.com/reference/) for more information.
+
 ## Standards
 
 ### Code Style
