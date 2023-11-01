@@ -5,8 +5,8 @@ services:
     container_name: react-client
     environment:
       - WDS_SOCKET_HOST=127.0.0.1 
-      - CHOKIDAR_USEPOLLING=true
-      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=${USE_POLLING}
+      - WATCHPACK_POLLING=${USE_POLLING}
     build:
       context: ./client
       target: dev
@@ -20,9 +20,14 @@ services:
   server:
     container_name: express-server
     environment:
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB_STRING=${MONGO_DB_STRING}
+      - MONGO_LOCAL=${MONGO_LOCAL}
+      - SERVER_PORT=${SERVER_PORT}
       - WDS_SOCKET_HOST=127.0.0.1 
-      - CHOKIDAR_USEPOLLING=true
-      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=${USE_POLLING}
+      - WATCHPACK_POLLING=${USE_POLLING}
     build:
       context: ./services/server
       target: dev
@@ -36,26 +41,21 @@ services:
   db:
     container_name: mongo-db
     image: mongo
-    restart: always
+    restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: SupportAdmin
-      MONGO_INITDB_ROOT_PASSWORD: UVR2015
-      MONGO_INITDB_DATABASE: aiw5o28
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     volumes:
       - db-data:/data/db
 
   db-interface:
     container_name: mongo-db-interface
     image: mongo-express
-    restart: always
     ports:
       - 8081:8081
     environment:
-      ME_CONFIG_BASICAUTH_USERNAME: express
-      ME_CONFIG_BASICAUTH_PASSWORD: 123456
-      ME_CONFIG_MONGODB_ADMINUSERNAME: SupportAdmin
-      ME_CONFIG_MONGODB_ADMINPASSWORD: UVR2015
-      ME_CONFIG_MONGODB_URL: mongodb://SupportAdmin:UVR2015@db:27017/
+      - ME_CONFIG_BASICAUTH_USERNAME=
+      - ME_CONFIG_MONGODB_URL=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@db:27017/
 
 volumes:
   db-data:
