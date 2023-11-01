@@ -30,3 +30,32 @@ services:
       - ./services/server/src:/app/src
     ports:
       - 9090:9090
+    depends_on:
+      - db
+
+  db:
+    container_name: mongo-db
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: SupportAdmin
+      MONGO_INITDB_ROOT_PASSWORD: UVR2015
+      MONGO_INITDB_DATABASE: aiw5o28
+    volumes:
+      - db-data:/data/db
+
+  db-interface:
+    container_name: mongo-db-interface
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: express
+      ME_CONFIG_BASICAUTH_PASSWORD: 123456
+      ME_CONFIG_MONGODB_ADMINUSERNAME: SupportAdmin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: UVR2015
+      ME_CONFIG_MONGODB_URL: mongodb://SupportAdmin:UVR2015@db:27017/
+
+volumes:
+  db-data:
