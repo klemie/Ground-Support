@@ -38,6 +38,16 @@ $ docker exec -it <container-name> ash
 
 See the Docker CLI and Compose CLI [documentation here](https://docs.docker.com/reference/) for more information.
 
+### Docker Compose Profiles
+
+There is a `dev-tools` Docker compose profile that can be run in addition to the default (unspecified) option. This profile builds a [mongo-express](https://github.com/mongo-express/mongo-express) container for inspecting and modifying the local mongo database instance. To run docker compose with this profile, enter the following in your terminal:
+
+``` bash
+$ docker compose --profile dev-tools up
+```
+
+Once running, to access the mongo-express client, visit `localhost:8081` in your browser.
+
 ## Standards
 
 ### Code Style

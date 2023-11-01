@@ -51,6 +51,8 @@ services:
   db-interface:
     container_name: mongo-db-interface
     image: mongo-express
+    profiles:
+      - dev-tools
     ports:
       - 8081:8081
     environment:
