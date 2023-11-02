@@ -74,4 +74,10 @@ const RocketSchema: Schema = new Schema(
     }
 );
 
+RocketSchema.pre('findOne', function (next) { 
+    this.populate("Components", { options: { strictPopulate: false }});
+    this.populate("Missions", { options: { strictPopulate: false }});
+    next();
+});
+
 export default mongoose.model<IRocket>('Rocket', RocketSchema);

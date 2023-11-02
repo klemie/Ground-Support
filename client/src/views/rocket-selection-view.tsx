@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Grid, Chip, Stack } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import addRocket from '../static/images/AddRocket.svg';
-import axios from 'axios';
 
 import '../styles/rocketSelection.css';
 import RocketProfilePopup from '../components/RocketProfilePopup';
+import api from '../services/api';
+import { IRocketPopulated } from '../utils/entities';
 
 interface Rocket {
 	id: string;
@@ -15,7 +16,8 @@ interface Rocket {
 }
 
 interface RocketSelectProps {
-	setCurrentView: (viewName: string) => void;
+	setCurrentView: () => void;
+	setRocketID?: (rocketID: string) => void;
 }
 
 export default function RocketSelectionView(props: RocketSelectProps) {
@@ -30,23 +32,22 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 
 	const [isOpen, setIsOpen] = useState(false);
 	const [rocketData, setRocketData] = useState<Rocket[]>([]);
-	const [rocketProfileId, setRocketProfileId] =  useState<string>('');
+	const [rocketProfileId, setRocketProfileId] = useState<string>('');
 	useEffect(() => {
-		async function getMissionData() {
-			//make an API call when component first mounts and setRocketData with response
-			const response = await axios.get(`http://127.0.0.1:9090/rocket/`);
-			// const data = response.data.result;
-			const rockets: Rocket[] = response.data.results.map((rocket: any) => {
+		async function getRocketData() {
+			const response = await api.getRockets();
+			const data = response.data as IRocketPopulated[];
+			const rockets: Rocket[] = data.map((rocket: any) => {
 				return {
 					id: rocket._id,
-					image: 'Xenia1.svg',
+					image: 'Xenia2.svg',
 					name: rocket.Name,
 					active: true
-				} as Rocket
+				} as Rocket;
 			});
 			setRocketData(rockets);
 		}
-		getMissionData();
+		getRocketData();
 	}, []);
 
 	const addNewRocket = () => {
@@ -65,7 +66,7 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 		return (
 			<div key={data.id.toString()}>
 				<Stack direction="column" spacing={1} onClick={data.active ? () => setRocket(data) : () => {}}>
-					<img src={rocketImageURL} alt="Rocket" width={40}></img>
+					<img src={rocketImageURL} alt="Rocket" width={60}></img>
 					<Chip label={data.name} color={data.active ? 'primary' : 'default'} sx={{ fontWeight: 'bold' }} />
 				</Stack>
 			</div>
@@ -115,12 +116,22 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 			<RocketProfilePopup
 				rocketProfileId={rocketProfileId}
 				isOpen={isOpen}
-				onSave={() => { 
-					props.setCurrentView('START_UP');
+				onSave={() => {
+					props.setCurrentView();
 					setIsOpen(false);
 				}}
 				onClose={() => setIsOpen(false)}
 			/>
+		<RocketProfilePopup
+			rocketProfileId={rocketProfileId}
+			isOpen={isOpen}
+			onSave={() => { 
+				props.setCurrentView();
+				if(props.setRocketID){props.setRocketID(rocketProfileId)};
+				setIsOpen(false);
+			}}
+			onClose={() => setIsOpen(false)}
+		/>
 		</div>
 	);
 }

@@ -85,6 +85,13 @@ export const EntityName = mongoose.model('entity', entitySchema);
 
 ⚠️ When calling entities only use `Entity.findById().save()` so the validator will run on it.
 
+### Real Time Operation
+A key feature of the application is showing real time data during flight. In order to do this we use sockets. A socket is an interface that allows two processes to communicate with each other over a network. This protocol follows a client-server model, where one program acts as the client that initiates the communication, and the other program acts as the server that listens for incoming connections and responds to client requests. In this case the client receives telemetry packets after they have been decoded. 
+
+<p align="center">
+<img src="./assets/socket.png" width="600"/>
+</p>
+
 # Server Backend
 
 Entity's from the database are updated to the database through mongoose queries, the private API or the public API. The
@@ -98,9 +105,8 @@ are nested as sub documents and might not populate there collection.
 <p align="center">
 <img src="./assets/ER Diagram.png" />
 </p>
-
-This structure has the `Rocket` Entity at the top of the hierarchy where all other entities an childeren and
-grandchildern of it. The two main entities off of Rocket entity is the `Component` and `Mission`. The
+Each entity has its own schema file, in which we define attributes and methods of the entity, similar to objects in Object Oriented Programming. Each entity has a corresponding document in the Database. Each entity has its own CRUD (Create Read Update Delete) api endpoints which allows external users to interface with the database collections. This structure has the `Rocket` Entity at the top of the hierarchy where all other entities an childeren and
+grandchildern of it. The two main entities off of Rocket entity is the `Component` and `Mission`.
 
 ### Rocket
 
@@ -118,8 +124,7 @@ grandchildern of it. The two main entities off of Rocket entity is the `Componen
 
 `Description`
 
-This entity stores all the important details of the rocket and stores references to the rockets child documents missions
-and components.
+The Rocket entity stores all the important details of the rocket and stores references to the missions and components.
 
 `API ✅`
 
@@ -136,10 +141,7 @@ and components.
 
 `Description`
 
-This entity creates allow the rocket to be compartmentalized into smaller pieces. Due to the experimental structure of
-UVRs rockets there maybe may be different payloads with unique modules. For example a flight computer with a sensor bay
-and a deployable payload may have different telemetry systems and modules therefore they will be stored and structured
-differently in the application.
+The Component entity allows the rocket to be compartmentalized into smaller pieces. Due to the experimental structure of UVRs rockets, there may be different payloads with unique modules. For example: a flight computer with a sensor bay and a deployable payload may have different telemetry systems and modules, therefore they will be stored and structured differently in the application.
 
 `API ✅`
 
@@ -160,9 +162,7 @@ differently in the application.
 
 `Description`
 
-The mission entity contains information relevant to a launch and or test of the rocket. Each Mission can be configured
-with. Mission only exist as a child of a rocket they cannot exist on there own. The components attribute configures
-which components from the rocket are active for this mission. ie which components are to be recorded.
+The mission entity contains information relevant to a launch and or test of the rocket. Missions only exist as a child of a rocket, they cannot exist on their own. The Components attribute configures which components from the rocket are active and will be recorded for that mission.
 
 `API ✅`
 
@@ -196,8 +196,7 @@ This document is a made up of sub documents. Structure is below. You can learn m
 
 `Description`
 
-Modules are used to break up group fields that come from one source. For example if you have a sensor that can read
-multiple values you would create a module for that component.
+The Module entity is used to break up group fields that come from one source. For example: if you have a sensor that can read multiple values, you would create a module for that component.
 
 `API ❌`
 
@@ -212,8 +211,7 @@ multiple values you would create a module for that component.
 
 `Description`
 
-Field Groups are used to group fields that fall under one reading. for example a sensor reading can have 3 axis of data.
-each of quite would be a single field hence grouping like fields.
+The Field Groups entity is used to group fields that have multiple readings, such as a sensor reading that can have 3 axes of data. 
 
 `API ❌`
 
@@ -230,8 +228,7 @@ each of quite would be a single field hence grouping like fields.
 
 `Description`
 
-Fields are the lowest object in the data config hierarchy. These entities are used to define the information for a
-single data type (data point).
+The Field entity is the lowest object in the data config hierarchy. These entities are used to define the information for a single data type (data point).
 
 `API ❌`
 
@@ -250,8 +247,7 @@ single data type (data point).
 
 `Description`
 
-A field data uses fields a constructor for the type. All of these attributes except for data is inherited from a sub
-document of data config. These attributes are only created by the data constructor function.
+A field data entity uses fields as a constructor for the type. All of these attributes except for data are inherited from sub documents of data config. These attributes are only created by the data constructor function on mission creation.
 
 `API ❌`
 
@@ -266,7 +262,7 @@ document of data config. These attributes are only created by the data construct
 
 `Description`
 
-This allows for time stamps on data
+This allows for time stamps on data.
 
 `API ❌`
 
@@ -283,41 +279,46 @@ mission calling the configured mission .
 <img src="./assets/Data Constructor.png" width="500"/>
 </p>
 
-## Telemetry
+# Telemetry
 
 The Telemetry Service is an iteration of UVic Rocketry's [groundstation](https://github.com/UVicRocketry/groundstation)
-proof of concept. Based on a deep dive into the old code we have determined ...
+proof of concept. 
 
+Both of the telemetry systems start by using the RTL-provided command line utility to take the incoming wave data from the RTL-SDRs and output the incoming signal. For the 434 MHz primary system we are using a nearly identical program as before using direwolf to take the incoming wave data and translate that into the APRS data. The team’s ground station backend then takes the output from Direwolf and makes the data available to the front end. For the 915 MHz signal, the software similarly uses a different piece of software written using GNU Radio to take the wave signal and convert and decode the FSK. The binary data is given to a Python program that decodes the binary data into something that the back and front ends can use.
 ### How to Run Telemetry service for testing:
 
 1. Have a Windows PC.
 2. Plug in RTL-SDR to The PC.
 3. Edit telemtry.py to make desired API call.
 4. Set up Big Red Bee to transmit on a certain frequency.
-5. Make sure Big Red Bee is tansmitting using a receiving software on the PC. I used
+5. Make sure Big Red Bee is transmitting using a receiving software on the PC. I used
    [SDR Sharp](https://airspy.com/download/) and that worked well. Just download the program and run both .bat files,
    then start the application.
 6. Open Git Bash or similar Bash terminal
 7. Navigate to services/telemetry-service
 8. Run following command. This will receive and decode signals and print output to terminal, so debugging can be done.
-    > rtl-sdr/rtl_fm.exe -f 441.35M -r 24k -s 260k -o 4 -p 93 -g 49.6 - | direwolf-1.6.0-413855e_x86_64/direwolf.exe -n
+    
+```bash 
+rtl-sdr/rtl_fm.exe -f 441.35M -r 24k -s 260k -o 4 -p 93 -g 49.6 - | direwolf-1.6.0-413855e_x86_64/direwolf.exe -n
     > 1 -r 24000 -b 16 -
+```
+
 9. Go outside and wait for telemetry lock (~3mins). When Telemetry is locked on output will look like what is seen on
    the right terminal. When Telemetry is not locked on, output will resemble the left terminal.
    ![image](https://user-images.githubusercontent.com/79673714/222917125-9d559bdc-36c3-4ad0-939d-dfd5df27c956.png)
 10. Once Telemetry is locked, quit the previous command with ^C and input the full command:
-    > rtl-sdr/rtl_fm.exe -f 441.35M -r 24k -s 260k -o 4 -p 93 -g 49.6 - | direwolf-1.6.0-413855e_x86_64/direwolf.exe -n
+    ```bash
+ rtl-sdr/rtl_fm.exe -f 441.35M -r 24k -s 260k -o 4 -p 93 -g 49.6 - | direwolf-1.6.0-413855e_x86_64/direwolf.exe -n
     > 1 -r 24000 -b 16 - | python telemetry.py
-11. Smile! "No way it's working perfectly!"
+ ```
+11. **smiles*\*! "No way it's working perfectly!"
 
-### Packets
+### Receiving
 
-#### Packet API format
+To be filled in by the person who takes on
 
 ### Decoding
 
 To be filled in by the person who takes on
 
-### Receiving
 
-To be filled in by the person who takes on

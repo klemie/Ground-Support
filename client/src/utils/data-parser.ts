@@ -38,3 +38,18 @@ export const dataConfigParser = (file: any): Module[] => {
 // const input = require("./sample-data.json");
 // const dataConfig = dataConfigParser(input);
 // console.log(dataConfig);
+
+export async function parseJsonFile(file: File | null): Promise<{ [key: string]: Object }> {
+	if (file == null) return {};
+	return new Promise((resolve, reject) => {
+		const fileReader = new FileReader();
+		fileReader.onload = (event) =>
+			resolve(
+				event.target && event.target.result && !(event.target.result instanceof ArrayBuffer)
+					? JSON.parse(event.target.result)
+					: ''
+			);
+		fileReader.onerror = (error) => reject(error);
+		fileReader.readAsText(file);
+	});
+}

@@ -1,0 +1,38 @@
+[
+    {
+        "module": {
+            "name": "BME280",
+            "telemetryId": "0001"
+        },
+        "temperature": [
+            { "field": "Temperature", "range": [2 , 3], "units": "K" }
+        ],
+        "humidity": [
+            { "field": "Humidity", "range": [2 , 3], "units": "g/m^3" }
+        ],
+        "pressure": [
+            { "field": "Pressure", "range": [2 , 3], "units": "KPa" }
+        ]
+    },
+    {
+        "module": {
+            "name": "LSM9DS1",
+            "telemetryId": "0010"
+        },
+        "acceleration": [
+            { "field": "x", "range": [2 , 3], "units": "G" } ,
+            { "field": "y", "range": [10 , 19], "units": "G" },
+            { "field": "z", "range": [16 , 19], "units": "G" }
+        ],
+        "gyroscope": [
+            { "field": "x", "range": [2 , 3], "units": "°/s" } ,
+            { "field": "y", "range": [10 , 19], "units": "°/s" },
+            { "field": "z", "range": [16 , 19], "units": "°/s" }
+        ],
+        "magnetometer": [
+            { "field": "x", "range": [2 , 3], "units": "gauss" } ,
+            { "field": "y", "range": [10 , 19], "units": "gauss" },
+            { "field": "z", "range": [16 , 19], "units": "gauss" }
+        ]
+    }
+]

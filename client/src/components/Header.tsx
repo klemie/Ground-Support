@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Typography from '@mui/material/Typography';
-import { Breadcrumbs, Stack, Link } from "@mui/material";
+import { Breadcrumbs, Stack, Link, useTheme } from "@mui/material";
 import groundSupport from "../static/images/groundSupport.svg";
+import groundSupportDarkMode from "../static/images/groundSupportDarkMode.svg";
 
 export interface Breadcrumb {
     name: string;
@@ -18,6 +19,7 @@ const handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 };
 
 const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
+    const isDarkTheme = useTheme().palette.mode === 'dark';
     const crumbs = props.breadCrumbs.map((crumb: Breadcrumb) => {
         if (!crumb.active) {
             return (
@@ -46,7 +48,7 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
             spacing={2}
             alignItems="flex-start" 
         >
-            <img src={groundSupport} alt="Ground Support Icon" height={80}/>
+            <img src={isDarkTheme ? groundSupportDarkMode : groundSupport} alt="Ground Support Icon" height={80}/>
             <Stack
                 direction="column"
                 alignItems="flex-start" 
