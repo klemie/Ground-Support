@@ -142,3 +142,6 @@ There should be an accompanying documentation file in the `documentation/compone
 ```
 
 ## Telemetry Backend
+![image](https://github.com/UVicRocketry/Ground-Support/assets/79673714/4d12a609-4c14-40fd-9f79-fe8ffff7273d)
+
+The Telemetry Backend implementation runs a socket server as well as a receiving and decoding thread. The decoding thread receives incoming encoded data from the rtl-sdr and decodes and packages it. Once data has been processed, the socket server will send data over sockets to the front end. Front end can also send a message to the socket server to prompt it to change receiving settings. This could include a change in encoding type (APRS, LORA) or other changes such as frequency. Socket sever will cause receiving thread to change its settings and run as usual.
