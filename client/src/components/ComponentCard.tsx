@@ -1,7 +1,7 @@
 import api from '../services/api';
 import React, { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Card, CardActions, CardContent, CardHeader, Chip, IconButton, Stack, Tooltip, Typography } from '@mui/material';
-import { IComponent, IComponentPopulated, IRocket, IRocketPopulated } from '../utils/entities';
+import { IComponentPopulated, IRocket, IRocketPopulated } from '../utils/entities';
 import EditIcon from '@mui/icons-material/Edit';
 import PlusIcon from '@mui/icons-material/Add'
 import { Delete } from '@mui/icons-material';
@@ -126,7 +126,7 @@ const ComponentCard: React.FC<ComponentCardProps> = (props: ComponentCardProps) 
                 </CardActions>
             </Card>
             {component && component.DataConfigId && (
-                <ModuleEditor component={component} mode="New" isOpen={moduleEditorOpen} onClose={() => setModuleEditorOpen(false)} />
+                <ModuleEditor dataConfigID={component.DataConfigId._id || ""} mode="New" isOpen={moduleEditorOpen} onClose={() => setModuleEditorOpen(false)} />
             )}
             <ComponentModal component={component} isOpen={componentModalOpen} onSave={updateComponent} onClose={() => setComponentModalOpen(false)}/>
         </>
