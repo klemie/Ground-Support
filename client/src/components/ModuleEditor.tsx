@@ -9,14 +9,11 @@ import PlusIcon from '@mui/icons-material/Add'
 import MinusIcon from '@mui/icons-material/Remove'
 
 interface IModuleEditorProps {
-    // No module when opened from ComponentCard.tsx
-    // Module populuated when opened from data-config-view.tsx, so we can edit as specified
-    // OR no module if adding new module from data-config-view.tsx
-    dataConfigID: string; // TODO re-eval when api calls are implemented
+    dataConfigID: string;
     index?: number;
     mode: "New" | "Edit";
     isOpen: boolean;
-    onClose: () => void; // TODO
+    onClose: () => void;
 };
 
 const ModuleEditor = (props: IModuleEditorProps) => {
@@ -134,7 +131,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                         <TextField label="Name"        name="Name"        key="Name"  id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Name || ""}/>
                         <TextField label="Range"       name="Range"       key="Range" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range || ""}/>
                         <TextField label="Units"       name="Units"       key="Units" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Units || ""}/>
-                        <TextField label="TelemetryId" name="TelemetryId" key="TelID" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.TelemetryId.data || ""} type="number"/>
+                        <TextField label="TelemetryId" name="TelemetryId" key="TelID" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.TelemetryId.data || field.TelemetryId || ""} type="number"/>
 
                         <Tooltip title="Remove Field" disableInteractive onClick={() => handleEditFields("remove", Number(index))}><IconButton><MinusIcon/></IconButton></Tooltip>
                     </Stack>
