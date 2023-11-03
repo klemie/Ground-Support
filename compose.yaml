@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  client:
+    container_name: react-client
+    environment:
+      - WDS_SOCKET_HOST=127.0.0.1 
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    build:
+      context: ./client
+      target: dev
+    volumes:
+      - ./client/src:/app/src
+    ports:
+      - 3000:3000
+    depends_on:
+      - server
+
+  server:
+    container_name: express-server
+    environment:
+      - WDS_SOCKET_HOST=127.0.0.1 
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    build:
+      context: ./services/server
+      target: dev
+    volumes:
+      - ./services/server/src:/app/src
+    ports:
+      - 9090:9090
