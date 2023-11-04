@@ -61,8 +61,12 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 		setIsOpen(true);
 	};
 
+	const getRocketImageURL = (data: Rocket) => {
+		return new URL(`../static/images/${data.image}`, import.meta.url).href;
+	}
+
 	const rockets = rocketData.map((data: Rocket) => {
-		const rocketImageURL = import(`../static/images/${data.image}`);
+		const rocketImageURL = getRocketImageURL(data);
 		return (
 			<div key={data.id.toString()}>
 				<Stack direction="column" spacing={1} onClick={data.active ? () => setRocket(data) : () => {}}>
