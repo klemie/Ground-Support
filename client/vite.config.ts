@@ -6,10 +6,10 @@ import viteTsconfigPaths from'vite-tsconfig-paths';
 export default defineConfig({
   plugins: [react(), viteTsconfigPaths()],
   server: {
+    host: true,
     watch: {
       usePolling: true,
     },
-    open: true,
     port: 3000,
   },
 });

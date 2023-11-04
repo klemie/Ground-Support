@@ -62,7 +62,7 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 	};
 
 	const rockets = rocketData.map((data: Rocket) => {
-		const rocketImageURL = require(`../static/images/${data.image}`);
+		const rocketImageURL = import(`../static/images/${data.image}`);
 		return (
 			<div key={data.id.toString()}>
 				<Stack direction="column" spacing={1} onClick={data.active ? () => setRocket(data) : () => {}}>
