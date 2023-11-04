@@ -9,11 +9,11 @@ from '@mui/material';
 import { tabsClasses } from '@mui/material/Tabs';
 
 import '../styles/componentDocs.css';
-import ComponentDocumentation, { DocumentationProps } from "../components/ComponentDocumentation";
+import ComponentDocumentation, { DocumentationProps } from "../components/ComponentDocumentation/ComponentDocumentation";
 import { components } from '../utils/component-documentation';
 
 // Components
-import Header, { Breadcrumb } from "../components/Header";
+import Header, { Breadcrumb } from "../components/Header/Header";
 
 const drawerHeight = '10vh';
 

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Stack, Typography, Container, AccordionDetails, AccordionSummary, Accordion, Paper, useTheme } from "@mui/material";
-import { IFieldData, IFieldGroup, IModule } from "../utils/entities";
+import { IFieldData, IFieldGroup, IModule } from "../../utils/entities";
 import MUIDataTable from "mui-datatables";
-import Graph from "./RealTimeGraph";
-import DataConstructor from '../utils/data-constructor';
+import Graph from "../Graph/RealTimeGraph";
+import DataConstructor from '../../utils/data-constructor';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SensorsIcon from '@mui/icons-material/Sensors';
 import ScienceIcon from '@mui/icons-material/Science';

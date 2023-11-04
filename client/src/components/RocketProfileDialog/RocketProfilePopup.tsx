@@ -13,8 +13,8 @@ import {
 	
 } from '@mui/material';
 import { FileUpload } from '@mui/icons-material';
-import { IRocket } from '../utils/entities';
-import api from '../services/api';
+import { IRocket } from '../../utils/entities';
+import api from '../../services/api';
 
 interface RocketProfileProps {
 	rocketProfileId?: string;

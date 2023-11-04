@@ -1,13 +1,13 @@
 import React, {  useState, useEffect } from 'react';
-import Header, { Breadcrumb } from "../../components/Header";
+import Header, { Breadcrumb } from "../../components/Header/Header";
 import { Button, Grid, Paper, Stack, Typography } from '@mui/material';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
 import AirplaneTicketIcon from '@mui/icons-material/AirplaneTicket';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import { IDataConfig } from '../../utils/entities';
 import api from '../../services/api';
-import ModuleStatus from '../../components/ModuleNew';
-import TelemetryLog from '../../components/TelemetryLog';
+import ModuleStatus from '../../components/Module/ModuleNew';
+import TelemetryLog from '../../components/TelemetryLog/TelemetryLog';
 
 export default function FlightView() {
 	

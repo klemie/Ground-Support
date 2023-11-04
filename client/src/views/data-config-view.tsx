@@ -13,7 +13,7 @@ import MUIDataTable, {
     MUIDataTableExpandButton,
     MUIDataTableOptions
 } from "mui-datatables";
-import Header, { Breadcrumb } from '../components/Header';
+import Header, { Breadcrumb } from '../components/Header/Header';
 
 // Utils
 import { IDataConfig } from '../utils/entities';

@@ -9,7 +9,7 @@ import {
 	Legend, 
 	ResponsiveContainer
 } from 'recharts';
-import { IModule } from '../utils/entities';
+import { IModule } from '../../utils/entities';
 
 interface GraphProps {
 	dataKeys: string[];

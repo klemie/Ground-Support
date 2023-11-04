@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Grid, Typography, Box, Tabs, Tab, Stack, Button, Paper } from '@mui/material';
-import Header, { Breadcrumb } from '../components/Header';
+import Header, { Breadcrumb } from '../components/Header/Header';
 
 // Icons
 import AddIcon from '@mui/icons-material/Add';
@@ -14,9 +14,9 @@ import RocketDetailsTab from './tabs/rocket-details-tab';
 import RocketMissionsTab from './tabs/rocket-missions-tab';
 
 // Popups
-import ComponentModal from '../components/modals/ComponentModal';
-import RocketProfilePopup from '../components/RocketProfilePopup';
-import MissionConfig from '../components/MissionConfig';
+import ComponentModal from '../components/ComponentModal/ComponentModal';
+import RocketProfilePopup from '../components/RocketProfileDialog/RocketProfilePopup';
+import MissionConfig from '../components/MissionConfigDialog/MissionConfig';
 
 // Utils
 import api from '../services/api';

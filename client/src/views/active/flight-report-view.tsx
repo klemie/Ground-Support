@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { IDataConfig, IMission } from '../../utils/entities';
 
 import { Accordion, AccordionDetails, AccordionSummary, Grid, Stack, Typography, Paper, Button, useTheme } from '@mui/material';
-import Header, { Breadcrumb } from '../../components/Header';
-import ModuleSummary from '../../components/ModuleSummary';
+import Header, { Breadcrumb } from '../../components/Header/Header';
+import ModuleSummary from '../../components/ModuleSummary/ModuleSummary';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
 import api from '../../services/api';
 import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import DataUpload from '../../components/DataUpload';
+import DataUpload from '../../components/DataUpload/DataUpload';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 
 export default function RocketSelectionView() {

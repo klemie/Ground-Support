@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
 // Components UI
-import Header, { Breadcrumb } from '../../components/Header';
-import TelemetryLog from '../../components/TelemetryLog';
+import Header, { Breadcrumb } from '../../components/Header/Header';
+import TelemetryLog from '../../components/TelemetryLog/TelemetryLog';
 import { 
 	Grid, 
 	Paper, 
@@ -24,7 +24,7 @@ import {
 import { IComponent, IDataConfig, IMission, IModule, IRocketPopulated } from '../../utils/entities';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
 import api from '../../services/api';
-import ModuleStatus from '../../components/ModuleNew';
+import ModuleStatus from '../../components/Module/ModuleNew';
 import { useSocketContext } from '../../utils/socket-context';
 import SensorsOffIcon from '@mui/icons-material/SensorsOff';
 import SensorsIcon from '@mui/icons-material/Sensors';

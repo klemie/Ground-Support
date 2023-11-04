@@ -1,5 +1,5 @@
 import React from 'react';
-import ComponentCard from '../../components/ComponentCard';
+import ComponentCard from '../../components/ComponentCard/ComponentCard';
 import { Alert, Box, Grid } from '@mui/material';
 import { IRocketPopulated } from '../../utils/entities';
 

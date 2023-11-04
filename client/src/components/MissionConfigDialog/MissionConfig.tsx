@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, Dialog, TextField, Stack, DialogContent, Typography, Checkbox, FormControlLabel, InputAdornment, Tooltip, IconButton, DialogActions, Select, MenuItem, OutlinedInput, Box, Chip, FormControl, InputLabel  } from "@mui/material";
-import { IComponent, IMission, IRocket, IRocketPopulated } from "../utils/entities";
-import api from "../services/api";
+import { IComponent, IMission, IRocket, IRocketPopulated } from "../../utils/entities";
+import api from "../../services/api";
 
 interface MissionConfigProps {
     missionId?: string;

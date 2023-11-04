@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, Divider, Chip } from "@mui/material";
-import { IField, IModule, IFieldGroup } from "../utils/entities"
-import { telemetryStatus, StatusTypes, TelemetryStatus, moduleStatus } from "../utils/statusTypes";
+import { IField, IModule, IFieldGroup } from "../../utils/entities"
+import { telemetryStatus, StatusTypes, TelemetryStatus, moduleStatus } from "../../utils/statusTypes";
 import { Reducer, useEffect, useReducer, useState } from "react";
 import _ from "lodash";
 

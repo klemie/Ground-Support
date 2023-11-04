@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Grid, Chip, Stack } from '@mui/material';
-import Header, { Breadcrumb } from '../components/Header';
+import Header, { Breadcrumb } from '../components/Header/Header';
 import addRocket from '../static/images/AddRocket.svg';
 
 import '../styles/rocketSelection.css';
-import RocketProfilePopup from '../components/RocketProfilePopup';
+import RocketProfilePopup from '../components/RocketProfileDialog/RocketProfilePopup';
 import api from '../services/api';
 import { IRocketPopulated } from '../utils/entities';
 

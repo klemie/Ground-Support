@@ -1,6 +1,6 @@
-import { DocumentationProps } from "../components/ComponentDocumentation";
-import Header from "../components/Header";
-import RealTimeChart from "../components/Graph";
+import { DocumentationProps } from "../components/ComponentDocumentation/ComponentDocumentation";
+import Header from "../components/Header/Header";
+import RealTimeChart from "../components/Graph/Graph";
 
 const header = <Header breadCrumbs={[{ name: "breadCrumb", path: "/", active: false }]}/>;
 const graph = <RealTimeChart />;

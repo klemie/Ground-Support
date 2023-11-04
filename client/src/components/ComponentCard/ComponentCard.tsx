@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Card, CardActions, CardContent, CardHeader, Chip, IconButton, Stack, Typography } from '@mui/material';
-import { IComponentPopulated, IRocket, IRocketPopulated } from '../utils/entities';
+import { IComponentPopulated, IRocket, IRocketPopulated } from '../../utils/entities';
 import EditIcon from '@mui/icons-material/Edit';
-import ComponentModal from './modals/ComponentModal';
+import ComponentModal from '../ComponentModal/ComponentModal';
 import { Delete } from '@mui/icons-material';
-import api from '../services/api';
+import api from '../../services/api';
 
 interface ComponentCardProps {
     componentId: string;
