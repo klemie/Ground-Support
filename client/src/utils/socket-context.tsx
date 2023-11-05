@@ -1,6 +1,4 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useState, useReducer } from 'react';
-import { io } from 'socket.io-client';
-import { socket } from './socket-config';
 
 interface IPacket {
 	Data: {};
@@ -74,31 +72,6 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 	const setLoRaFrequency = (frequency: number) => {
 		// socket.emit('set_loRa_frequency', { frequency });
 	};
-
-	useEffect(() => {
-		socket.on('loRa_packet', (packet: IPacket) => {
-			const p = packet as IPacket;
-			loraDispatch({ type: 'SET_PACKET', payload: p });
-		});
-
-		socket.on('aprs_packet', (packet: IPacket) => {
-			const p = packet as IPacket;
-			console.log('APRS PACKET:', p);
-			aprsDispatch({ type: 'SET_PACKET', payload: p });
-		});
-
-		socket.on('logs', (data: any) => {
-			setLogs((prev) => [...prev, JSON.stringify(data)]);
-		});
-
-		return () => {
-			socket.disconnect();
-		};
-	}, []);
-
-	useEffect(() => {
-		console.log('APRS:', aprsPacket);
-	}, [aprsPacket]);
 
 	return (
 		<Context.Provider
