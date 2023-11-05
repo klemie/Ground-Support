@@ -1,11 +1,4 @@
-import { 
-	createContext, 
-	PropsWithChildren, 
-	useContext, 
-	useEffect, 
-	useState, 
-	useReducer 
-} from 'react';
+import { createContext, PropsWithChildren, useContext, useEffect, useState, useReducer } from 'react';
 import { io } from 'socket.io-client';
 import { socket } from './socket-config';
 
@@ -30,17 +23,17 @@ export const Context = createContext<SocketContext>({
 	setLoRaFrequency: (frequency: number) => {}
 });
 
-function aprsReducer(state: IPacket, action: {type: string, payload: any}) {
+function aprsReducer(state: IPacket, action: { type: string; payload: any }) {
 	switch (action.type) {
 		case 'SET_PACKET':
-			return  action.payload;
+			return action.payload;
 
 		default:
 			throw new Error(`Unhandled action type: ${action.type}`);
 	}
 }
 
-function loraReducer(state: IPacket, action: {type: string, payload: any}) {
+function loraReducer(state: IPacket, action: { type: string; payload: any }) {
 	switch (action.type) {
 		case 'SET_PACKET':
 			return action.payload;
@@ -54,7 +47,9 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 	const [logs, setLogs] = useState<string[]>([]);
 	const [aprsPacket, aprsDispatch] = useReducer(aprsReducer, {} as IPacket);
 	const [loRaPacket, loraDispatch] = useReducer(loraReducer, {} as IPacket);
-	const socket = io('http://localhost:8086/toClient');
+	const socket = io('http://localhost:9193', {
+		transports: ['websocket']
+	});
 
 	const setAprsFrequency = (frequency: number) => {
 		// socket.emit('set_aprs_frequency', { frequency });
@@ -67,13 +62,13 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 	useEffect(() => {
 		socket.on('loRa_packet', (packet: IPacket) => {
 			const p = packet as IPacket;
-			loraDispatch({ type: 'SET_PACKET', payload: p});
+			loraDispatch({ type: 'SET_PACKET', payload: p });
 		});
 
 		socket.on('aprs_packet', (packet: IPacket) => {
 			const p = packet as IPacket;
 			console.log('APRS PACKET:', p);
-			aprsDispatch({ type: 'SET_PACKET', payload: p});
+			aprsDispatch({ type: 'SET_PACKET', payload: p });
 		});
 
 		socket.on('logs', (data: any) => {
