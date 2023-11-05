@@ -9,16 +9,16 @@ export interface SocketContext {
 	logs: string[];
 	aprsPacket: IPacket;
 	loRaPacket: IPacket;
-	setAprsFrequency: (frequency: number) => void;
-	setLoRaFrequency: (frequency: number) => void;
+	setPacketFrequency: (frequency: number) => void;
+	setProtocol: (protocol: string) => void;
 }
 
 export const Context = createContext<SocketContext>({
 	logs: [],
 	aprsPacket: {} as IPacket,
 	loRaPacket: {} as IPacket,
-	setAprsFrequency: (frequency: number) => {},
-	setLoRaFrequency: (frequency: number) => {}
+	setPacketFrequency: (frequency: number) => {},
+	setProtocol: (protocol: string) => {}
 });
 
 function aprsReducer(state: IPacket, action: { type: string; payload: any }) {
@@ -45,6 +45,9 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 	const [logs, setLogs] = useState<string[]>([]);
 	const [aprsPacket, aprsDispatch] = useReducer(aprsReducer, {} as IPacket);
 	const [loRaPacket, loraDispatch] = useReducer(loraReducer, {} as IPacket);
+	const [packetFrequency, setPacketFrequency] = useState<number>(3);
+	const [protocol, setProtocol] = useState<string>('APRS');
+
 	const port = 9193;
 	const ws = new WebSocket(`ws://localhost:${port}`);
 
@@ -52,12 +55,28 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 		ws.send(JSON.stringify({ type: 'establish_stream', frequency: 2 }));
 	};
 
+	const changePacketFrequency = (frequency: number) => {
+		ws.send(JSON.stringify({ type: 'change_frequency', frequency: frequency }));
+	};
+
 	const changeProtocol = (protocol: string) => {
 		ws.send(JSON.stringify({ type: 'change_protocol', protocol: protocol }));
 	};
 
+	useEffect(() => {
+		if (ws.readyState === ws.OPEN) {
+			changePacketFrequency(packetFrequency);
+		}
+	}, [packetFrequency]);
+
+	useEffect(() => {
+		if (ws.readyState === ws.OPEN) {
+			changeProtocol(protocol);
+		}
+	}, [protocol]);
+
 	ws.addEventListener('open', () => {
-		console.log('connected');
+		console.log('Socket Connected');
 		enableLiveMode();
 	});
 
@@ -65,13 +84,6 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 		const data = JSON.parse(message.data);
 		console.log(data);
 	});
-	const setAprsFrequency = (frequency: number) => {
-		// socket.emit('set_aprs_frequency', { frequency });
-	};
-
-	const setLoRaFrequency = (frequency: number) => {
-		// socket.emit('set_loRa_frequency', { frequency });
-	};
 
 	return (
 		<Context.Provider
@@ -79,8 +91,8 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 				logs,
 				aprsPacket,
 				loRaPacket,
-				setAprsFrequency,
-				setLoRaFrequency
+				setPacketFrequency,
+				setProtocol
 			}}
 		>
 			{children}
