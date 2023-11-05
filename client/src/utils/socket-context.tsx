@@ -47,10 +47,26 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 	const [logs, setLogs] = useState<string[]>([]);
 	const [aprsPacket, aprsDispatch] = useReducer(aprsReducer, {} as IPacket);
 	const [loRaPacket, loraDispatch] = useReducer(loraReducer, {} as IPacket);
-	const socket = io('http://localhost:9193', {
-		transports: ['websocket']
+	const port = 9193;
+	const ws = new WebSocket(`ws://localhost:${port}`);
+
+	const enableLiveMode = () => {
+		ws.send(JSON.stringify({ type: 'establish_stream', frequency: 2 }));
+	};
+
+	const changeProtocol = (protocol: string) => {
+		ws.send(JSON.stringify({ type: 'change_protocol', protocol: protocol }));
+	};
+
+	ws.addEventListener('open', () => {
+		console.log('connected');
+		enableLiveMode();
 	});
 
+	ws.addEventListener('message', (message) => {
+		const data = JSON.parse(message.data);
+		console.log(data);
+	});
 	const setAprsFrequency = (frequency: number) => {
 		// socket.emit('set_aprs_frequency', { frequency });
 	};
