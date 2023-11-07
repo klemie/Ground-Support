@@ -38,7 +38,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     const [dataConfig, setDataConfig] = useState<IDataConfig>(emptyDataConfig)
     const [moduleObject, setModuleObject] = useState<IModule>(emptyModule);
     const [namingPopupOpen, setNamingPopupOpen] = useState<boolean>(false);
-    const [tabIndex, setTabIndex] = useState(0);
+    const [tabIndex, setTabIndex] = useState<number>(0);
     const [saveModuleIndex, setSaveModuleIndex] = useState<number>(0);
     
     const [showValidationPopup, setShowValidationPopup] = useState<boolean>(false);
@@ -80,6 +80,10 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     }, [dataConfig]);
     
     const TabDisplay = (props:any) => {
+        // TODO
+        // 1. Come up with better way to initialize new FieldGroup on start up
+        //    eg. on new module, have "Name New Group" popup 
+
         const fieldGroups = props.fieldGroups;
 
         const handleTabChange = (e:any, newTabIndex: number) => {
@@ -102,6 +106,10 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     };
 
     const FieldDisplay = (props:any) => {
+        // TODO 
+        // 1. Split range into two fields
+        // 2. Set telemetryID to have binary type
+
         const fields = props.fields;
         
         const handleChangeCurrentFields = (e:React.ChangeEvent<HTMLInputElement>) => {
