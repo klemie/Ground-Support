@@ -107,7 +107,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
 
     const FieldDisplay = (props:any) => {
         // TODO 
-        // 1. Split range into two fields
+        // 1. Split range into two fields - DONE!
         // 2. Set telemetryID to have binary type
 
         const fields = props.fields;
@@ -117,11 +117,19 @@ const ModuleEditor = (props: IModuleEditorProps) => {
             const fieldName = e.target.name;
             let newFieldValue:any = e.target.value;
 
-            if (fieldName === 'Range') {
-                newFieldValue = newFieldValue.split(',').map(Number);
-            } else if (fieldName === 'TelemetryId') {
+            if (fieldName === "Range[0]") {
                 newFieldValue = Number(newFieldValue);
+                currentFields[fieldID]["Range"][0] = newFieldValue;
+                return;
+            } else if (fieldName === "Range[1]") {
+                newFieldValue = Number(newFieldValue);
+                currentFields[fieldID]["Range"][1] = newFieldValue;
+                return;
             }
+
+            if (fieldName === 'TelemetryId') {
+                newFieldValue = Number(newFieldValue);
+            } 
         
             currentFields[fieldID] = {
                 ...currentFields[fieldID],
@@ -136,10 +144,11 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                     just display as is in the textfield */}
                 {fields.map((field:any, index:string) => (
                     <Stack direction={"row"} spacing={1}>
-                        <TextField label="Name"        name="Name"        key="Name"  id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Name || ""}/>
-                        <TextField label="Range"       name="Range"       key="Range" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range || ""}/>
-                        <TextField label="Units"       name="Units"       key="Units" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Units || ""}/>
-                        <TextField label="TelemetryId" name="TelemetryId" key="TelID" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.TelemetryId.data || field.TelemetryId || ""} type="number"/>
+                        <TextField label="Name"        name="Name"        key="name"   id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Name || ""}/>
+                        <TextField label="Lower Range" name="Range[0]"      key="lrange" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range[0] || ""} type="number"/>
+                        <TextField label="Upper Range" name="Range[1]"      key="urange" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range[1] || ""} type="number"/>
+                        <TextField label="Units"       name="Units"       key="units"  id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Units || ""}/>
+                        <TextField label="TelemetryId" name="TelemetryId" key="telid"  id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.TelemetryId.data || field.TelemetryId || ""} type="number"/>
 
                         <Tooltip title="Remove Field" disableInteractive onClick={() => handleEditFields("remove", Number(index))}><IconButton><MinusIcon/></IconButton></Tooltip>
                     </Stack>
