@@ -71,6 +71,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                 setSaveModuleIndex(0)
             } else if (mode === "New") {
                 setSaveModuleIndex(dataConfig.Modules.length)
+                setNamingPopupOpen(true)
             } else if (mode === "Edit") {
                 setSaveModuleIndex(index || 0);
                 setModuleObject(dataConfig.Modules[index || 0])
@@ -83,10 +84,9 @@ const ModuleEditor = (props: IModuleEditorProps) => {
         // TODO
         // 1. Come up with better way to initialize new FieldGroup on start up
         //    eg. on new module, have "Name New Group" popup 
-
         const fieldGroups = props.fieldGroups;
 
-        const handleTabChange = (e:any, newTabIndex: number) => {
+        const handleTabChange = (_e:any, newTabIndex: number) => {
             let moduleObjectEdited = lodash.cloneDeep(moduleObject)
             moduleObjectEdited.FieldGroups[tabIndex].Fields = currentFields
 
@@ -108,7 +108,8 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     const FieldDisplay = (props:any) => {
         // TODO 
         // 1. Split range into two fields - DONE!
-        // 2. Set telemetryID to have binary type
+        // 2. Set telemetryID to have binary type - Fuck!
+        // 3. Type checking (number) for range fields
 
         const fields = props.fields;
         
@@ -117,11 +118,11 @@ const ModuleEditor = (props: IModuleEditorProps) => {
             const fieldName = e.target.name;
             let newFieldValue:any = e.target.value;
 
-            if (fieldName === "Range[0]") {
+            if (fieldName === "LRange") {
                 newFieldValue = Number(newFieldValue);
                 currentFields[fieldID]["Range"][0] = newFieldValue;
                 return;
-            } else if (fieldName === "Range[1]") {
+            } else if (fieldName === "URange") {
                 newFieldValue = Number(newFieldValue);
                 currentFields[fieldID]["Range"][1] = newFieldValue;
                 return;
@@ -129,7 +130,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
 
             if (fieldName === 'TelemetryId') {
                 newFieldValue = Number(newFieldValue);
-            } 
+            }
         
             currentFields[fieldID] = {
                 ...currentFields[fieldID],
@@ -145,10 +146,10 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                 {fields.map((field:any, index:string) => (
                     <Stack direction={"row"} spacing={1}>
                         <TextField label="Name"        name="Name"        key="name"   id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Name || ""}/>
-                        <TextField label="Lower Range" name="Range[0]"      key="lrange" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range[0] || ""} type="number"/>
-                        <TextField label="Upper Range" name="Range[1]"      key="urange" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range[1] || ""} type="number"/>
+                        <TextField label="Lower Range" name="LRange"      key="lrange" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range[0] || ""} type="number"/>
+                        <TextField label="Upper Range" name="URange"      key="urange" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range[1] || ""} type="number"/>
                         <TextField label="Units"       name="Units"       key="units"  id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Units || ""}/>
-                        <TextField label="TelemetryId" name="TelemetryId" key="telid"  id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.TelemetryId.data || field.TelemetryId || ""} type="number"/>
+                        <TextField label="TelemetryID" name="TelemetryId" key="telid"  id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.TelemetryId.data || field.TelemetryId || ""} type="number"/>
 
                         <Tooltip title="Remove Field" disableInteractive onClick={() => handleEditFields("remove", Number(index))}><IconButton><MinusIcon/></IconButton></Tooltip>
                     </Stack>
@@ -163,19 +164,25 @@ const ModuleEditor = (props: IModuleEditorProps) => {
         const handleClosePopup = () => {
             handleEditFieldGroups("add", nameFieldContents);
             setNamingPopupOpen(false);
-        }
+        };
 
         const handleFieldChange = (e:React.ChangeEvent<HTMLInputElement>) => {
             nameFieldContents = e.target.value;
-        }
+        };
+
+        const checkEnter = (e:any) => {
+            if(e.keyCode == 13){
+                handleClosePopup();
+            }
+        };
 
         return (
             <Dialog open={namingPopupOpen}>
                 <DialogTitle>
-                    <Typography variant="subtitle1">Name New Group</Typography>
+                    <Typography variant="subtitle1">Name New Field Group</Typography>
                 </DialogTitle>
                 <DialogContent>
-                    <TextField onChange={handleFieldChange} label={"Group Name"} sx={{marginTop: 0.8}}/>
+                    <TextField onChange={handleFieldChange} onKeyDown={checkEnter} label={"Group Name"} sx={{marginTop: 0.8}} autoFocus/>
                 </DialogContent>
                 <Stack direction={"row"} justifyContent={"space-evenly"} marginBottom={2}>
                     <Button onClick={() => setNamingPopupOpen(false)} fullWidth={false} variant={"contained"}>Cancel</Button>
@@ -226,31 +233,36 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     const handleEditFieldGroups = (op:"add" | "remove", groupName?:string) => {
         // Deref const object so we can edit and give to setModuleObject - neccessary because we're using state, otherwise no worky
         let moduleObjectEdited:IModule = lodash.cloneDeep(moduleObject)
-        let newTab = 0
+        let newTab = tabIndex;
 
         if(op === "add") {
-            const emptyField:IField = {
-                Name: '',
-                Range: [0, 0],
-                Units: '',
-                TelemetryId: 0
+            // Hacky check for startup, RE adding a named group on "New Module" init
+            // TODO do this better probably
+            if (moduleObjectEdited.FieldGroups[0].Name === "New Group") {
+                moduleObjectEdited.FieldGroups.splice(0, 1);
+                newTab = -1;
             }
-    
+
             const emptyFieldGroup:IFieldGroup = {
                 Name: groupName || 'New Group',
                 Fields: [
-                    emptyField
+                    {
+                        Name: '',
+                        Range: [0, 0],
+                        Units: '',
+                        TelemetryId: 0
+                    }
                 ]
             }
     
-            moduleObjectEdited.FieldGroups.splice(tabIndex + 1, 0, emptyFieldGroup)
-            newTab = tabIndex + 1  
+            moduleObjectEdited.FieldGroups.splice(newTab + 1, 0, emptyFieldGroup)
+            newTab += 1  
 
         } else {
             if (moduleObjectEdited.FieldGroups.length > 1) {
-                moduleObjectEdited.FieldGroups.splice(tabIndex, 1);
-                if(tabIndex > 0) {
-                    newTab = tabIndex - 1
+                moduleObjectEdited.FieldGroups.splice(newTab, 1);
+                if(newTab > 0) {
+                    newTab -= 1
                 }
             }
         }
@@ -336,7 +348,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     };
 
     const stopClickThrough = (e: React.MouseEvent) => {
-        e.stopPropagation(); // Prevent clicks from propagating to parent components, which was a problem when editing data-config-view.tsx
+        e.stopPropagation(); // Prevent clicks from propagating to parent components, which was a problem when editing within data-config-view.tsx
     };
 
     return (
