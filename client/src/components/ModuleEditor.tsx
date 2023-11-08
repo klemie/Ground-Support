@@ -171,7 +171,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
         };
 
         const checkEnter = (e:any) => {
-            if(e.keyCode == 13){
+            if(e.keyCode == 13 && nameFieldContents){
                 handleClosePopup();
             }
         };
@@ -182,7 +182,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                     <Typography variant="subtitle1">Name New Field Group</Typography>
                 </DialogTitle>
                 <DialogContent>
-                    <TextField onChange={handleFieldChange} onKeyDown={checkEnter} label={"Group Name"} sx={{marginTop: 0.8}} autoFocus/>
+                    <TextField onChange={handleFieldChange} onKeyUp={checkEnter} label={"Group Name"} sx={{marginTop: 0.8}} autoFocus/>
                 </DialogContent>
                 <Stack direction={"row"} justifyContent={"space-evenly"} marginBottom={2}>
                     <Button onClick={() => setNamingPopupOpen(false)} fullWidth={false} variant={"contained"}>Cancel</Button>
@@ -376,7 +376,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                                     whiteSpace: "nowrap",}}>
 
                             <Typography variant="subtitle1" sx={{paddingRight: 1}}>Field Groups</Typography>
-                            <Tooltip title="New Field Group" disableInteractive><IconButton onClick={() => setNamingPopupOpen(true)}><PlusIcon/></IconButton></Tooltip>
+                            <Tooltip title="New Field Group" disableInteractive><IconButton onClick={() => setNamingPopupOpen(true)} ><PlusIcon/></IconButton></Tooltip>
                             <Tooltip title="Remove Current Field Group" disableInteractive><IconButton onClick={() => handleEditFieldGroups("remove")}><MinusIcon/></IconButton></Tooltip>
                         </Stack>
 
