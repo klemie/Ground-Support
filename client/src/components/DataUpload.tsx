@@ -1,7 +1,6 @@
-import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Slide, Stack, Tooltip, Typography } from "@mui/material";
+import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Tooltip, Typography } from "@mui/material";
 import { useActiveMission } from "../utils/ActiveMissionContext";
-import React, { useState, forwardRef, useEffect } from 'react';
-import { TransitionProps } from "@mui/material/transitions";
+import React, { useState, useEffect } from 'react';
 import FileUpload from "react-material-file-upload";
 import * as DataConverter from "rocket-data"
 
@@ -17,9 +16,11 @@ const MissionConfig: React.FC<IDataUploadProps> = (props: IDataUploadProps) => {
     const { isOpen, onClose } = props;
     const [files, setFiles] = useState<File[]>([]);
     
-    const handleSave = () => {
-        // TODO: mateos rust library
-        DataConverter.greet();
+    const handleSave = async () => {
+        const config_file = files.find((element: File) => element.type === "application/json");
+        const bin_file = files.find((element: File) => element.type === "application/macbinary");
+        const csv_str = await DataConverter.convert_to_csv(config_file, bin_file);
+        console.log(csv_str);
         props.onClose();
     };
 
