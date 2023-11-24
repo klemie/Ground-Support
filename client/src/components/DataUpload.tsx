@@ -1,8 +1,8 @@
-import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Slide, Stack, Tooltip, Typography } from "@mui/material";
+import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Tooltip, Typography } from "@mui/material";
 import { useActiveMission } from "../utils/ActiveMissionContext";
-import React, { useState, forwardRef, useEffect } from 'react';
-import { TransitionProps } from "@mui/material/transitions";
+import React, { useState, useEffect } from 'react';
 import FileUpload from "react-material-file-upload";
+import * as DataConverter from "rocket-data"
 
 
 
@@ -16,8 +16,11 @@ const MissionConfig: React.FC<IDataUploadProps> = (props: IDataUploadProps) => {
     const { isOpen, onClose } = props;
     const [files, setFiles] = useState<File[]>([]);
     
-    const handleSave = () => {
-        // TODO: mateos rust library
+    const handleSave = async () => {
+        const config_file = files.find((element: File) => element.name.indexOf(".json") !== -1);
+        const bin_file = files.find((element: File) => element.name.indexOf(".bin") !== -1);
+        const csv_str = await DataConverter.convert_to_csv(config_file, bin_file);
+        console.log(csv_str);
         props.onClose();
     };
 
@@ -43,9 +46,7 @@ const MissionConfig: React.FC<IDataUploadProps> = (props: IDataUploadProps) => {
                         <Typography variant="subtitle1">Supported File Type:</Typography>
                         <Chip label='.cvs' color="primary" variant="outlined"/> 
                         <Chip label='.json' color="primary" variant="outlined"/> 
-                        <Tooltip title="Raw data. not Supported yet">
-                            <Chip label='.bin' color="error" variant="outlined" />
-                        </Tooltip>
+                        <Chip label='.bin' color="primary" variant="outlined"/>
                     </Stack>
                     <Tooltip title="To upload multiple files they both must be selected in your file system">
                         <div>

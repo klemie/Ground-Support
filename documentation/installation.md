@@ -59,6 +59,14 @@ Now if you haven't already you can clone the repository
 ```bash
 git clone https://github.com/UVicRocketry/Ground-Support.git
 ```
+
+Then clone project submodules
+
+```bash
+cd Ground-Support
+git submodule update --init --recursive
+```
+
 **Server Environment File**
 
 In the `/services/server` directory create a `.env` file. If not called exactly `.env`, create one and copy and paste
