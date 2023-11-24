@@ -1,4 +1,4 @@
 [submodule "client/flight-data-reader"]
 	path = client/flight-data-reader
-	url = https://github.com/mas393/flight-data-reader.git
-	branch = ground-support-support
+	url = https://github.com/PokeyOne/flight-data-reader.git
+	branch = trunk

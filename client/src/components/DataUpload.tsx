@@ -17,8 +17,8 @@ const MissionConfig: React.FC<IDataUploadProps> = (props: IDataUploadProps) => {
     const [files, setFiles] = useState<File[]>([]);
     
     const handleSave = async () => {
-        const config_file = files.find((element: File) => element.type === "application/json");
-        const bin_file = files.find((element: File) => element.type === "application/macbinary");
+        const config_file = files.find((element: File) => element.name.indexOf(".json") !== -1);
+        const bin_file = files.find((element: File) => element.name.indexOf(".bin") !== -1);
         const csv_str = await DataConverter.convert_to_csv(config_file, bin_file);
         console.log(csv_str);
         props.onClose();
