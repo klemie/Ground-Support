@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import api from "../services/api";
 import lodash from "lodash";
 import { useEffect, useState } from "react";
@@ -19,21 +19,26 @@ interface IModuleEditorProps {
 const ModuleEditor = (props: IModuleEditorProps) => {
     const { dataConfigID, index, mode, isOpen, onClose } = props;
 
-    const emptyModule:IModule = useMemo(() => ({
+    const emptyModule:IModule = {
         Name: "",
         FieldGroups: [
             {
                 Name: "New Group", 
                 Fields: [
-                    {Name: "", Range: [0,0], Units: "", TelemetryId: 0}
+                    {
+                        Name: '',
+                        Range: [0, 0],
+                        Units: '',
+                        TelemetryId: {type: "Buffer", data: [0]} as any
+                    }
                 ]
             }
         ]
-    }), []);
-        
-    const emptyDataConfig:IDataConfig = useMemo(() => ({
+    }
+
+    const emptyDataConfig:IDataConfig = {
         Modules: [emptyModule]
-    }), [emptyModule]);
+    }
         
     const [dataConfig, setDataConfig] = useState<IDataConfig>(emptyDataConfig)
     const [moduleObject, setModuleObject] = useState<IModule>(emptyModule);
@@ -81,9 +86,6 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     }, [dataConfig]);
     
     const TabDisplay = (props:any) => {
-        // TODO
-        // 1. Come up with better way to initialize new FieldGroup on start up
-        //    eg. on new module, have "Name New Group" popup 
         const fieldGroups = props.fieldGroups;
 
         const handleTabChange = (_e:any, newTabIndex: number) => {
@@ -106,13 +108,25 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     };
 
     const FieldDisplay = (props:any) => {
-        // TODO 
-        // 1. Split range into two fields - DONE!
-        // 2. Set telemetryID to have binary type - Fuck!
-        // 3. Type checking (number) for range fields
-
         const fields = props.fields;
         
+        const numberToArray = (number:number) => {
+            // For converting to buffer type as required by mongoose
+            const numString = String(number);
+            const numArray = numString.split('').map(Number);
+            return numArray;
+        }
+
+        const arrayToNumber = (arr:number[]) => {
+            // For displaying buffer type in textfield for editing
+            if(arr) {
+                const numString = arr.join('');
+                const number = parseInt(numString, 10);
+                return number;
+            }
+            return 0;
+        }
+
         const handleChangeCurrentFields = (e:React.ChangeEvent<HTMLInputElement>) => {
             const fieldID = Number(e.target.id);
             const fieldName = e.target.name;
@@ -126,10 +140,11 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                 newFieldValue = Number(newFieldValue);
                 currentFields[fieldID]["Range"][1] = newFieldValue;
                 return;
-            }
-
-            if (fieldName === 'TelemetryId') {
-                newFieldValue = Number(newFieldValue);
+            } else if (fieldName === 'TelemetryId') {
+                // Slightly janky but works for saving as mongoose Buffer 
+                newFieldValue = numberToArray(Number(newFieldValue));
+                currentFields[fieldID]["TelemetryId"] = {type: "Buffer", data: newFieldValue} as any;
+                return;
             }
         
             currentFields[fieldID] = {
@@ -140,16 +155,16 @@ const ModuleEditor = (props: IModuleEditorProps) => {
 
         return (
             <Stack direction={"column"} spacing={3} padding={2} maxHeight={"45vh"} sx={{overflow: "scroll"}}>
-                {/* "field" is type any because we need to the access field.TelemetryId.data value
-                    This is because the server sees the TelemetryId as a Buffer, which we can't 
+                {/* "field" is type any (not IField) because we need to the access field.TelemetryId.data value
+                    This is because the server sees the TelemetryId as a Buffer (from mongoose types), which we can't 
                     just display as is in the textfield */}
                 {fields.map((field:any, index:string) => (
-                    <Stack direction={"row"} spacing={1}>
+                    <Stack direction={"row"} spacing={0.5}>
                         <TextField label="Name"        name="Name"        key="name"   id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Name || ""}/>
-                        <TextField label="Lower Range" name="LRange"      key="lrange" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range[0] || ""} type="number"/>
-                        <TextField label="Upper Range" name="URange"      key="urange" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range[1] || ""} type="number"/>
+                        <TextField label="Lower Range" name="LRange"      key="lrange" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range[0] || "0"} type="number"/>
+                        <TextField label="Upper Range" name="URange"      key="urange" id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Range[1] || "0"} type="number"/>
                         <TextField label="Units"       name="Units"       key="units"  id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.Units || ""}/>
-                        <TextField label="TelemetryID" name="TelemetryId" key="telid"  id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={field.TelemetryId.data || field.TelemetryId || ""} type="number"/>
+                        <TextField label="TelemetryID" name="TelemetryId" key="telid"  id={index} onChange={handleChangeCurrentFields} size="small" defaultValue={arrayToNumber(field.TelemetryId.data) || ""}/>
 
                         <Tooltip title="Remove Field" disableInteractive onClick={() => handleEditFields("remove", Number(index))}><IconButton><MinusIcon/></IconButton></Tooltip>
                     </Stack>
@@ -236,8 +251,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
         let newTab = tabIndex;
 
         if(op === "add") {
-            // Hacky check for startup, RE adding a named group on "New Module" init
-            // TODO do this better probably
+            // Check for startup condition, add new field name in place of [0] if case
             if (moduleObjectEdited.FieldGroups[0].Name === "New Group") {
                 moduleObjectEdited.FieldGroups.splice(0, 1);
                 newTab = -1;
@@ -250,7 +264,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                         Name: '',
                         Range: [0, 0],
                         Units: '',
-                        TelemetryId: 0
+                        TelemetryId: {type: "Buffer", data: [0]} as any
                     }
                 ]
             }
@@ -277,7 +291,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
                 Name: '',
                 Range: [0, 0],
                 Units: '',
-                TelemetryId: 0
+                TelemetryId: {type: "Buffer", data: [0]} as any
             }
 
             moduleObjectEdited.FieldGroups[tabIndex].Fields.push(emptyField)
@@ -290,23 +304,33 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     };
 
     const handleSaveClose = async() => {
+        
         const validateFields = () => {
-            if(!moduleObject.Name) {
+            if (!moduleObject.Name) {
                 setValidationMessage("Module must have a name");
                 return false;
             }
-            for (const field of currentFields) {
-                if (!field.Name || field.Range.length !== 2 || !field.Units || !field.TelemetryId) {
-                    setValidationMessage("Some fields are empty or invalid. Please check before saving");
-                    return false;
+        
+            for (const fieldGroup of moduleObject.FieldGroups) {
+                for (const field of fieldGroup.Fields as any) {
+                    // Check if any of the required properties are missing or empty
+                    if (!field.Name || field.Range.length !== 2 || !field.Units || field.TelemetryId === undefined) {
+                        setValidationMessage("Some fields are empty or invalid. Please check before saving");
+                        return false;
+                    }
+                    
+                    // Check if TelemetryId is not binary
+                    if (field.TelemetryId !== '' && !/^[01]*$/.test(String(field.TelemetryId.data.join('')))) {
+                        setValidationMessage("All TelemetryIDs must be binary");
+                        return false;
+                    }
                 }
             }
+        
             return true;
         };
         
-        const isValid = validateFields();
-        
-        if (!isValid) {
+        if (!validateFields()) {
             setShowValidationPopup(true);
             return;
           }
@@ -350,7 +374,7 @@ const ModuleEditor = (props: IModuleEditorProps) => {
     const stopClickThrough = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent clicks from propagating to parent components, which was a problem when editing within data-config-view.tsx
     };
-
+    
     return (
         <Dialog open={isOpen} fullWidth maxWidth={"md"} PaperProps={{sx:{maxHeight: "80vh"}}} onClick={stopClickThrough}>
             <DialogTitle marginTop={1}>
