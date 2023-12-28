@@ -10,12 +10,11 @@ import {
 	ResponsiveContainer
 } from 'recharts';
 import { IAprsTelemetryPacket } from '../utils/TelemetryTypes';
-import { useActiveMission } from '../utils/ActiveMissionContext';
 
 interface GraphProps {
 	dataKeys: string[];
 	packet?: IAprsTelemetryPacket;
-	staticData: any[]
+	staticData: any[];
 	realTime: boolean;
 }
 
@@ -24,7 +23,7 @@ const Graph: React.FC<GraphProps> = (props: GraphProps) => {
 	const [data, setData] = useState<any[]>([]);
 
 	useEffect(() => {
-		if (realTime && packet?.Parsed.altitude !== 0) {
+		if (realTime && packet?.Parsed.altitude > 0) {
 			setData((prev) => [
 				...prev, 
 				{

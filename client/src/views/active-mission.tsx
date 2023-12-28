@@ -42,26 +42,6 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
     const socketContext = useSocketContext();
     const activeMissionContext = useActiveMission();
 
-    const savePacket = () => {
-        console.log("save packet");
-        const mission = activeContext.activeMission; 
-        const payload: IMission = {
-            _id: mission._id,
-            Name: mission.Name,
-            Components: mission.Components,
-            Coordinates: mission.Coordinates,
-            IsTest: mission.IsTest,
-            IsActive: mission.IsActive,
-            LaunchAltitude: mission.LaunchAltitude,
-            Published: mission.Published,
-            Date: mission.Date,
-            Data: mission.Data
-        }
-        // activeContext.activeMission;
-        // payload.Data.push({Value: socketContext.aprsPacket.Data, TimeSinceLaunch: 0, FieldId: '' } as IDataPoint);
-        api.updateMission(missionId, payload);
-    };
-
     function phaseReducer(state: any, action: any) {
         switch (action.type) {
             case START_UP_KEY:

@@ -80,8 +80,6 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 			socket.on('logs', (data: any) => {
 				setLogs((prev) => [...prev, JSON.stringify(data)]);
 			});
-		} catch (error) {
-			
 		}
 
 		return () => {
