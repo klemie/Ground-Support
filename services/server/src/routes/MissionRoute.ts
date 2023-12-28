@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import controller from '../controllers/Generic';
-import MissionModel, { MissionSchema } from '../models/MissionModel';
+import MissionModel from '../models/MissionModel';
 
 const router = express.Router();
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import sys
 from utils.bigRedBeeDecoder import parse_aprs
-from utils.random_packet_generator import aprs_mock
 
 import socketio
 
