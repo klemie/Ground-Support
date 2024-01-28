@@ -33,10 +33,11 @@ const getAll = (model: Model<any>, populate?: string[]) => async (req: Request, 
 const get = (model: Model<any>, populate?: string[]) => async (req: Request, res: Response, next: NextFunction) => {
     console.log(`Getting all documents from ${model.modelName} by id`);
     const id = req.params.id;
+    const pop = [req.query.populate && req.query ? req.query.populate as string : ''];
     try {
         const result = await model
             .findOne<Document>({ _id: id })
-            .populate(populate || []);
+            .populate(pop[0] !== '' ? pop : []);
 
         if (!result) {
             console.log('Not found');
@@ -111,5 +112,6 @@ export default {
     getAll,
     get,
     update,
+    put,
     deleteOne
 };

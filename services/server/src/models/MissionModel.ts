@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 import { isValidLongitude, isValidLatitude } from "../library/CoordinateValidation";
-import { IFieldData } from "./FieldDataModel";
+import { DataPointSchema, IDataPoint } from "./DataPointModel";
 
 interface ICoordinates {
     Latitude: number;
@@ -16,7 +16,7 @@ export interface IMission {
     LaunchAltitude: number;
     Components: [Types.ObjectId];
     Published: boolean;
-    Data?: IFieldData[];
+    Data?: IDataPoint[];
 };
 
 export interface IMissionModel extends IMission, Document { };
@@ -40,7 +40,7 @@ const CoordinatesSchema: Schema = new Schema(
     }
 );
 
-const MissionSchema: Schema = new Schema(
+export const MissionSchema: Schema = new Schema(
     {
         Name: {
             type: String,
@@ -73,10 +73,7 @@ const MissionSchema: Schema = new Schema(
             default: false,
             required: true
         },
-        Data: [{
-            type: Types.ObjectId,
-            ref: 'FieldData'
-        }]
+        Data: [DataPointSchema]
     },
     {
         versionKey: false,
@@ -85,7 +82,15 @@ const MissionSchema: Schema = new Schema(
 );
 
 MissionSchema.pre('findOne', function (next) { 
-    this.populate("Components", { options: { strictPopulate: false }});
+    this.populate({
+        path: "Components",
+        // model: "Component",
+        populate: {
+            path: "DataConfigId",
+            model: "DataConfig"
+        },
+        options: { strictPopulate: false }
+    });
     next();
 });
 
