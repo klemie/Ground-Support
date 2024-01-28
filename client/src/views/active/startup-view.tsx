@@ -29,7 +29,6 @@ import { useSocketContext } from '../../utils/socket-context';
 import SensorsOffIcon from '@mui/icons-material/SensorsOff';
 import SensorsIcon from '@mui/icons-material/Sensors';
 import { IAprsTelemetryPacket } from '../../utils/TelemetryTypes';
-import { saveAprsPacket } from '../../utils/savePacket';
 import Graph from '../../components/RealTimeGraph';
 import { CoordinateGrid } from '../../components/CartesianGrid';
 
@@ -77,7 +76,7 @@ export default function StartUpView() {
 	}, []);
 
 	const savePacketToDatabase = useCallback(async (packet: IAprsTelemetryPacket) => {
-		await saveAprsPacket(activeContext.activeMission, packet, packetNumber);
+		// TODO: function that maps incoming data to fields from dataconfig
 	}, [currentPacket]);
 
 	useEffect(() => {
@@ -93,10 +92,6 @@ export default function StartUpView() {
 		} catch (error) { }
 
 	}, [currentPacket]);
-
-	useEffect(() => {
-		console.log(sc.aprsPacket.Data);
-	}, [sc.aprsPacket.Data]);
 
 	return (
 		<>
