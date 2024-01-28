@@ -93,13 +93,14 @@ export default function FlightView() {
 									</Grid>
 								)})
 							)}
-							{!component.DataConfigId && (
+							{/* {!component.DataConfigId && (
 									<TelemetryLog 
-										value={context.logs.toString()}
+										telemetryConnected
+										value={context.logs}
 										width='100%' 
 										maxRows={15}
 									/>
-							)}
+							)} */}
 						</Grid>	
 					);
 				})}

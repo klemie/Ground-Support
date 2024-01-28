@@ -16,7 +16,7 @@ def generate_random_coordinate():
     return (32.97175827941012, -106.965486509431)
 
 
-def direwolf_mock():
+def aprs_mock():
     """
     Returns
     -------

@@ -1,9 +1,7 @@
 import { DocumentationProps } from "../components/ComponentDocumentation";
 import Header from "../components/Header";
-import RealTimeChart from "../components/Graph";
 
 const header = <Header breadCrumbs={[{ name: "breadCrumb", path: "/", active: false }]}/>;
-const graph = <RealTimeChart />;
 
 const codeBlocks = [
 `import { Breadcrumb } from "../components/Header"; 

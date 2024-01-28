@@ -21,26 +21,34 @@ import {
 } from '@mui/material';
 
 // Utils
-import { IComponent, IDataConfig, IMission, IModule, IRocketPopulated } from '../../utils/entities';
+import { IComponent, IDataConfig, IModule } from '../../utils/entities';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
 import api from '../../services/api';
 import ModuleStatus from '../../components/ModuleNew';
 import { useSocketContext } from '../../utils/socket-context';
 import SensorsOffIcon from '@mui/icons-material/SensorsOff';
 import SensorsIcon from '@mui/icons-material/Sensors';
+import { IAprsTelemetryPacket } from '../../utils/TelemetryTypes';
+import Graph from '../../components/RealTimeGraph';
+import { CoordinateGrid } from '../../components/CartesianGrid';
 
-interface StartUpViewProps {
-	rocket: IRocketPopulated;
-	mission?: IMission;
-}
-
-
-export default function StartUpView(props: StartUpViewProps) {
+export default function StartUpView() {
 	const [component, setComponent] = useState<IComponent>();
 	const [connected, setConnected] = useState<boolean>(false);
+	const [packetNumber, setPacketNumber] = useState<number>(1);
+	const [currentPacket, setCurrentPacket] = useState<IAprsTelemetryPacket>({
+		Raw: [''],
+		Parsed: {
+			timeStampLocal: '0-0-0',
+			timeStampUnix: '0.0',
+			latitude: 0,
+			longitude: 0,
+			altitude: 0,
+			lock: false,
+		}
+	});
 
 	const sc = useSocketContext();
-
 	const activeContext = useActiveMission();
 
 	const breadCrumbs: Breadcrumb[] = [
@@ -49,7 +57,6 @@ export default function StartUpView(props: StartUpViewProps) {
 	];
 
 	const [dataConfig, setDataConfig] = useState<IDataConfig>();
-	const [log, setLog] = useState<string[]>(['Not Data']);
 	const getDataConfig = useCallback(async () => {
 		try {
 			if (component?.DataConfigId === undefined) return console.log('No Data Config Id');
@@ -63,13 +70,29 @@ export default function StartUpView(props: StartUpViewProps) {
 
 
 	useEffect(() => {
+		console.log('active rocket:', activeContext.rocket);
+		console.log('active mission:', activeContext.activeMission);
 		getDataConfig();
-	}, [getDataConfig]);
+	}, []);
+
+	const savePacketToDatabase = useCallback(async (packet: IAprsTelemetryPacket) => {
+		// TODO: function that maps incoming data to fields from dataconfig
+	}, [currentPacket]);
 
 	useEffect(() => {
 		if (sc.aprsPacket.Data === undefined) return 
-		setLog(prev => [...prev, JSON.stringify(sc.aprsPacket.Data) as string || '']);
-	}, [sc.aprsPacket.Data]);
+		activeContext.updateLogs(sc.aprsPacket.Data as IAprsTelemetryPacket);
+		setCurrentPacket(sc.aprsPacket.Data as IAprsTelemetryPacket);
+	}, [sc.aprsPacket.Data, activeContext]);
+
+	useEffect(() => {
+		setPacketNumber(packetNumber + 1);
+		try {
+			savePacketToDatabase(currentPacket)
+		} catch (error) { }
+
+	}, [currentPacket]);
+
 	return (
 		<>
 			<Grid container direction="column" paddingX="2rem" paddingY="2rem" gap={3}>
@@ -142,22 +165,32 @@ export default function StartUpView(props: StartUpViewProps) {
                     </Paper>
 				</Grid>
 				<Grid container direction={'row'} gap={3}>
-					<Grid item width={component?.Name === 'Big Red Bee' ? '100%' : '50%'}>
-						<TelemetryLog 
-							value={log.toString()}
+					<Grid item width={component?.Name === 'Big Red Bee' ? '50%' : '100%'}>
+						<TelemetryLog
+							packet={currentPacket}
+							telemetryConnected={connected}
 							width='100%' 
 							maxRows={15}
 						/>
 					</Grid>
-					{component?.Name === 'Flight Computer' && 
-						dataConfig && dataConfig.Modules.map((module: IModule) => {
-							return (
-								<Grid item>
-									<ModuleStatus module={module} statusOnly />
-								</Grid>
-							)}
-						)
+					{component?.Name === 'Big Red Bee' &&
+						<Grid item direction={'column'} width={'46%'} gap={3} height={"60vh"}>
+							{/* <Grid> */}
+								<CoordinateGrid 
+									packet={currentPacket}
+								/>
+							{/* </Grid>
+							<Grid> */}
+								<Graph 
+									dataKeys={['Altitude']}
+									packet={currentPacket}
+									staticData={[]}
+									realTime
+								/>
+							{/* </Grid> */}
+						</Grid>
 					}
+					
 				</Grid>
 			</Grid>
 		</>

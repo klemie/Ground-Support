@@ -1,0 +1,29 @@
+
+{
+    "Modules": [
+        {
+            "Name": "Big Red Bee",
+            "FieldGroups": [
+                {
+                    "Name": "Altitude",
+                    "Fields": [
+                        { "Name": "Altitude", "Range": [0 , 18000], "Units": "m", "TelemetryId": "0000" }
+                    ]
+                },
+                {
+                    "Name": "Coordinates",
+                    "Fields": [
+                        { "Name": "Longitude", "Range": [-180 , -180], "Units": "DMS", "TelemetryId": "0000" },
+                        { "Name": "Latitude", "Range": [-90 , 90], "Units": "DMS", "TelemetryId": "0000" }
+                    ]
+                },
+                {
+                    "Name": "Call Sign",
+                    "Fields": [
+                        { "Name": "Call Sign", "Range": [0 , 0], "Units": "N/A", "TelemetryId": "0000" }
+                    ]
+                }
+            ]
+        }
+    ]
+}
