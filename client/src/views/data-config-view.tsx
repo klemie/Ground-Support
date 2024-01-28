@@ -25,7 +25,7 @@ import Header, { Breadcrumb } from '../components/Header';
 import { IDataConfig } from '../utils/entities';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import api from '../services/api';
-import ModuleEditor from '../components/ModuleEditor';
+import ModuleEditor from '../components/dataConfigEditor/ModuleEditor';
 import lodash from 'lodash';
 
 interface Props {

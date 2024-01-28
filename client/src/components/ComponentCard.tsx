@@ -7,7 +7,7 @@ import PlusIcon from '@mui/icons-material/Add'
 import { Delete } from '@mui/icons-material';
 
 import ComponentModal from './modals/ComponentModal';
-import ModuleEditor from './ModuleEditor'
+import ModuleEditor from './dataConfigEditor/ModuleEditor'
 
 interface ComponentCardProps {
     componentId: string;

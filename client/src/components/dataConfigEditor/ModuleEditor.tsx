@@ -1,8 +1,8 @@
 import React from "react";
-import api from "../services/api";
+import api from "../../services/api";
 import lodash from "lodash";
 import { useEffect, useState } from "react";
-import { IDataConfig, IField, IFieldGroup, IModule } from "../utils/entities";
+import { IDataConfig, IField, IFieldGroup, IModule } from "../../utils/entities";
 
 import { Box, Button, Dialog, DialogContent, DialogTitle, IconButton, Stack, Tab, Tabs, TextField, Tooltip, Typography } from "@mui/material";
 import PlusIcon from '@mui/icons-material/Add'
