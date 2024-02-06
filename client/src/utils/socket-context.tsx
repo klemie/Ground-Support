@@ -48,11 +48,11 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 	const [packetFrequency, setPacketFrequency] = useState<number>(3);
 	const [protocol, setProtocol] = useState<string>('APRS');
 
-	const port = 9193;
+	const port = import.meta.env.TELEMETRY_SERVER_PORT ? import.meta.env.TELEMETRY_SERVER_PORT : 9193;
 	const ws = new WebSocket(`ws://localhost:${port}`);
 
 	const enableLiveMode = () => {
-		ws.send(JSON.stringify({ type: 'establish_stream', frequency: 2 }));
+		ws.send(JSON.stringify({ type: 'establish_stream', frequency: packetFrequency }));
 	};
 
 	const changePacketFrequency = (frequency: number) => {
