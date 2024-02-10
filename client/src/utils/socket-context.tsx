@@ -1,13 +1,4 @@
-import { 
-	createContext, 
-	PropsWithChildren, 
-	useContext, 
-	useEffect, 
-	useState, 
-	useReducer 
-} from 'react';
-import { io } from 'socket.io-client';
-import { socket } from './socket-config';
+import { createContext, PropsWithChildren, useContext, useEffect, useState, useReducer } from 'react';
 
 interface IPacket {
 	Data: {};
@@ -18,29 +9,29 @@ export interface SocketContext {
 	logs: string[];
 	aprsPacket: IPacket;
 	loRaPacket: IPacket;
-	setAprsFrequency: (frequency: number) => void;
-	setLoRaFrequency: (frequency: number) => void;
+	setPacketFrequency: (frequency: number) => void;
+	setProtocol: (protocol: string) => void;
 }
 
 export const Context = createContext<SocketContext>({
 	logs: [],
 	aprsPacket: {} as IPacket,
 	loRaPacket: {} as IPacket,
-	setAprsFrequency: (frequency: number) => {},
-	setLoRaFrequency: (frequency: number) => {}
+	setPacketFrequency: (frequency: number) => {},
+	setProtocol: (protocol: string) => {}
 });
 
-function aprsReducer(state: IPacket, action: {type: string, payload: any}) {
+function aprsReducer(state: IPacket, action: { type: string; payload: any }) {
 	switch (action.type) {
 		case 'SET_PACKET':
-			return  action.payload;
+			return action.payload;
 
 		default:
 			throw new Error(`Unhandled action type: ${action.type}`);
 	}
 }
 
-function loraReducer(state: IPacket, action: {type: string, payload: any}) {
+function loraReducer(state: IPacket, action: { type: string; payload: any }) {
 	switch (action.type) {
 		case 'SET_PACKET':
 			return action.payload;
@@ -54,43 +45,45 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 	const [logs, setLogs] = useState<string[]>([]);
 	const [aprsPacket, aprsDispatch] = useReducer(aprsReducer, {} as IPacket);
 	const [loRaPacket, loraDispatch] = useReducer(loraReducer, {} as IPacket);
-	const socket = io('http://localhost:8086/toClient');
+	const [packetFrequency, setPacketFrequency] = useState<number>(3);
+	const [protocol, setProtocol] = useState<string>('APRS');
 
-	const setAprsFrequency = (frequency: number) => {
-		// socket.emit('set_aprs_frequency', { frequency });
+	const port = import.meta.env.TELEMETRY_SERVER_PORT ? import.meta.env.TELEMETRY_SERVER_PORT : 9193;
+	const ws = new WebSocket(`ws://localhost:${port}`);
+
+	const enableLiveMode = () => {
+		ws.send(JSON.stringify({ type: 'establish_stream', frequency: packetFrequency }));
 	};
 
-	const setLoRaFrequency = (frequency: number) => {
-		// socket.emit('set_loRa_frequency', { frequency });
+	const changePacketFrequency = (frequency: number) => {
+		ws.send(JSON.stringify({ type: 'change_frequency', frequency: frequency }));
+	};
+
+	const changeProtocol = (protocol: string) => {
+		ws.send(JSON.stringify({ type: 'change_protocol', protocol: protocol }));
 	};
 
 	useEffect(() => {
-		try {
-			socket.on('loRa_packet', (packet: IPacket) => {
-				const p = packet as IPacket;
-				loraDispatch({ type: 'SET_PACKET', payload: p});
-			});
-	
-			socket.on('aprs_packet', (packet: IPacket) => {
-				const p = packet as IPacket;
-				console.log('APRS PACKET:', p);
-				aprsDispatch({ type: 'SET_PACKET', payload: p});
-			});
-	
-			socket.on('logs', (data: any) => {
-				setLogs((prev) => [...prev, JSON.stringify(data)]);
-			});
-		} catch {
-			console.log('Error connecting to socket');
+		if (ws.readyState === ws.OPEN) {
+			changePacketFrequency(packetFrequency);
 		}
-		return () => {
-			socket.disconnect();
-		};
-	}, []);
+	}, [packetFrequency]);
 
 	useEffect(() => {
-		console.log('APRS:', aprsPacket);
-	}, [aprsPacket]);
+		if (ws.readyState === ws.OPEN) {
+			changeProtocol(protocol);
+		}
+	}, [protocol]);
+
+	ws.addEventListener('open', () => {
+		console.log('Socket Connected');
+		enableLiveMode();
+	});
+
+	ws.addEventListener('message', (message) => {
+		const data = JSON.parse(message.data);
+		console.log(data);
+	});
 
 	return (
 		<Context.Provider
@@ -98,8 +91,8 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 				logs,
 				aprsPacket,
 				loRaPacket,
-				setAprsFrequency,
-				setLoRaFrequency
+				setPacketFrequency,
+				setProtocol
 			}}
 		>
 			{children}
