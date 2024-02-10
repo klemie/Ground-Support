@@ -371,6 +371,35 @@ async function updateMission(id: string, payload: IMission): Promise<IApiRespons
 
 /**
  * @param id Id of a mission
+ * @param payload The mission to update type IMissionPopulation
+ * @returns The updated mission
+ */
+async function upsertMissionData(id: string, payload: {}): Promise<IApiResponse> {
+    let response: AxiosResponse;
+    let data: IApiResponse = {
+        data: {} as IMission,
+        error: {} as IError
+    } as IApiResponse;
+    
+    try {
+        response = await api.put(`/mission/data/${id}`, payload);
+        data = {
+            data: response.data.result 
+                ? response.data.result 
+                : response.data.results as IMission,
+            error: handleError(response)
+        };
+    } catch(e) {
+        const err = e as AxiosError;
+        data.error.error = true;
+        data.error.message = `Error updating the mission with the id ${id}. Full error:\n${err.message}`;
+    }
+
+    return data;
+}
+
+/**
+ * @param id Id of a mission
  * @returns The deleted mission
  */
 async function deleteMission(id: string): Promise<IApiResponse> {
@@ -768,6 +797,7 @@ export default {
     getMission,
     createMission,
     updateMission,
+    upsertMissionData,
     deleteMission,
     getComponents,
     getComponent,

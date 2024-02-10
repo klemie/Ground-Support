@@ -1,9 +1,9 @@
 import { IModule, IField } from "./entities";
-import { IFieldData } from "./entities";
+import { IDataPoint } from "./entities";
 
 interface IDataConstructor {
     module: IModule;
-    data?: IFieldData;
+    data?: IDataPoint;
 }
 
 interface ITableCol {
@@ -17,7 +17,7 @@ interface ITableCol {
 
 class DataConstructor implements IDataConstructor {
     module: IModule;
-    data?: IFieldData | any | undefined;
+    data?: IDataPoint | any | undefined;
     private fieldNames?: string[][]
 
     constructor(module: IModule) {
@@ -156,7 +156,7 @@ class DataConstructor implements IDataConstructor {
         return cols;
     }
 
-    _tableData(data: any) {;
+    _tableData(data: any) {
         return data;
     }
 

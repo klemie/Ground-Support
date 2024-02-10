@@ -4,21 +4,29 @@ import { useEffect, useState, useCallback } from 'react';
 import {
     Button,
     Grid,
+    IconButton,
     Stack,
     TableCell,
-    TableRow
+    TableRow,
+    Tooltip
 } from '@mui/material';
 import MUIDataTable, {
     ExpandButton,
     MUIDataTableExpandButton,
     MUIDataTableOptions
 } from "mui-datatables";
+
+import EditIcon   from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import Header, { Breadcrumb } from '../components/Header';
 
 // Utils
 import { IDataConfig } from '../utils/entities';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import api from '../services/api';
+import ModuleEditor from '../components/dataConfigEditor/ModuleEditor';
+import lodash from 'lodash';
 
 interface Props {
     DataConfigID: string;
@@ -33,7 +41,9 @@ export default function DataConfigView(props: Props) {
         { name: 'Data Configuration', path: '/', active: true }
     ];
 
-    const[dataConfig, setDataConfig] = useState<IDataConfig>({Modules: []} as IDataConfig);
+    const [dataConfig, setDataConfig] = useState<IDataConfig>({Modules: []} as IDataConfig);
+    const [moduleEditorOpen, setModuleEditorOpen] = useState<boolean>(false)
+    const [openModuleIndex, setOpenModuleIndex] = useState<number>(0)
 
     const getDataConfig = useCallback(async () => {
         const dataConfigResponse = await api.getDataConfig(DataConfigID);
@@ -46,14 +56,95 @@ export default function DataConfigView(props: Props) {
             options: { filter: false, },
         },
         {
-            name: 'Number Of Fields',
+            name: 'Field Groups',
             options: { filter: false, },
         },
+        {
+            name: '',
+            options: { filter: false, },
+        }
     ];
 
-    const data = dataConfig.Modules.map((module) => {
+    interface IEditButtonsProps {
+        dataConfig:IDataConfig,
+        moduleIndex: number
+    }
+
+    const EditButtons = (props:IEditButtonsProps) => {
+
+        const {dataConfig, moduleIndex} = props;
+
+        const saveDeletion = async(payload:IDataConfig):Promise<boolean> => {
+            const dataConfigID = dataConfig._id as string
+
+            let response:any;
+            try {
+                response = await api.updateDataConfig(dataConfigID, payload)
+                console.log(response.error)
+                if (response.error) {
+                    throw Error(response.status)
+                }
+            } catch (error) {
+                console.error(error)
+                return false;
+            } finally {
+                return true;
+            }
+        };
+
+        const handleEditModule = () => {
+            setOpenModuleIndex(moduleIndex);
+            setModuleEditorOpen(true);
+        }
+
+        const handleClose = async() => {
+            setModuleEditorOpen(false);
+
+            // Force refresh so the user can see changes
+            await getDataConfig();
+        }
+
+        const handleDeleteModule = async() => {
+            let dataConfigRet:IDataConfig = lodash.cloneDeep(dataConfig)
+            dataConfigRet.Modules.splice(moduleIndex, 1);
+            
+            let success:boolean;
+            try{
+                success = await saveDeletion(dataConfigRet)
+                if(!success) {
+                    throw Error
+                }
+            } catch (error) {
+                console.error(error)
+            } finally {
+                setDataConfig(dataConfigRet)
+            }
+        }
+
+        return(
+            <>
+                <Stack direction={"row"}>
+                    <Tooltip title="Edit Module">
+                        <IconButton aria-label="edit module" onClick={handleEditModule}><EditIcon/></IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete Module">
+                        <IconButton aria-label="delete module" onClick={handleDeleteModule}><DeleteIcon/></IconButton>
+                    </Tooltip>
+                </Stack>
+                {/* This is admittedly silly looking but is the easiest way I could think of for avoiding tons of api calls 
+                    Without this short-circuit eval the editor calls the api for each module, which gets out of control 
+                    quickly if we have multiple modules - also speeds up editor load time
+                */}
+                {moduleEditorOpen === true && openModuleIndex === moduleIndex && (
+                    <ModuleEditor dataConfigID={dataConfig._id || ""} index={openModuleIndex} mode="Edit" isOpen={moduleEditorOpen} onClose={handleClose}/>
+                )}
+            </>
+        )
+    }
+
+    const data = dataConfig.Modules.map((module, index) => {
         return [
-            module.Name, module.FieldGroups.length
+            module.Name, module.FieldGroups.length, <EditButtons dataConfig={dataConfig} moduleIndex={index}/>
         ]
     });
 
