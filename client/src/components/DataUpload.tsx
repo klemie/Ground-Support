@@ -11,8 +11,7 @@ interface IDataUploadProps {
     onClose: () => void;
 }
 
-
-const MissionConfig: React.FC<IDataUploadProps> = (props: IDataUploadProps) => {
+const DataUpload: React.FC<IDataUploadProps> = (props: IDataUploadProps) => {
     const { isOpen, onClose } = props;
     const [files, setFiles] = useState<File[]>([]);
     
@@ -70,4 +69,4 @@ const MissionConfig: React.FC<IDataUploadProps> = (props: IDataUploadProps) => {
     );
 }
 
-export default MissionConfig;
+export default DataUpload;
