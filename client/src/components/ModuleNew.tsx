@@ -32,8 +32,6 @@ const statusReducer = (
     }
 }
 
-
-
 /**
  * @param module IModule object
  * @param dataPoints incoming data points for the module in the order of the fields
@@ -95,7 +93,6 @@ const ModuleStatus: React.FC<ModuleProps> = (props: ModuleProps) => {
         >(statusReducer, StatusTypes.InActive);
     useEffect(() => {
         const st = processStatus(module, data);
-
         statusDispatch({ type: st.status });
     }, []);
 

@@ -5,7 +5,6 @@ import addRocket from '../static/images/AddRocket.svg';
 
 import '../styles/rocketSelection.css';
 import RocketProfilePopup from '../components/RocketProfilePopup';
-import { SocketGateway } from '../utils/socket-context';
 import api from '../services/api';
 import { IRocketPopulated } from '../utils/entities';
 
@@ -41,7 +40,7 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 			const rockets: Rocket[] = data.map((rocket: any) => {
 				return {
 					id: rocket._id,
-					image: 'Xenia1.svg',
+					image: 'Xenia2.svg',
 					name: rocket.Name,
 					active: true
 				} as Rocket;
@@ -62,12 +61,16 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 		setIsOpen(true);
 	};
 
+	const getRocketImageURL = (data: Rocket) => {
+		return new URL(`../static/images/${data.image}`, import.meta.url).href;
+	}
+
 	const rockets = rocketData.map((data: Rocket) => {
-		const rocketImageURL = require(`../static/images/${data.image}`);
+		const rocketImageURL = getRocketImageURL(data);
 		return (
 			<div key={data.id.toString()}>
 				<Stack direction="column" spacing={1} onClick={data.active ? () => setRocket(data) : () => {}}>
-					<img src={rocketImageURL} alt="Rocket" width={40}></img>
+					<img src={rocketImageURL} alt="Rocket" width={60}></img>
 					<Chip label={data.name} color={data.active ? 'primary' : 'default'} sx={{ fontWeight: 'bold' }} />
 				</Stack>
 			</div>

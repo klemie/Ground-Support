@@ -64,8 +64,9 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
         filter: true,
         responsive: 'standard',
         onRowClick: (rowData: any[], rowMeta: { dataIndex: number, rowIndex: number }) => {
-            activeMissionContext.activeMissionDispatch({type: 'SET_MISSION', payload: rocket.Missions[rowMeta.dataIndex]});
-            activeMissionContext.rocketDispatch({type: 'SET_ROCKET', payload: rocket});
+            activeMissionContext.updateMission(rocket.Missions[rowMeta.dataIndex]);
+            activeMissionContext.updateRocket(rocket);
+            console.log(activeMissionContext.activeMission);
             onMissionClick(missions[rowMeta.dataIndex]);
         }
     };

@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  client:
+    container_name: react-client
+    environment:
+      - WDS_SOCKET_HOST=127.0.0.1 
+      - CHOKIDAR_USEPOLLING=${USE_POLLING}
+      - WATCHPACK_POLLING=${USE_POLLING}
+    build:
+      context: ./client
+      target: dev
+    volumes:
+      - ./client/src:/app/src
+    ports:
+      - 3000:3000
+    depends_on:
+      - server
+
+  server:
+    container_name: express-server
+    environment:
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB_STRING=${MONGO_DB_STRING}
+      - MONGO_LOCAL=${MONGO_LOCAL}
+      - SERVER_PORT=${SERVER_PORT}
+      - WDS_SOCKET_HOST=127.0.0.1 
+      - CHOKIDAR_USEPOLLING=${USE_POLLING}
+      - WATCHPACK_POLLING=${USE_POLLING}
+    build:
+      context: ./services/server
+      target: dev
+    volumes:
+      - ./services/server/src:/app/src
+    ports:
+      - 9090:9090
+    depends_on:
+      - db
+
+  db:
+    container_name: mongo-db
+    image: mongo
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    volumes:
+      - db-data:/data/db
+
+  db-interface:
+    container_name: mongo-db-interface
+    image: mongo-express
+    profiles:
+      - dev-tools
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_BASICAUTH_USERNAME=
+      - ME_CONFIG_MONGODB_URL=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@db:27017/
+
+volumes:
+  db-data:

@@ -10,7 +10,7 @@ router.get('/:id', controller.get(DataConfigModel));
 
 router.post('/', controller.create(DataConfigModel));
 
-router.patch(':/id', controller.update(DataConfigModel));
+router.patch('/:id', controller.update(DataConfigModel));
 
 router.delete('/:id', controller.deleteOne(DataConfigModel));
 

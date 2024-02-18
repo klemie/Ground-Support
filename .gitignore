@@ -6,3 +6,4 @@ client/package.json
 services/server-service/src/index.js
 .DS_STORE
 .pyc*
+/telemetry/src/telemetry/src/utils/__pycache__

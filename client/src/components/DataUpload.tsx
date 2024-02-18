@@ -11,7 +11,6 @@ interface IDataUploadProps {
     onClose: () => void;
 }
 
-
 const DataUpload: React.FC<IDataUploadProps> = (props: IDataUploadProps) => {
     const { isOpen, onClose } = props;
     const [files, setFiles] = useState<File[]>([]);
