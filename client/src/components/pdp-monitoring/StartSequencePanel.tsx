@@ -1,4 +1,4 @@
-import { Button, Fab, FormControl, FormControlLabel, FormGroup, Paper, Stack, Switch, Typography } from '@mui/material';
+import { Button, ButtonGroup, FormControl, FormControlLabel, FormGroup, Paper, Stack, Switch, Typography } from '@mui/material';
 import React, { useEffect, useState, useReducer } from 'react';
 import { sequenceReducer, updateSequence } from './sequenceReducer';
 
@@ -11,13 +11,15 @@ interface IProps {
 
 const StartSequencePanel: React.FC<IProps> = (props: IProps) => {
     // state
-    const [receivedFeedback, setReceivedFeedback] = useState(true);
+    const [keyIn, setKeyIn] = useState(true);
     const [sequence, dispatch] = useReducer(sequenceReducer, { state: 'key' });
+    const [overRide, setOverRide] = useState(false);
     // effects
     useEffect(() => {
-
-
-    }, []);
+        if (sequence.state === "key") {
+            updateSequence(sequence, dispatch);
+        }
+    }, [sequence.state]);
 
     // render
     return (
@@ -28,30 +30,40 @@ const StartSequencePanel: React.FC<IProps> = (props: IProps) => {
             >
                 <FormControl component="fieldset">
                     <FormGroup row sx={{ justifyContent:"center" }}>
-                        <Fab 
-                            variant="extended" 
-                            color="success" 
-                            disabled={!receivedFeedback && sequence.state === "key"}
-                            onClick={() =>  sequence.state === "key" ? updateSequence(sequence, dispatch) : null}
-                        >
-                            <KeyIcon color={'inherit'} />
-                        </Fab>
+                        <ButtonGroup variant="contained" color="primary" aria-label="key-button-group" orientation='vertical'>
+                            <Button 
+                                variant='contained' 
+                                startIcon={<KeyIcon />} 
+                                disabled={!keyIn} 
+                                color="primary"
+                                aria-readonly={true}
+                            >
+                                KEY
+                            </Button>
+                            <Button 
+                                color={overRide ? "primary" : "grey"}
+                                variant='contained' 
+                                onClick={() => setOverRide(!overRide)}
+                            >
+                                    OVERRIDE
+                            </Button>
+                        </ButtonGroup>
                         <FormControlLabel 
                             sx={{ width: "fit-content" }} 
-                            control={<Switch disabled={!(sequence.state === "prime")} onChange={() => sequence.state === "prime" ? updateSequence(sequence, dispatch) : null} />} 
+                            control={<Switch disabled={!(sequence.state === "prime") && !overRide} onChange={() => sequence.state === "prime" ? updateSequence(sequence, dispatch) : null} />} 
                             label="Prime" 
                             labelPlacement='bottom' 
                         />
                         <Button 
                             variant="contained" 
-                            disabled={!(sequence.state === "ignite")}
+                            disabled={!overRide  &&  !(sequence.state === "ignite")}
                             onClick={() => sequence.state === "ignite" ? updateSequence(sequence, dispatch) : null}
                         >
                             Ignite
                         </Button>
                         <FormControlLabel 
                             sx={{ width: "fit-content" }} 
-                            control={<Switch disabled={!(sequence.state === "mev")} />} 
+                            control={<Switch disabled={!overRide &&  !(sequence.state === "mev")} />} 
                             label="MEV" 
                             labelPlacement='bottom' 
                             onChange={() => sequence.state === "mev" ? updateSequence(sequence, dispatch) : null}
