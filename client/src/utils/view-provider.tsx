@@ -7,6 +7,8 @@ import ComponentDocs from '../views/component-docs-view';
 import RocketDetailsView from '../views/rocket-details-view';
 import DataConfigView from '../views/data-config-view';
 import ActiveMissionView from '../views/active-mission';
+import EngineMonitoringView from '../views/pdp-monitoring/engine-monitoring-view';
+
 import { ActiveMissionProvider } from './ActiveMissionContext';
 import { SocketGateway } from './socket-context';
 
@@ -20,6 +22,9 @@ const DATA_CONFIG_KEY = 'DATA_CONFIG';
 
 // Active Flight
 const ACTIVE_FLIGHT_KEY = 'ACTIVE_FLIGHT';
+
+// PDP Monitoring
+const PDP_MONITORING_KEY = 'PDP_MONITORING';
 
 interface ViewProviderProps {
     currentView?: () => void
@@ -57,6 +62,10 @@ export default function ViewProvider(props: ViewProviderProps) {
 
 	const handleToRocketDetails = (): any => {
 		viewDispatch({ type: ROCKET_DETAILS_KEY });
+	};
+
+	const handleToPDPMonitoring = () => {
+		viewDispatch({ type: PDP_MONITORING_KEY });
 	};
 
 	function viewReducer(state: any, action: any) {
@@ -103,16 +112,22 @@ export default function ViewProvider(props: ViewProviderProps) {
 						/>
 					</SocketGateway>
 				}
+			case PDP_MONITORING_KEY:
+				return {
+					view: PDP_MONITORING_KEY,
+					currentView: <EngineMonitoringView 
+						backToRocketSelection={handleToRocketSelect}
+					/>
+				}
 			default:
 				throw Error(`Unknown action type: ${action.type}`);
 		}
 	}
 
 	const [viewState, viewDispatch] = useReducer(viewReducer, {
-		view: ROCKET_SELECT_KEY,
-		currentView: <RocketSelectionView 
-			setCurrentView={handleToRocketDetails} 
-			setRocketID={updateRocketID}
+		view: PDP_MONITORING_KEY,
+		currentView: <EngineMonitoringView 
+			backToRocketSelection={handleToRocketSelect}
 		/>
 	});
 
