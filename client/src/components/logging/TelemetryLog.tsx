@@ -5,8 +5,8 @@ import { Download } from "@mui/icons-material";
 import GpsOffIcon from '@mui/icons-material/GpsOff';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimerIcon from '@mui/icons-material/Timer';
-import { IAprsTelemetryPacket, formatPacket } from "../utils/TelemetryTypes";
-import { useActiveMission } from "../utils/ActiveMissionContext";
+import { IAprsTelemetryPacket, formatPacket } from "../../utils/TelemetryTypes";
+import { useActiveMission } from "../../utils/ActiveMissionContext";
 import { saveAs } from "file-saver";
 
 interface TelemetryLogProps {

@@ -11,12 +11,12 @@ interface IProps {
 
 const StartSequencePanel: React.FC<IProps> = (props: IProps) => {
     // state
-    const [keyIn, setKeyIn] = useState(true);
+    const [keyIn, setKeyIn] = useState(false);
     const [sequence, dispatch] = useReducer(sequenceReducer, { state: 'key' });
     const [overRide, setOverRide] = useState(false);
     // effects
     useEffect(() => {
-        if (sequence.state === "key") {
+        if (sequence.state === "key" && keyIn) {
             updateSequence(sequence, dispatch);
         }
     }, [sequence.state]);
@@ -41,7 +41,7 @@ const StartSequencePanel: React.FC<IProps> = (props: IProps) => {
                                 KEY
                             </Button>
                             <Button 
-                                color={overRide ? "primary" : "grey"}
+                                color={overRide ? "primary" : "grey" }
                                 variant='contained' 
                                 onClick={() => setOverRide(!overRide)}
                             >
@@ -74,6 +74,7 @@ const StartSequencePanel: React.FC<IProps> = (props: IProps) => {
             <Button 
                 variant='contained'
                 color='error'
+                sx={{ width: 250 }}
             >
                 ABORT
             </Button>

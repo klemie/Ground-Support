@@ -3,7 +3,7 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
 // Components UI
 import Header, { Breadcrumb } from '../../components/Header';
-import TelemetryLog from '../../components/TelemetryLog';
+import TelemetryLog from '../../components/logging/TelemetryLog';
 import { 
 	Grid, 
 	Paper, 

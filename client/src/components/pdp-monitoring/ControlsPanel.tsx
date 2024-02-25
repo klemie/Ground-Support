@@ -51,21 +51,20 @@ const ControlsPanel: React.FC<IProps> = (props: IProps) => {
             elevation={2}
             sx={{ padding: 2, width: "fit-content" }}
         >
-            {/* <Typography variant="h6" gutterBottom>Controls</Typography> */}
             <FormControl component="fieldset">
-                <FormGroup row>
+                <Stack direction={'row'}>
                     <ValveControl valveName='N2O Flow' />
                     <ValveControl valveName='N2O Vent' />
-                </FormGroup>
-                <FormGroup row>
+                </Stack>
+                <Stack direction={'row'}>
                     <ValveControl valveName='N2 Flow' />
                     <ValveControl valveName='N2 Vent' />
-                </FormGroup>
-                <FormGroup row>
+                </Stack>
+                <Stack direction={'row'}>
                     <ValveControl valveName='RTV' />
                     <ValveControl valveName='NCV' />
-                </FormGroup>
-                <FormGroup row>
+                </Stack>
+                <FormGroup >
                     <ValveControl valveName='EVV' />
                 </FormGroup>
                 <FormControlLabel 

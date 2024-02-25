@@ -2,20 +2,26 @@ import React, { useEffect, useState, useReducer, useCallback } from "react";
 
 // Utils
 import { useActiveMission } from "../../utils/ActiveMissionContext";
-import { IDataPoint, IMission, IMissionPopulated, IRocketPopulated } from "../../utils/entities";
 import api from "../../services/api";
 
 // Icons
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import WifiTetheringIcon from '@mui/icons-material/WifiTethering';
+import BuildIcon from '@mui/icons-material/Build';
 
 // Panels
 import ControlsPanel from "../../components/pdp-monitoring/ControlsPanel";
 
 // Components UI
-import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material";
+import { Box, Button, Grid, Paper, Stack, Typography, Tooltip } from "@mui/material";
+
 import Header, { Breadcrumb } from "../../components/Header";
 import StartSequencePanel from "../../components/pdp-monitoring/StartSequencePanel";
+import TelemetryLog from "../../components/logging/TelemetryLog";
+import InstrumentationPanel from "../../components/pdp-monitoring/InstrumentationPanel";
+
+import { IAprsTelemetryPacket } from "../../utils/TelemetryTypes";
+import { InsertInvitation } from "@mui/icons-material";
 
 interface ViewProviderProps {
     rocketId?: string;
@@ -42,6 +48,18 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
 		{ name: 'PDP Monitoring', path: '/', active: true }
 	];
     
+    const [currentPacket, setCurrentPacket] = useState<IAprsTelemetryPacket>({
+		Raw: [''],
+		Parsed: {
+			timeStampLocal: '0-0-0',
+			timeStampUnix: '0.0',
+			latitude: 0,
+			longitude: 0,
+			altitude: 0,
+			lock: false,
+		}
+	});
+    
     return (
         <Box sx={{ width: '100vw', height: '100vh' }}>
             <Stack
@@ -65,22 +83,33 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                                     PDP Monitoring System
                                 </Typography>
                             </Stack>
-                            <Button 
-                                variant="contained" 
-                                size={'large'} 
-                                startIcon={<WifiTetheringIcon/>} 
-                            >
-                                Connect
-                            </Button>
+                            <Stack direction="row" spacing={2}>
+                                <Tooltip title="PDP Configuration" placement="top" arrow followCursor>
+                                    <Button variant={'contained'}>
+                                        <BuildIcon />
+                                    </Button>
+                                </Tooltip>
+                                <Button 
+                                    variant="contained" 
+                                    size={'large'} 
+                                    startIcon={<WifiTetheringIcon/>} 
+                                >
+                                    Connect
+                                </Button>
+                            </Stack>
                         </Stack>
                     </Paper>
                 </Grid>
                 <Grid item>
-                    <ControlsPanel />
+                    <Stack direction="row" spacing={2}>
+                        <ControlsPanel />
+                        <TelemetryLog width={'auto'} maxRows={10} packet={currentPacket} telemetryConnected={true} />
+                        <InstrumentationPanel />
+                    </Stack>
                 </Grid>
                 <Grid item>
                     <StartSequencePanel />
-                </Grid>
+                </Grid>   
             </Stack>
             <div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
                 {colors.map((color) => {
