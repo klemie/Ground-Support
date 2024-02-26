@@ -22,6 +22,7 @@ import InstrumentationPanel from "../../components/pdp-monitoring/Instrumentatio
 
 import { IAprsTelemetryPacket } from "../../utils/TelemetryTypes";
 import { InsertInvitation } from "@mui/icons-material";
+import { useMonitoringSocketContext } from "../../utils/monitoring-system/monitoring-socket-context";
 
 interface ViewProviderProps {
     rocketId?: string;
@@ -42,6 +43,7 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
 
     // Context initial State
     const activeContext = useActiveMission();
+    const socketContext = useMonitoringSocketContext();
 
 	const breadCrumbs: Breadcrumb[] = [
 		{ name: 'Rocket Selection', path: '/', active: false },
@@ -93,6 +95,7 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                                     variant="contained" 
                                     size={'large'} 
                                     startIcon={<WifiTetheringIcon/>} 
+                                    onClick={socketContext.toggleConnection}
                                 >
                                     Connect
                                 </Button>

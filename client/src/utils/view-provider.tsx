@@ -11,6 +11,7 @@ import EngineMonitoringView from '../views/pdp-monitoring/engine-monitoring-view
 
 import { ActiveMissionProvider } from './ActiveMissionContext';
 import { SocketGateway } from './socket-context';
+import { MonitoringGateway } from './monitoring-system/monitoring-socket-context';
 
 const ROCKET_SELECT_KEY = 'ROCKET_SELECT';
 const COMPONENT_DOCUMENT_KEY = 'COMPONENT_DOCUMENT';
@@ -115,9 +116,11 @@ export default function ViewProvider(props: ViewProviderProps) {
 			case PDP_MONITORING_KEY:
 				return {
 					view: PDP_MONITORING_KEY,
-					currentView: <EngineMonitoringView 
-						backToRocketSelection={handleToRocketSelect}
-					/>
+					currentView: <MonitoringGateway>
+						<EngineMonitoringView 
+							backToRocketSelection={handleToRocketSelect}
+						/>
+					</MonitoringGateway>
 				}
 			default:
 				throw Error(`Unknown action type: ${action.type}`);
