@@ -25,8 +25,6 @@ const ValveControl = (props: IValveControlProps) => {
         if (checked) {
             payload.action = ControlsActionTypes.OPEN;
         }
-        console.log("packet send:");
-        console.log(payload);
         socketContext.setControlsPacketOut(payload);
     }
 

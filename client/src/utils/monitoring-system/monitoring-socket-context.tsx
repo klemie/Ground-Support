@@ -7,6 +7,8 @@ import {
     useReducer 
 } from 'react';
 
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+
 import {
     PacketType,
     ControlsActionTypes, 
@@ -44,13 +46,13 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
     const [instrumentationPacketOut, setInstrumentationPacketOut] = useState<IInstrumentationPacket>({} as IInstrumentationPacket);
     const [controlsPacketIn, setControlsPacketIn] = useState({});
     const [instrumentationPacketIn, setInstrumentationPacketIn] = useState({});
-    const [connection, setConnection] = useState<boolean>(false);
+    const [connection, setConnection] = useState<boolean>(true);
 
     const [packetNumber, setPacketNumber] = useState<number>(0);
 
     const port = import.meta.env.MONITORING_SYSTEM_PORT 
         ? import.meta.env.MONITORING_SYSTEM_PORT 
-        : 9193;
+        : 8888;
     const uri = import.meta.env.MONITORING_SYSTEM_URI 
         ? import.meta.env.MONITORING_SYSTEM_PORT
         : 'ws://localhost';
@@ -60,88 +62,36 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
         setConnection(!connection);
     };
 
-    const ws = new WebSocket(`${uri}:${port}`);
-   
-    
-    const enableLiveMode = () => {
-        ws.send(JSON.stringify({ type: 'establish_stream' }));
-    };
+    const {
+        sendMessage,
+        sendJsonMessage,
+        lastMessage,
+        lastJsonMessage,
+        readyState,
+        getWebSocket
+    } = useWebSocket(`${uri}:${port}`, {
+        onOpen: () => console.log('Connected to Valve Cart'),
+        shouldReconnect: (closeEvent) => true
+    });
 
     useEffect(() => {
-        setConnection(!connection);
-        if (!connection) {
-            ws.close();
+        if (lastMessage) {
+            setLogs((prevLogs) => [...prevLogs, lastMessage.data]);
         }
-        ws.onopen = () => {
-            setLogs((prev) => [...prev, 'Connected to Valve Cart']);
-            console.log('Connected to Valve Cart');
-            enableLiveMode();
-        };
-
-        ws.onclose = () => {
-            setLogs((prev) => [...prev, 'Closed Connection with Valve Cart']);
-            console.log('Closed Connection with Valve Cart');
-        };
-    }, [connection]);
-
-    ws.addEventListener('open', () => {
-		console.log('Socket Connected');
-		enableLiveMode();
-	});
-
-    /*------------ Controls Transmitting -------------*/
-
-    const controlsPacketTransmittingHandler = (packet: IControlsPacket) => {
-        ws.send(JSON.stringify(packet));
-    }
+    }, [lastMessage]);
 
     useEffect(() => {
-        if (ws.OPEN) {
-            controlsPacketTransmittingHandler(controlsPacketOut);
+        if (lastJsonMessage) {
+            setLogs((prevLogs) => [...prevLogs, JSON.stringify(lastJsonMessage)]);
+        }
+    }, [lastJsonMessage]);
+
+
+    useEffect(() => {
+        if (controlsPacketOut) {
+            sendJsonMessage(controlsPacketOut);
         }
     }, [controlsPacketOut]);
-
-    /*------------ Instrumentation Transmitting -------------*/
-
-    const instrumentationPacketTransmittingHandler = (packet: IInstrumentationPacket) => {
-        ws.send(JSON.stringify(packet));
-    }
-
-    useEffect(() => {
-        if (ws.OPEN) {
-            instrumentationPacketTransmittingHandler(instrumentationPacketOut);
-        }
-    }, [instrumentationPacketIn]);
-
-    /*------------ Receiving -------------*/
-
-    ws.onmessage = (event: MessageEvent) => {
-        const packet: IControlsPacket | IInstrumentationPacket = JSON.parse(event.data);
-        const receivedTimeStamp = new Date(Date.now());
-        setPacketNumber(packetNumber + 1);
-
-        const packetString = {
-            packetNumber: packetNumber,
-            receivedTimeStamp: receivedTimeStamp,
-            data: packet
-        }
-        
-        switch (packet.identifier) {
-            case PacketType.CONTROLS:
-                setControlsPacketIn(packet);
-                setLogs((prev) => [...prev, JSON.stringify(packetString)]);
-                break;
-
-            case PacketType.INSTRUMENTATION:
-                setInstrumentationPacketIn(packet);
-                setLogs((prev) => [...prev, JSON.stringify(packetString)]);
-                break;
-            
-            default:
-                setLogs((prev) => [...prev, JSON.stringify(packetString)]);
-                break;
-        }
-    }
 
     return (
         <MonitoringContext.Provider 
