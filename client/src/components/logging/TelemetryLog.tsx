@@ -10,7 +10,7 @@ import { useActiveMission } from "../../utils/ActiveMissionContext";
 import { saveAs } from "file-saver";
 
 interface TelemetryLogProps {
-    packet: IAprsTelemetryPacket;
+    packet: any;
     width: string;
     maxRows: number;
     telemetryConnected: boolean;
@@ -31,7 +31,7 @@ const TelemetryLog: React.FC<TelemetryLogProps> = (props: TelemetryLogProps) => 
 
     useEffect(() => {
         if (props.packet) {
-            setLog((prev) => [...prev, formatPacket(props.packet)]);
+            setLog((prev) => [...prev, JSON.stringify(props.packet)]);
             setTimeSincePacket(0);
         }
     }, [props.packet]);
@@ -51,15 +51,6 @@ const TelemetryLog: React.FC<TelemetryLogProps> = (props: TelemetryLogProps) => 
             return () => clearInterval(interval);
         }
     }, [timeSincePacket, telemetryConnected]);
-
-
-    useEffect(() => {
-        if (props.packet?.Parsed?.lock) {
-            setLocked(true);
-        } else {
-            setLocked(false);
-        }
-    }, [props.packet]);
 
     return (
         <Box style={{

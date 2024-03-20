@@ -2,16 +2,7 @@ import { Chip, Grid, Paper, Stack, Switch, Tooltip, Typography, styled } from '@
 import React, { useEffect, useState } from 'react';
 
 import SensorsIcon from '@mui/icons-material/Sensors';
-
-const ResponseType = styled(Paper)(({ theme }) => ({
-    backgroundColor: '#1A2027',
-    ...theme.typography.body2,
-    padding: theme.spacing(0.5),
-    width: "90%",
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-}));
-
+import InstrumentationReadingCard from './InstrumentationReadingCard';
 
 interface IProps {
   // props
@@ -34,11 +25,18 @@ const InstrumentationPanel: React.FC<IProps> = (props: IProps) => {
                     </Stack>
                 </Stack>
             </Paper>
-            <Paper
-                elevation={2}
-                sx={{ padding: 2, height: '100%' }}
+            <Grid 
+                container
+                gap={2}
             >
-            </Paper>
+                <InstrumentationReadingCard />
+                <InstrumentationReadingCard />
+                <InstrumentationReadingCard />
+                <InstrumentationReadingCard />
+                <InstrumentationReadingCard />
+                <InstrumentationReadingCard />
+            </Grid>
+            
         </Stack>
     );
 };

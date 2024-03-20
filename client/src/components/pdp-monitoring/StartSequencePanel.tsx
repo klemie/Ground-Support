@@ -23,13 +23,20 @@ const StartSequencePanel: React.FC<IProps> = (props: IProps) => {
 
     // render
     return (
-        <Stack spacing={2} direction={'row'}>
+        <Stack spacing={2} direction={'column'}>
+             <Button 
+                    variant='contained'
+                    color='error'
+                    sx={{ width: "100%", height: 100 }}
+                >
+                    <Typography variant='h4'>ABORT</Typography>
+            </Button>
             <Paper
                 elevation={2}
                 sx={{ padding: 2, width: "fit-content" }}
             >
                 <FormControl component="fieldset">
-                    <FormGroup row sx={{ justifyContent:"center" }}>
+                    <Stack direction={'row'}>
                         <ButtonGroup variant="contained" color="primary" aria-label="key-button-group" orientation='vertical'>
                             <Button 
                                 variant='contained' 
@@ -45,7 +52,7 @@ const StartSequencePanel: React.FC<IProps> = (props: IProps) => {
                                 variant='contained' 
                                 onClick={() => setOverRide(!overRide)}
                             >
-                                    OVERRIDE
+                                OVERRIDE
                             </Button>
                         </ButtonGroup>
                         <FormControlLabel 
@@ -68,16 +75,9 @@ const StartSequencePanel: React.FC<IProps> = (props: IProps) => {
                             labelPlacement='bottom' 
                             onChange={() => sequence.state === "mev" ? updateSequence(sequence, dispatch) : null}
                         />
-                    </FormGroup>
+                    </Stack>
                 </FormControl>
             </Paper>
-            <Button 
-                variant='contained'
-                color='error'
-                sx={{ width: 250 }}
-            >
-                ABORT
-            </Button>
         </Stack>
     );
 };

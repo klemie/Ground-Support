@@ -55,7 +55,7 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
         : 8888;
     const uri = import.meta.env.MONITORING_SYSTEM_URI 
         ? import.meta.env.MONITORING_SYSTEM_PORT
-        : 'ws://localhost';
+        : 'ws://localhost/';
 
     // TODO: change to button start socket connection
     const toggleConnection = () => {
@@ -69,7 +69,7 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
         lastJsonMessage,
         readyState,
         getWebSocket
-    } = useWebSocket(`${uri}:${port}`, {
+    } = useWebSocket(`ws://localhost:8888`, {
         onOpen: () => console.log('Connected to Valve Cart'),
         shouldReconnect: (closeEvent) => true
     });
@@ -82,6 +82,7 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
 
     useEffect(() => {
         if (lastJsonMessage) {
+            console.log(lastJsonMessage);
             setLogs((prevLogs) => [...prevLogs, JSON.stringify(lastJsonMessage)]);
         }
     }, [lastJsonMessage]);
@@ -92,6 +93,12 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
             sendJsonMessage(controlsPacketOut);
         }
     }, [controlsPacketOut]);
+    
+    useEffect(() => {
+        if (instrumentationPacketOut) {
+            sendJsonMessage(instrumentationPacketOut);
+        }
+    }, [instrumentationPacketOut]);
 
     return (
         <MonitoringContext.Provider 

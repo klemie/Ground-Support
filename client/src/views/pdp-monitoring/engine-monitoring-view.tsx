@@ -8,6 +8,7 @@ import api from "../../services/api";
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import WifiTetheringIcon from '@mui/icons-material/WifiTethering';
 import BuildIcon from '@mui/icons-material/Build';
+import ForumIcon from '@mui/icons-material/Forum';
 
 // Panels
 import ControlsPanel from "../../components/pdp-monitoring/ControlsPanel";
@@ -21,7 +22,7 @@ import TelemetryLog from "../../components/logging/TelemetryLog";
 import InstrumentationPanel from "../../components/pdp-monitoring/InstrumentationPanel";
 
 import { IAprsTelemetryPacket } from "../../utils/TelemetryTypes";
-import { InsertInvitation } from "@mui/icons-material";
+import { Chat, InsertInvitation, Settings } from "@mui/icons-material";
 import { useMonitoringSocketContext } from "../../utils/monitoring-system/monitoring-socket-context";
 
 interface ViewProviderProps {
@@ -50,18 +51,14 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
 		{ name: 'PDP Monitoring', path: '/', active: true }
 	];
     
-    const [currentPacket, setCurrentPacket] = useState<IAprsTelemetryPacket>({
-		Raw: [''],
-		Parsed: {
-			timeStampLocal: '0-0-0',
-			timeStampUnix: '0.0',
-			latitude: 0,
-			longitude: 0,
-			altitude: 0,
-			lock: false,
-		}
-	});
-    
+    const [currentPacket, setCurrentPacket] = useState({});
+
+    useEffect(() => {
+        if (currentPacket) {
+            setCurrentPacket(socketContext.logs);
+        }
+    }, [currentPacket]);
+
     return (
         <Box sx={{ width: '100vw', height: '100vh' }}>
             <Stack
@@ -88,9 +85,18 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                             <Stack direction="row" spacing={2}>
                                 <Tooltip title="PDP Configuration" placement="top" arrow followCursor>
                                     <Button variant={'contained'}>
-                                        <BuildIcon />
+                                        <Settings />
                                     </Button>
                                 </Tooltip>
+                                <Button variant={'contained'}>
+                                    <ForumIcon />
+                                </Button>
+                                <Button 
+                                    variant="contained" 
+                                    size={'large'} 
+                                >
+                                    Instrumentation
+                                </Button>
                                 <Button 
                                     variant="contained" 
                                     size={'large'} 
@@ -105,13 +111,15 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                 </Grid>
                 <Grid item>
                     <Stack direction="row" spacing={2}>
-                        <ControlsPanel />
-                        <TelemetryLog width={'auto'} maxRows={10} packet={currentPacket} telemetryConnected={true} />
+                        <Stack direction="column" spacing={2} textAlign={'center'}>
+                            <ControlsPanel />
+                            <StartSequencePanel />
+                        </Stack>
                         <InstrumentationPanel />
                     </Stack>
                 </Grid>
                 <Grid item>
-                    <StartSequencePanel />
+                    
                 </Grid>   
             </Stack>
             <div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
