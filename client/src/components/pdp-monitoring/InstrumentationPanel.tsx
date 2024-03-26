@@ -2,7 +2,7 @@ import { Chip, Grid, Paper, Stack, Switch, Tooltip, Typography, styled } from '@
 import React, { useEffect, useState } from 'react';
 
 import SensorsIcon from '@mui/icons-material/Sensors';
-import InstrumentationReadingCard from './InstrumentationReadingCard';
+import { InstrumentationModule, InstrumentationType_t } from './InstrumentationModule';
 
 interface IProps {
   // props
@@ -29,14 +29,8 @@ const InstrumentationPanel: React.FC<IProps> = (props: IProps) => {
                 container
                 gap={2}
             >
-                <InstrumentationReadingCard />
-                <InstrumentationReadingCard />
-                <InstrumentationReadingCard />
-                <InstrumentationReadingCard />
-                <InstrumentationReadingCard />
-                <InstrumentationReadingCard />
+                <InstrumentationModule title={"Run Tank"} type={InstrumentationType_t.PRESSURE}/>
             </Grid>
-            
         </Stack>
     );
 };

@@ -1,9 +1,11 @@
 export const CONTROL_PACKET_TYPE = "CONTROLS";
 export const INSTRUMENTATION_PACKET_TYPE = "INSTRUMENTATION";
+export const INFO_PACKET_TYPE = "INFO";
 
 export enum PacketType {
     CONTROLS = CONTROL_PACKET_TYPE,
-    INSTRUMENTATION = INSTRUMENTATION_PACKET_TYPE
+    INSTRUMENTATION = INSTRUMENTATION_PACKET_TYPE,
+    INFO = INFO_PACKET_TYPE
 }
 
 interface IBasePacket {
@@ -14,10 +16,10 @@ interface IBasePacket {
 
 enum ControlsValveTypes {
     MEV = "MEV",
-    N2OFlow = "N2O Flow",
-    N2OVent = "N2O Vent",
-    N2Flow = "N2 Flow",
-    N2Vent = "N2 Vent",
+    N2OFlow = "N2OF",
+    N2OVent = "N2OV",
+    N2Flow = "N2F",
+    N2Vent = "N2V",
     RTV = "RTV",
     NCV = "NCV",
     EVV = "EVV"
@@ -30,9 +32,10 @@ enum ControlsActionTypes {
 
 enum ControlsCommandTypes {
     STATUS = "STATUS",
-    CONTROL = "CONTROL",
+    CONTROL = "CTRL",
     ABORT = "ABORT",
-    RESET = "RESET"
+    RESET = "RESET",
+    SET = "SET"
 }
 
 export interface IControlsPacket extends IBasePacket {

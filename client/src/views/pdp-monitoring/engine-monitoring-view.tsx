@@ -20,10 +20,12 @@ import Header, { Breadcrumb } from "../../components/Header";
 import StartSequencePanel from "../../components/pdp-monitoring/StartSequencePanel";
 import TelemetryLog from "../../components/logging/TelemetryLog";
 import InstrumentationPanel from "../../components/pdp-monitoring/InstrumentationPanel";
-
+import ConnectionDialog from "../../components/pdp-monitoring/ConnectionDialog";
 import { IAprsTelemetryPacket } from "../../utils/TelemetryTypes";
 import { Chat, InsertInvitation, Settings } from "@mui/icons-material";
 import { useMonitoringSocketContext } from "../../utils/monitoring-system/monitoring-socket-context";
+import EngineLogDialog from "../../components/logging/EngineLog";
+import ConfigurationDialog from "../../components/pdp-monitoring/ConfigurationDialog";
 
 interface ViewProviderProps {
     rocketId?: string;
@@ -41,17 +43,20 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
 		'rgba(69, 136, 201, 1)'
 	];
 
-
+    
     // Context initial State
     const activeContext = useActiveMission();
     const socketContext = useMonitoringSocketContext();
-
+    
 	const breadCrumbs: Breadcrumb[] = [
 		{ name: 'Rocket Selection', path: '/', active: false },
 		{ name: 'PDP Monitoring', path: '/', active: true }
 	];
     
     const [currentPacket, setCurrentPacket] = useState({});
+    const [openConnection, setOpenConnection] = useState(false);
+    const [openSettings, setOpenSettings] = useState(false);
+    const [openLog, setOpenLog] = useState(false);
 
     useEffect(() => {
         if (currentPacket) {
@@ -84,11 +89,14 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                             </Stack>
                             <Stack direction="row" spacing={2}>
                                 <Tooltip title="PDP Configuration" placement="top" arrow followCursor>
-                                    <Button variant={'contained'}>
+                                    <Button variant={'contained'} onClick={() => setOpenSettings(openSettings => !openSettings)}>
                                         <Settings />
                                     </Button>
                                 </Tooltip>
-                                <Button variant={'contained'}>
+                                <Button 
+                                    variant={'contained'}
+                                    onClick={() => setOpenLog(openLog => !openLog)}
+                                    >
                                     <ForumIcon />
                                 </Button>
                                 <Button 
@@ -101,7 +109,10 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                                     variant="contained" 
                                     size={'large'} 
                                     startIcon={<WifiTetheringIcon/>} 
-                                    onClick={socketContext.toggleConnection}
+                                    onClick={() => {
+                                        setOpenConnection(!openConnection);  
+                                        socketContext.toggleConnection
+                                    }}
                                 >
                                     Connect
                                 </Button>
@@ -111,7 +122,7 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                 </Grid>
                 <Grid item>
                     <Stack direction="row" spacing={2}>
-                        <Stack direction="column" spacing={2} textAlign={'center'}>
+                        <Stack direction="column" spacing={2} alignItems={'center'}>
                             <ControlsPanel />
                             <StartSequencePanel />
                         </Stack>
@@ -136,9 +147,20 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                     );
                 })}
             </div>
+            <ConnectionDialog 
+                isOpen={openConnection} 
+                onClose={() => setOpenConnection(false)}
+            />
+            <EngineLogDialog
+                isOpen={openLog}
+                onClose={() => setOpenLog(false)}
+            />
+            <ConfigurationDialog 
+                isOpen={openSettings} 
+                onClose={() => setOpenSettings(false)}
+            />
         </Box>
     );
-
 }
 
 export default EngineMonitoringView;
