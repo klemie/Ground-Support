@@ -1,9 +1,12 @@
 import { Button, ButtonGroup, FormControl, FormControlLabel, FormGroup, Paper, Stack, Switch, Typography } from '@mui/material';
 import React, { useEffect, useState, useReducer } from 'react';
 import { sequenceReducer, updateSequence } from './sequenceReducer';
+import { ControlsActionTypes, ControlsCommandTypes, ControlsValveTypes, IControlsPacket, PacketType } from '../../utils/monitoring-system/monitoring-types';
 
 // Icons
 import KeyIcon from '@mui/icons-material/Key';
+import { useMonitoringSocketContext } from '../../utils/monitoring-system/monitoring-socket-context';
+import ValveControl from './ValveControlSwitch';
 
 interface IProps {
   // props
@@ -21,6 +24,18 @@ const StartSequencePanel: React.FC<IProps> = (props: IProps) => {
         }
     }, [sequence.state]);
 
+    const socketContext = useMonitoringSocketContext();
+
+    const sendAbortCommand = () => {
+        // default closed
+        const payload: IControlsPacket = {
+            identifier: PacketType.CONTROLS,
+            command: ControlsCommandTypes.ABORT
+        };
+
+        socketContext.setControlsPacketOut(payload);
+    }
+
     // render
     return (
         <Stack spacing={2} direction={'column'}>
@@ -28,6 +43,7 @@ const StartSequencePanel: React.FC<IProps> = (props: IProps) => {
                     variant='contained'
                     color='error'
                     sx={{ width: "100%", height: 100 }}
+                    onClick={() => sendAbortCommand()}
                 >
                     <Typography variant='h4'>ABORT</Typography>
             </Button>
@@ -55,11 +71,10 @@ const StartSequencePanel: React.FC<IProps> = (props: IProps) => {
                                 OVERRIDE
                             </Button>
                         </ButtonGroup>
-                        <FormControlLabel 
-                            sx={{ width: "fit-content" }} 
-                            control={<Switch disabled={!(sequence.state === "prime") && !overRide} onChange={() => sequence.state === "prime" ? updateSequence(sequence, dispatch) : null} />} 
-                            label="Prime" 
-                            labelPlacement='bottom' 
+                        <ValveControl 
+                            valveName={ControlsValveTypes.PRIME} 
+                            disabled={!(sequence.state === "prime") && !overRide} 
+                            onFlip={() => sequence.state === "prime" ? updateSequence(sequence, dispatch) : null } 
                         />
                         <Button 
                             variant="contained" 
@@ -68,12 +83,10 @@ const StartSequencePanel: React.FC<IProps> = (props: IProps) => {
                         >
                             Ignite
                         </Button>
-                        <FormControlLabel 
-                            sx={{ width: "fit-content" }} 
-                            control={<Switch disabled={!overRide &&  !(sequence.state === "mev")} />} 
-                            label="MEV" 
-                            labelPlacement='bottom' 
-                            onChange={() => sequence.state === "mev" ? updateSequence(sequence, dispatch) : null}
+                        <ValveControl 
+                            valveName={ControlsValveTypes.MEV} 
+                            disabled={!overRide &&  !(sequence.state === "mev")} 
+                            onFlip={() => sequence.state === "mev" ? updateSequence(sequence, dispatch) : null}
                         />
                     </Stack>
                 </FormControl>

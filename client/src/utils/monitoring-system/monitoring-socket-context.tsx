@@ -91,6 +91,7 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
     useEffect(() => {
         if (controlsPacketOut) {
             sendJsonMessage(controlsPacketOut);
+            console.log(controlsPacketOut);
         }
     }, [controlsPacketOut]);
     

@@ -128,10 +128,7 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                         </Stack>
                         <InstrumentationPanel />
                     </Stack>
-                </Grid>
-                <Grid item>
-                    
-                </Grid>   
+                </Grid> 
             </Stack>
             <div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
                 {colors.map((color) => {
