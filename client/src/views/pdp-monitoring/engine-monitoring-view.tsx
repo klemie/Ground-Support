@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useReducer, useCallback } from "react";
 
 // Utils
-import { useActiveMission } from "../../utils/ActiveMissionContext";
 import api from "../../services/api";
 
 // Icons
@@ -18,7 +17,6 @@ import { Box, Button, Grid, Paper, Stack, Typography, Tooltip } from "@mui/mater
 
 import Header, { Breadcrumb } from "../../components/Header";
 import StartSequencePanel from "../../components/pdp-monitoring/StartSequencePanel";
-import TelemetryLog from "../../components/logging/TelemetryLog";
 import InstrumentationPanel from "../../components/pdp-monitoring/InstrumentationPanel";
 import ConnectionDialog from "../../components/pdp-monitoring/ConnectionDialog";
 import { IAprsTelemetryPacket } from "../../utils/TelemetryTypes";
@@ -26,6 +24,7 @@ import { Chat, InsertInvitation, Settings } from "@mui/icons-material";
 import { useMonitoringSocketContext } from "../../utils/monitoring-system/monitoring-socket-context";
 import EngineLogDialog from "../../components/logging/EngineLog";
 import ConfigurationDialog from "../../components/pdp-monitoring/ConfigurationDialog";
+import useWebSocket from "react-use-websocket";
 
 interface ViewProviderProps {
     rocketId?: string;
@@ -42,12 +41,7 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
 		'rgba(0, 94, 184, 1)',
 		'rgba(69, 136, 201, 1)'
 	];
-
-    
-    // Context initial State
-    const activeContext = useActiveMission();
     const socketContext = useMonitoringSocketContext();
-    
 	const breadCrumbs: Breadcrumb[] = [
 		{ name: 'Rocket Selection', path: '/', active: false },
 		{ name: 'PDP Monitoring', path: '/', active: true }
@@ -63,6 +57,23 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
             setCurrentPacket(socketContext.logs);
         }
     }, [currentPacket]);
+    const {
+        sendMessage,
+        sendJsonMessage,
+        lastMessage,
+        lastJsonMessage,
+        readyState,
+        getWebSocket
+    } = useWebSocket(`ws://localhost:8080`, {
+        onOpen: () => console.log('Connected to MCB'),
+        shouldReconnect: (closeEvent: any) => true
+    });
+   
+    useEffect(() => {
+        if (readyState === 1) {
+            console.log('Connected to Valve Cart');
+        }
+    }, []);  
 
     return (
         <Box sx={{ width: '100vw', height: '100vh' }}>
@@ -111,7 +122,7 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                                     startIcon={<WifiTetheringIcon/>} 
                                     onClick={() => {
                                         setOpenConnection(!openConnection);  
-                                        socketContext.toggleConnection
+                                        // socketContext.toggleConnection
                                     }}
                                 >
                                     Connect
