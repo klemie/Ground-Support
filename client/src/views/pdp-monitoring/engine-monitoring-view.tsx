@@ -14,7 +14,7 @@ import ForumIcon from '@mui/icons-material/Forum';
 import ControlsPanel from "../../components/pdp-monitoring/ControlsPanel";
 
 // Components UI
-import { Box, Button, Grid, Paper, Stack, Typography, Tooltip } from "@mui/material";
+import { Box, Button, Grid, Paper, Stack, Typography, Tooltip, Fab, useTheme, useMediaQuery, BottomNavigation, BottomNavigationAction } from "@mui/material";
 
 import Header, { Breadcrumb } from "../../components/Header";
 import StartSequencePanel from "../../components/pdp-monitoring/StartSequencePanel";
@@ -26,16 +26,63 @@ import { Chat, InsertInvitation, Settings } from "@mui/icons-material";
 import { useMonitoringSocketContext } from "../../utils/monitoring-system/monitoring-socket-context";
 import EngineLogDialog from "../../components/logging/EngineLog";
 import ConfigurationDialog from "../../components/pdp-monitoring/ConfigurationDialog";
+import groundSupportDarkMode from  "../../static/images/groundSupportDarkMode.svg"
 
-interface ViewProviderProps {
-    rocketId?: string;
-    missionId?: string;
-    backToRocketSelection: () => void;
+interface IPhoneViewProps {
+   openSettings: () => void;
+   openLog: () => void;
 }
 
-const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderProps) => {
-    // const { rocketId, missionId, backToRocketSelection } = props;
+const PhoneView: React.FC<IPhoneViewProps> = (props: IPhoneViewProps) => {
+    const [value, setValue] = useState<string>();
+    return(
+        <Box sx={{ width: '100vw', height: '100vh' }}>
+            <Paper elevation={5} sx={{ padding: 2, borderRadius: 0 }}>
+                <Stack direction="row" alignItems={'center'} justifyContent={'space-between'}>
+                    <Stack direction="row" alignItems={'center'} spacing={2}>
+                        <img src={groundSupportDarkMode} alt="Ground Support Icon" height={30}/>
+                        <Typography align='left' variant='h6' fontWeight={'bold'}>
+                            PDP Monitoring
+                        </Typography>
+                    </Stack> 
+                </Stack>
+            </Paper>  
+            <Stack
+                height={'100%'}
+                padding={3}
+                direction="column"
+                gap={3}
+                overflow={'none'}
+            >
+                {/* <InstrumentationPanel phone /> */}
+                <Stack direction="row" spacing={2} sx={{ position: "absolute", bottom: 20 }}>
+                    <Tooltip title="PDP Configuration" placement="top" arrow followCursor>
+                        <Fab 
+                            color="primary"                 
+                            sx={{ borderRadius: 2 }}
+                            onClick={() => props.openSettings()}
+                        >
+                            <Settings />
+                        </Fab>
+                    </Tooltip>
+                    <Fab 
+                        color="primary"
+                        onClick={() => props.openLog()}
+                        sx={{ borderRadius: 2 }}
+                    >
+                        <ForumIcon />
+                    </Fab>
+                </Stack>
+            </Stack>
+        </Box>
+    );
+};
+interface IComputerViewProps {
+    openSettings: () => void;
+    openLog: () => void;
+}
 
+const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) => {
     const colors: string[] = [
 		'rgba(255, 197, 87, 1)',
 		'rgba(214, 91, 79, 1)',
@@ -43,26 +90,11 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
 		'rgba(69, 136, 201, 1)'
 	];
 
-    
-    // Context initial State
-    const activeContext = useActiveMission();
-    const socketContext = useMonitoringSocketContext();
-    
-	const breadCrumbs: Breadcrumb[] = [
+    const breadCrumbs: Breadcrumb[] = [
 		{ name: 'Rocket Selection', path: '/', active: false },
 		{ name: 'PDP Monitoring', path: '/', active: true }
 	];
     
-    const [currentPacket, setCurrentPacket] = useState({});
-    const [openConnection, setOpenConnection] = useState(false);
-    const [openSettings, setOpenSettings] = useState(false);
-    const [openLog, setOpenLog] = useState(false);
-
-    useEffect(() => {
-        if (currentPacket) {
-            setCurrentPacket(socketContext.logs);
-        }
-    }, [currentPacket]);
 
     return (
         <Box sx={{ width: '100vw', height: '100vh' }}>
@@ -89,13 +121,13 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                             </Stack>
                             <Stack direction="row" spacing={2}>
                                 <Tooltip title="PDP Configuration" placement="top" arrow followCursor>
-                                    <Button variant={'contained'} onClick={() => setOpenSettings(openSettings => !openSettings)}>
+                                    <Button variant={'contained'} onClick={() =>props.openSettings()}>
                                         <Settings />
                                     </Button>
                                 </Tooltip>
                                 <Button 
                                     variant={'contained'}
-                                    onClick={() => setOpenLog(openLog => !openLog)}
+                                    onClick={() => props.openLog()}
                                     >
                                     <ForumIcon />
                                 </Button>
@@ -109,10 +141,6 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                                     variant="contained" 
                                     size={'large'} 
                                     startIcon={<WifiTetheringIcon/>} 
-                                    onClick={() => {
-                                        setOpenConnection(!openConnection);  
-                                        socketContext.toggleConnection
-                                    }}
                                 >
                                     Connect
                                 </Button>
@@ -129,9 +157,6 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                         <InstrumentationPanel />
                     </Stack>
                 </Grid>
-                <Grid item>
-                    
-                </Grid>   
             </Stack>
             <div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
                 {colors.map((color) => {
@@ -147,6 +172,50 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                     );
                 })}
             </div>
+           
+        </Box>
+    );
+}
+
+interface ViewProviderProps {
+    rocketId?: string;
+    missionId?: string;
+    backToRocketSelection: () => void;
+}
+
+const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderProps) => {
+    // const { rocketId, missionId, backToRocketSelection } = props;
+    const theme = useTheme();
+    const isNotMobile = useMediaQuery(theme.breakpoints.up('sm'));
+
+    // Context initial State
+    const socketContext = useMonitoringSocketContext();
+    
+    const [currentPacket, setCurrentPacket] = useState({});
+    const [openConnection, setOpenConnection] = useState(false);
+    const [openSettings, setOpenSettings] = useState(false);
+    const [openLog, setOpenLog] = useState(false);
+
+    useEffect(() => {
+        if (currentPacket) {
+            setCurrentPacket(socketContext.logs);
+        }
+    }, [currentPacket]);
+
+    return (
+        <>
+            {!isNotMobile ?
+                <PhoneView 
+                    openSettings={() => setOpenSettings(true)}
+                    openLog={() => setOpenLog(true)}
+                />
+                :
+                <ComputerView 
+                    openSettings={() => setOpenSettings(true)}
+                    openLog={() => setOpenLog(true)}
+                />
+            }
+            
             <ConnectionDialog 
                 isOpen={openConnection} 
                 onClose={() => setOpenConnection(false)}
@@ -154,13 +223,15 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
             <EngineLogDialog
                 isOpen={openLog}
                 onClose={() => setOpenLog(false)}
+                isMobile={!isNotMobile}
             />
             <ConfigurationDialog 
                 isOpen={openSettings} 
                 onClose={() => setOpenSettings(false)}
             />
-        </Box>
+        </>
     );
+    
 }
 
 export default EngineMonitoringView;
