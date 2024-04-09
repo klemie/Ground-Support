@@ -7,12 +7,13 @@ import ComponentDocs from '../views/component-docs-view';
 import RocketDetailsView from '../views/rocket-details-view';
 import DataConfigView from '../views/data-config-view';
 import ActiveMissionView from '../views/active-mission';
+import MissionReplayView from '../views/mission-replay-view';
 import { ActiveMissionProvider } from './ActiveMissionContext';
 import { SocketGateway } from './socket-context';
 
 const ROCKET_SELECT_KEY = 'ROCKET_SELECT';
 const COMPONENT_DOCUMENT_KEY = 'COMPONENT_DOCUMENT';
-// const MISSION_REPLAY_KEY = 'MISSION_REPLAY';
+const MISSION_REPLAY_KEY = 'MISSION_REPLAY';
 
 // Rocket Details
 const ROCKET_DETAILS_KEY = 'ROCKET_DETAILS';
@@ -102,6 +103,11 @@ export default function ViewProvider(props: ViewProviderProps) {
 							backToRocketSelection={handleToRocketDetails}
 						/>
 					</SocketGateway>
+				}
+			case MISSION_REPLAY_KEY:
+				return {
+					view: MISSION_REPLAY_KEY,
+					currentView: <MissionReplayView />
 				}
 			default:
 				throw Error(`Unknown action type: ${action.type}`);

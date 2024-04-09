@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { IMission, IRocketPopulated } from '../../utils/entities';
 import MUIDataTable, { MUIDataTableOptions } from 'mui-datatables';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
@@ -60,16 +60,30 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
     const activeMissionContext = useActiveMission()
 
 
+    // const options: MUIDataTableOptions = {
+    //     filter: true,
+    //     responsive: 'standard',
+    //     onRowClick: (rowData: any[], rowMeta: { dataIndex: number, rowIndex: number }) => {
+    //         activeMissionContext.updateMission(rocket.Missions[rowMeta.dataIndex]);
+    //         activeMissionContext.updateRocket(rocket);
+    //         console.log(activeMissionContext.activeMission);
+    //         onMissionClick(missions[rowMeta.dataIndex]);
+    //     }
+    // };
+
     const options: MUIDataTableOptions = {
         filter: true,
         responsive: 'standard',
         onRowClick: (rowData: any[], rowMeta: { dataIndex: number, rowIndex: number }) => {
+            console.log('Navigating to mission replay view');
             activeMissionContext.updateMission(rocket.Missions[rowMeta.dataIndex]);
             activeMissionContext.updateRocket(rocket);
-            console.log(activeMissionContext.activeMission);
+            // console.log(activeMissionContext.activeMission);
             onMissionClick(missions[rowMeta.dataIndex]);
         }
     };
+
+    
 
     const columns: ITableColumns[] = [
         {
