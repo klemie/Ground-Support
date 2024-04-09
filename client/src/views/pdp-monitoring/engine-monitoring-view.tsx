@@ -26,6 +26,8 @@ import { Chat, InsertInvitation, Settings } from "@mui/icons-material";
 import { useMonitoringSocketContext } from "../../utils/monitoring-system/monitoring-socket-context";
 import EngineLogDialog from "../../components/logging/EngineLog";
 import ConfigurationDialog from "../../components/pdp-monitoring/ConfigurationDialog";
+import { MCBSocketTesting } from "../../utils/monitoring-system/mcb-monitoring-context";
+import useWebSocket from "react-use-websocket";
 
 interface ViewProviderProps {
     rocketId?: string;
@@ -63,6 +65,24 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
             setCurrentPacket(socketContext.logs);
         }
     }, [currentPacket]);
+
+    const {
+        sendMessage,
+        sendJsonMessage,
+        lastMessage,
+        lastJsonMessage,
+        readyState,
+        getWebSocket
+    } = useWebSocket(`ws://localhost:8080`, {
+        onOpen: () => console.log('Connected to MCB'),
+        shouldReconnect: (closeEvent) => true
+    });
+
+    useEffect(() => {
+        if (lastMessage) {
+            console.log(lastMessage);
+        }
+    }, [lastMessage]);
 
     return (
         <Box sx={{ width: '100vw', height: '100vh' }}>
