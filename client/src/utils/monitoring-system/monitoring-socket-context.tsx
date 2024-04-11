@@ -82,7 +82,7 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
 
     useEffect(() => {
         if (lastJsonMessage) {
-            console.log(lastJsonMessage);
+            console.log("lastJsonMessage", lastJsonMessage);
             setLogs((prevLogs) => [...prevLogs, JSON.stringify(lastJsonMessage)]);
         }
     }, [lastJsonMessage]);
