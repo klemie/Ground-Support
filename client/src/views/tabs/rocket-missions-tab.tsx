@@ -78,8 +78,9 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
             console.log('Navigating to mission replay view');
             activeMissionContext.updateMission(rocket.Missions[rowMeta.dataIndex]);
             activeMissionContext.updateRocket(rocket);
-            // console.log(activeMissionContext.activeMission);
-            onMissionClick(missions[rowMeta.dataIndex]);
+            // onMissionClick(missions[rowMeta.dataIndex]);
+            //What do I put here to get the new view
+            dataConfigClick(missions[rowMeta.dataIndex])
         }
     };
 

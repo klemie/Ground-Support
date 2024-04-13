@@ -107,7 +107,10 @@ export default function ViewProvider(props: ViewProviderProps) {
 			case MISSION_REPLAY_KEY:
 				return {
 					view: MISSION_REPLAY_KEY,
-					currentView: <MissionReplayView />
+					currentView: <MissionReplayView 
+						toDataConfig={handleToDataConfig}
+						setActiveView={handleToActiveFlight}  
+      					openActiveMission={updateMissionId}/>
 				}
 			default:
 				throw Error(`Unknown action type: ${action.type}`);
