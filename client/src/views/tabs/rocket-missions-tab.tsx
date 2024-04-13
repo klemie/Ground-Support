@@ -59,18 +59,6 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
     
     const activeMissionContext = useActiveMission()
 
-
-    // const options: MUIDataTableOptions = {
-    //     filter: true,
-    //     responsive: 'standard',
-    //     onRowClick: (rowData: any[], rowMeta: { dataIndex: number, rowIndex: number }) => {
-    //         activeMissionContext.updateMission(rocket.Missions[rowMeta.dataIndex]);
-    //         activeMissionContext.updateRocket(rocket);
-    //         console.log(activeMissionContext.activeMission);
-    //         onMissionClick(missions[rowMeta.dataIndex]);
-    //     }
-    // };
-
     const options: MUIDataTableOptions = {
         filter: true,
         responsive: 'standard',
@@ -78,9 +66,8 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
             console.log('Navigating to mission replay view');
             activeMissionContext.updateMission(rocket.Missions[rowMeta.dataIndex]);
             activeMissionContext.updateRocket(rocket);
-            // onMissionClick(missions[rowMeta.dataIndex]);
-            //What do I put here to get the new view
-            dataConfigClick(missions[rowMeta.dataIndex])
+            //What do I put here to get the new view?
+            dataConfigClick={}
         }
     };
 
