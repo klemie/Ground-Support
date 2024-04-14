@@ -51,9 +51,9 @@ function TabPanel(props: TabPanelProps) {
 
 interface RocketDetailsProps {
     rocketID: string;
-    openActiveMission: (view: string) => void;
-    setActiveView: (key: string) => void;
     toDataConfig: (id: string) => void;
+    setActiveView: (key: string) => void;
+    openActiveMission: (view: string) => void;
 }
 
 export default function RocketDetailsView(props: RocketDetailsProps) {

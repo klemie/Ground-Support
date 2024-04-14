@@ -67,7 +67,7 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
             activeMissionContext.updateMission(rocket.Missions[rowMeta.dataIndex]);
             activeMissionContext.updateRocket(rocket);
             //What do I put here to get the new view?
-            dataConfigClick={}
+            dataConfigClick={ROCKET_DETAILS_KEY}
         }
     };
 

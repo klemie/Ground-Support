@@ -108,6 +108,7 @@ export default function ViewProvider(props: ViewProviderProps) {
 				return {
 					view: MISSION_REPLAY_KEY,
 					currentView: <MissionReplayView 
+						rocketID={currentRocketId}
 						toDataConfig={handleToDataConfig}
 						setActiveView={handleToActiveFlight}  
       					openActiveMission={updateMissionId}/>
