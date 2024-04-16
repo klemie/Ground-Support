@@ -78,11 +78,17 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
         shouldReconnect: (closeEvent) => true
     });
 
+    // useEffect(() => {
+    //     if (lastMessage) {
+    //         console.log(lastMessage);
+    //     }
+    // }, [lastMessage]);
+
     useEffect(() => {
-        if (lastMessage) {
-            console.log(lastMessage);
+        if (lastJsonMessage) {
+            console.log(lastJsonMessage);
         }
-    }, [lastMessage]);
+    }, [lastJsonMessage]);
 
     return (
         <Box sx={{ width: '100vw', height: '100vh' }}>
