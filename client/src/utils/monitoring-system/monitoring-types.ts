@@ -20,10 +20,9 @@ enum ControlsValveTypes {
     N2OFlow = "N2OF",
     N2OVent = "N2OV",
     N2Flow = "N2F",
-    N2Vent = "N2V",
     RTV = "RTV",
     NCV = "NCV",
-    EVV = "EVV"
+    ERV = "ERV"
 }
 
 enum ControlsActionTypes {

@@ -68,11 +68,6 @@ const EngineLogDialog: React.FC<EngineLogDialogProps> = (props: EngineLogDialogP
                         >
                             Packet Log
                         </Button>
-                        <FormControlLabel
-                            control={<Checkbox />}
-                            label="Verbose Logging"
-                            labelPlacement="end"
-                        />
                     </Stack>
                 </Stack>
             </DialogContent>
