@@ -15,14 +15,13 @@ const ControlsPanel: React.FC = () => (
             </Stack>
             <Stack direction={'row'}>
                 <ValveControl valveName={ControlsValveTypes.N2Flow} />
-                <ValveControl valveName={ControlsValveTypes.N2Vent} />
+                <ValveControl valveName={ControlsValveTypes.ERV} />
             </Stack>
             <Stack direction={'row'}>
                 <ValveControl valveName={ControlsValveTypes.RTV} />
                 <ValveControl valveName={ControlsValveTypes.NCV} />
             </Stack>
             <FormGroup>
-                <ValveControl valveName={ControlsValveTypes.EVV} />
             </FormGroup>
             <FormControlLabel 
                 sx={{ marginTop: 1 }}
