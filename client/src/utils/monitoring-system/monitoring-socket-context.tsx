@@ -17,6 +17,7 @@ import {
     IControlsPacket,
     IInstrumentationPacket
 } from './monitoring-types';
+import { useLogContext } from '../../components/logging/LogContext';
 
 export interface IMonitoringSocketContext {
     toggleConnection: () => void;
@@ -62,6 +63,8 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
         setConnection(!connection);
     };
 
+    const logContext = useLogContext();
+
     const {
         sendMessage,
         sendJsonMessage,
@@ -77,6 +80,7 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
     useEffect(() => {
         if (lastMessage) {
             setLogs((prevLogs) => [...prevLogs, lastMessage.data]);
+            logContext.addToMissionControlLogs(lastMessage.data);
         }
     }, [lastMessage]);
 
@@ -84,6 +88,7 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
         if (lastJsonMessage) {
             console.log(lastJsonMessage);
             setLogs((prevLogs) => [...prevLogs, JSON.stringify(lastJsonMessage)]);
+            logContext.addToValveCartLogs(JSON.stringify(lastJsonMessage));
         }
     }, [lastJsonMessage]);
 

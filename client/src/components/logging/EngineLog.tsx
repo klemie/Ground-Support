@@ -1,8 +1,8 @@
 import React, {useCallback, useEffect, useState} from "react";
 import { Button, Dialog, TextField, Stack, DialogContent, Typography, DialogActions, DialogTitle, Select, MenuItem, InputLabel, Tooltip, TextareaAutosize, FormControlLabel, Checkbox } from "@mui/material";
-import { webusb } from 'usb';
 import { Download, Info } from "@mui/icons-material";
-
+import { useLogContext } from "./LogContext";
+import { useMonitoringSocketContext } from "../../utils/monitoring-system/monitoring-socket-context";
 
 interface EngineLogDialogProps {
     isOpen: boolean;
@@ -11,14 +11,16 @@ interface EngineLogDialogProps {
 
 const EngineLogDialog: React.FC<EngineLogDialogProps> = (props: EngineLogDialogProps) => {
     const {isOpen, onClose} = props;
-    
     const handleClose = () => {
         onClose();
     }
-
+    
     const handleDownload = () => {
         // download logs
     }
+
+    const logContext = useLogContext();
+    const MonitoringContext = useMonitoringSocketContext();
 
     return(
         <Dialog 
@@ -45,6 +47,7 @@ const EngineLogDialog: React.FC<EngineLogDialogProps> = (props: EngineLogDialogP
                         maxRows={15}
                         readOnly
                         placeholder="Valve Cart Log"
+                        value={logContext.valveCartLogs.join('\n')}
                     />
                     <Typography variant="subtitle1">MC Log</Typography>
                     <TextareaAutosize
@@ -58,6 +61,7 @@ const EngineLogDialog: React.FC<EngineLogDialogProps> = (props: EngineLogDialogP
                         maxRows={15}
                         readOnly
                         placeholder="Mission Control Log"
+                        value={MonitoringContext.logs.join('\n')}
                     />
                     <Stack direction="row" justifyContent="space-between">
                         <Button 

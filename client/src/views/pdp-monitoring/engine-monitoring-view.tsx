@@ -57,23 +57,6 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
             setCurrentPacket(socketContext.logs);
         }
     }, [currentPacket]);
-    const {
-        sendMessage,
-        sendJsonMessage,
-        lastMessage,
-        lastJsonMessage,
-        readyState,
-        getWebSocket
-    } = useWebSocket(`ws://localhost:8080`, {
-        onOpen: () => console.log('Connected to MCB'),
-        shouldReconnect: (closeEvent: any) => true
-    });
-   
-    useEffect(() => {
-        if (readyState === 1) {
-            console.log('Connected to Valve Cart');
-        }
-    }, []);  
 
     return (
         <Box sx={{ width: '100vw', height: '100vh' }}>
