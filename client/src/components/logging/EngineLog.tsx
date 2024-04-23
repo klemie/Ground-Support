@@ -19,7 +19,6 @@ const EngineLogDialog: React.FC<EngineLogDialogProps> = (props: EngineLogDialogP
         // download logs
     }
 
-    const logContext = useLogContext();
     const MonitoringContext = useMonitoringSocketContext();
 
     return(
@@ -35,7 +34,7 @@ const EngineLogDialog: React.FC<EngineLogDialogProps> = (props: EngineLogDialogP
             </DialogTitle>
             <DialogContent>
                 <Stack direction={'column'} gap={2}>
-                    <Typography variant="subtitle1">VC Log</Typography>
+                    <Typography variant="subtitle1">Valve Cart Log</Typography>
                     <TextareaAutosize
                         style={{
                             borderRadius: "10px",
@@ -47,9 +46,9 @@ const EngineLogDialog: React.FC<EngineLogDialogProps> = (props: EngineLogDialogP
                         maxRows={15}
                         readOnly
                         placeholder="Valve Cart Log"
-                        value={logContext.valveCartLogs.join('\n')}
+                        value={MonitoringContext.valveCartLogs.join('\n')}
                     />
-                    <Typography variant="subtitle1">MC Log</Typography>
+                    <Typography variant="subtitle1">Mission Control Log</Typography>
                     <TextareaAutosize
                         style={{
                             borderRadius: "10px",
@@ -61,7 +60,7 @@ const EngineLogDialog: React.FC<EngineLogDialogProps> = (props: EngineLogDialogP
                         maxRows={15}
                         readOnly
                         placeholder="Mission Control Log"
-                        value={MonitoringContext.logs.join('\n')}
+                        value={MonitoringContext.missionControlLogs.join('\n')}
                     />
                     <Stack direction="row" justifyContent="space-between">
                         <Button 

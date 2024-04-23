@@ -3,17 +3,12 @@ import {
     PropsWithChildren, 
     useContext, 
     useEffect, 
-    useState, 
-    useReducer 
+    useState
 } from 'react';
 
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 import {
-    PacketType,
-    ControlsActionTypes, 
-    ControlsCommandTypes, 
-    ControlsValveTypes, 
     IControlsPacket,
     IInstrumentationPacket
 } from './monitoring-types';
@@ -21,7 +16,8 @@ import { useLogContext } from '../../components/logging/LogContext';
 
 export interface IMonitoringSocketContext {
     toggleConnection: () => void;
-    logs: string[];
+    missionControlLogs: string[];
+    valveCartLogs: string[];
     controlsPacketOut: IControlsPacket;
     setControlsPacketOut: (packet: IControlsPacket) => void;  
     instrumentationPacketOut: IInstrumentationPacket;
@@ -32,7 +28,8 @@ export interface IMonitoringSocketContext {
 
 export const MonitoringContext = createContext<IMonitoringSocketContext>({
     toggleConnection: () => {},
-    logs: [],
+    missionControlLogs: [],
+    valveCartLogs: [],
     controlsPacketOut: {} as IControlsPacket,
     setControlsPacketOut: (packet: IControlsPacket) => {},
     instrumentationPacketOut: {} as IInstrumentationPacket,
@@ -42,7 +39,8 @@ export const MonitoringContext = createContext<IMonitoringSocketContext>({
 });
 
 export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
-    const [logs, setLogs] = useState<string[]>([]);
+    const [missionControlLogs, setMissionControlLogs] = useState<string[]>([]);
+    const [valveCartLogs, setValveCartLogs] = useState<string[]>([]);
     const [controlsPacketOut, setControlsPacketOut] = useState<IControlsPacket>({} as IControlsPacket);
     const [instrumentationPacketOut, setInstrumentationPacketOut] = useState<IInstrumentationPacket>({} as IInstrumentationPacket);
     const [controlsPacketIn, setControlsPacketIn] = useState({});
@@ -66,12 +64,9 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
     const logContext = useLogContext();
 
     const {
-        sendMessage,
         sendJsonMessage,
         lastMessage,
-        lastJsonMessage,
-        readyState,
-        getWebSocket
+        lastJsonMessage
     } = useWebSocket(`ws://192.168.0.1:8888`, {
         onOpen: () => console.log('Connected to Valve Cart'),
         shouldReconnect: (closeEvent) => true
@@ -79,24 +74,22 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
 
     useEffect(() => {
         if (lastMessage) {
-            setLogs((prevLogs) => [...prevLogs, lastMessage.data]);
-            logContext.addToMissionControlLogs(lastMessage.data);
+            setValveCartLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${lastMessage.data}`]);
         }
     }, [lastMessage]);
 
     useEffect(() => {
         if (lastJsonMessage) {
-            console.log(lastJsonMessage);
-            setLogs((prevLogs) => [...prevLogs, JSON.stringify(lastJsonMessage)]);
-            logContext.addToValveCartLogs(JSON.stringify(lastJsonMessage));
+            // setValveCartLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${lastMessage.data}`]);
         }
     }, [lastJsonMessage]);
 
 
     useEffect(() => {
         if (controlsPacketOut) {
+            console.log("packet out")
+            setMissionControlLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${JSON.stringify(controlsPacketOut)}`]);
             sendJsonMessage(controlsPacketOut);
-            console.log(controlsPacketOut);
         }
     }, [controlsPacketOut]);
     
@@ -110,7 +103,8 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
         <MonitoringContext.Provider 
             value={{ 
                 toggleConnection,
-                logs,
+                valveCartLogs,
+                missionControlLogs,
                 controlsPacketOut,
                 setControlsPacketOut,
                 instrumentationPacketOut,
