@@ -6,7 +6,7 @@ import {
     useState
 } from 'react';
 
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 
 import {
     IControlsPacket,
@@ -60,8 +60,6 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
     const toggleConnection = () => {
         setConnection(!connection);
     };
-
-    const logContext = useLogContext();
 
     const {
         sendJsonMessage,

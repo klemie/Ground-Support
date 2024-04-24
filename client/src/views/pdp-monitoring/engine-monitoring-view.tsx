@@ -25,6 +25,7 @@ import { useMonitoringSocketContext } from "../../utils/monitoring-system/monito
 import EngineLogDialog from "../../components/logging/EngineLog";
 import ConfigurationDialog from "../../components/pdp-monitoring/ConfigurationDialog";
 import useWebSocket from "react-use-websocket";
+import { ControlsActionTypes, ControlsCommandTypes, ControlsValveTypes, IControlsPacket, PacketType } from "../../utils/monitoring-system/monitoring-types";
 
 interface ViewProviderProps {
     rocketId?: string;
@@ -54,9 +55,59 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
 
     useEffect(() => {
         if (currentPacket) {
-            setCurrentPacket(socketContext.logs);
+            setCurrentPacket(socketContext.missionControlLogs);
         }
     }, [currentPacket]);
+
+    const {
+        lastJsonMessage
+    } = useWebSocket(`ws://localhost:8080`, {
+        onOpen: () => console.log('Connected to MCB'),
+        shouldReconnect: (closeEvent) => true
+    });
+
+
+    useEffect(() => {
+        if (lastJsonMessage) {
+            let receivedValve: any | ControlsValveTypes;
+            const valveValue: string = lastJsonMessage && "valve" in (lastJsonMessage as object) 
+                ? lastJsonMessage['valve'] 
+                : '';
+            switch (valveValue)
+            {
+                case 'MEV':
+                    receivedValve = ControlsValveTypes.MEV;
+                    break;
+                case 'N2OF':
+                    receivedValve = ControlsValveTypes.N2OFlow;
+                    break;
+                case 'N2OV':
+                    receivedValve = ControlsValveTypes.N2OVent;
+                    break;
+                case 'N2F':
+                    receivedValve = ControlsValveTypes.N2Flow;
+                    break;
+                case 'RTV':
+                    receivedValve = ControlsValveTypes.RTV;
+                    break;
+                case 'NCV':
+                    receivedValve = ControlsValveTypes.NCV;
+                    break;
+                case 'ERV':
+                    receivedValve = ControlsValveTypes.ERV;
+                    break;
+            }
+
+            const payload: IControlsPacket = {
+                identifier: PacketType.CONTROLS,
+                command: ControlsCommandTypes.CONTROL,
+                valve: receivedValve,
+                action: lastJsonMessage['action'] == 'OPEN' ? ControlsActionTypes.OPEN : ControlsActionTypes.CLOSE
+            };
+            console.log(payload)
+            socketContext.setControlsPacketOut(payload)
+        }
+    }, [lastJsonMessage]);
 
     return (
         <Box sx={{ width: '100vw', height: '100vh' }}>
