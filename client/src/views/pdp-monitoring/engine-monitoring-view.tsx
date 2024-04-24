@@ -6,20 +6,18 @@ import api from "../../services/api";
 // Icons
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import WifiTetheringIcon from '@mui/icons-material/WifiTethering';
-import BuildIcon from '@mui/icons-material/Build';
 import ForumIcon from '@mui/icons-material/Forum';
 
 // Panels
 import ControlsPanel from "../../components/pdp-monitoring/ControlsPanel";
 
 // Components UI
-import { Box, Button, Grid, Paper, Stack, Typography, Tooltip } from "@mui/material";
+import { Box, Button, Grid, Paper, Stack, Typography, Tooltip, ButtonGroup } from "@mui/material";
 
 import Header, { Breadcrumb } from "../../components/Header";
 import StartSequencePanel from "../../components/pdp-monitoring/StartSequencePanel";
 import InstrumentationPanel from "../../components/pdp-monitoring/InstrumentationPanel";
 import ConnectionDialog from "../../components/pdp-monitoring/ConnectionDialog";
-import { IAprsTelemetryPacket } from "../../utils/TelemetryTypes";
 import { Chat, InsertInvitation, Settings } from "@mui/icons-material";
 import { useMonitoringSocketContext } from "../../utils/monitoring-system/monitoring-socket-context";
 import EngineLogDialog from "../../components/logging/EngineLog";
@@ -59,55 +57,55 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
         }
     }, [currentPacket]);
 
-    const {
-        lastJsonMessage
-    } = useWebSocket(`ws://localhost:8080`, {
-        onOpen: () => console.log('Connected to MCB'),
-        shouldReconnect: (closeEvent) => true
-    });
+    // const {
+    //     lastJsonMessage
+    // } = useWebSocket(`ws://localhost:8080`, {
+    //     onOpen: () => console.log('Connected to MCB'),
+    //     shouldReconnect: (closeEvent) => true
+    // });
 
 
-    useEffect(() => {
-        if (lastJsonMessage) {
-            let receivedValve: any | ControlsValveTypes;
-            const valveValue: string = lastJsonMessage && "valve" in (lastJsonMessage as object) 
-                ? lastJsonMessage['valve'] 
-                : '';
-            switch (valveValue)
-            {
-                case 'MEV':
-                    receivedValve = ControlsValveTypes.MEV;
-                    break;
-                case 'N2OF':
-                    receivedValve = ControlsValveTypes.N2OFlow;
-                    break;
-                case 'N2OV':
-                    receivedValve = ControlsValveTypes.N2OVent;
-                    break;
-                case 'N2F':
-                    receivedValve = ControlsValveTypes.N2Flow;
-                    break;
-                case 'RTV':
-                    receivedValve = ControlsValveTypes.RTV;
-                    break;
-                case 'NCV':
-                    receivedValve = ControlsValveTypes.NCV;
-                    break;
-                case 'ERV':
-                    receivedValve = ControlsValveTypes.ERV;
-                    break;
-            }
+    // useEffect(() => {
+    //     if (lastJsonMessage) {
+    //         let receivedValve: any | ControlsValveTypes;
+    //         const valveValue: string = lastJsonMessage && "valve" in (lastJsonMessage as object) 
+    //             ? lastJsonMessage['valve'] 
+    //             : '';
+    //         switch (valveValue)
+    //         {
+    //             case 'MEV':
+    //                 receivedValve = ControlsValveTypes.MEV;
+    //                 break;
+    //             case 'N2OF':
+    //                 receivedValve = ControlsValveTypes.N2OFlow;
+    //                 break;
+    //             case 'N2OV':
+    //                 receivedValve = ControlsValveTypes.N2OVent;
+    //                 break;
+    //             case 'N2F':
+    //                 receivedValve = ControlsValveTypes.N2Flow;
+    //                 break;
+    //             case 'RTV':
+    //                 receivedValve = ControlsValveTypes.RTV;
+    //                 break;
+    //             case 'NCV':
+    //                 receivedValve = ControlsValveTypes.NCV;
+    //                 break;
+    //             case 'ERV':
+    //                 receivedValve = ControlsValveTypes.ERV;
+    //                 break;
+    //         }
 
-            const payload: IControlsPacket = {
-                identifier: PacketType.CONTROLS,
-                command: ControlsCommandTypes.CONTROL,
-                valve: receivedValve,
-                action: lastJsonMessage['action'] == 'OPEN' ? ControlsActionTypes.OPEN : ControlsActionTypes.CLOSE
-            };
-            console.log(payload)
-            socketContext.setControlsPacketOut(payload)
-        }
-    }, [lastJsonMessage]);
+    //         const payload: IControlsPacket = {
+    //             identifier: PacketType.CONTROLS,
+    //             command: ControlsCommandTypes.CONTROL,
+    //             valve: receivedValve,
+    //             action: lastJsonMessage['action'] == 'OPEN' ? ControlsActionTypes.OPEN : ControlsActionTypes.CLOSE
+    //         };
+    //         console.log(payload)
+    //         socketContext.setControlsPacketOut(payload)
+    //     }
+    // }, [lastJsonMessage]);
 
     return (
         <Box sx={{ width: '100vw', height: '100vh' }}>
@@ -144,34 +142,59 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                                     >
                                     <ForumIcon />
                                 </Button>
-                                <Button 
-                                    variant="contained" 
-                                    size={'large'} 
-                                >
-                                    Instrumentation
-                                </Button>
-                                <Button 
-                                    variant="contained" 
-                                    size={'large'} 
-                                    startIcon={<WifiTetheringIcon/>} 
-                                    onClick={() => {
-                                        setOpenConnection(!openConnection);  
-                                        socketContext.toggleConnection();
-                                    }}
-                                >
-                                    Connect
-                                </Button>
+                                <ButtonGroup>
+                                    <Tooltip
+                                        title={"LabJack Status"}
+                                    >
+                                        <Button 
+                                            disabled={!socketContext.isLabJackOn} 
+                                            color={"success"}
+                                            aria-readonly
+                                            >
+                                                LabJack 
+                                        </Button>
+                                    </Tooltip>
+                                    <Tooltip title={"Serial Status"}>
+                                        <Button 
+                                            disabled={!socketContext.isSerialOn} 
+                                            aria-readonly
+                                            color={"success"}
+                                        >
+                                            Serial
+                                        </Button>
+                                    </Tooltip>
+                                    <Tooltip title={"Valve Cart Status"}>
+                                        <Button 
+                                            disabled={!socketContext.isConnected} 
+                                            color={"success"}
+                                        >
+                                            Valve Cart
+                                        </Button>
+                                    </Tooltip>
+                                    <Button 
+                                        variant="contained" 
+                                        size={'large'} 
+                                        startIcon={<WifiTetheringIcon/>} 
+                                        sx={{ width: 180 }}
+                                        onClick={() => {
+                                            // setOpenConnection(!openConnection);  
+                                            socketContext.toggleConnection();
+                                        }}
+                                    >
+                                        {socketContext.connect ? "Disconnect" : "Connect"}
+                                    </Button>
+                                </ButtonGroup>
                             </Stack>
                         </Stack>
                     </Paper>
                 </Grid>
-                <Grid item>
+                <Grid item alignItems={'center'} width={"100%"}>
                     <Stack direction="row" spacing={2}>
                         <Stack direction="column" spacing={2} alignItems={'center'}>
                             <ControlsPanel />
                             <StartSequencePanel />
                         </Stack>
-                        <InstrumentationPanel />
+                        <EngineLogDialog dialog={false} isOpen={false} onClose={()=>{}}/>
                     </Stack>
                 </Grid> 
             </Stack>
@@ -194,8 +217,9 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                 onClose={() => setOpenConnection(false)}
             />
             <EngineLogDialog
-                isOpen={openLog}
                 onClose={() => setOpenLog(false)}
+                isOpen={openLog}
+                dialog
             />
             <ConfigurationDialog 
                 isOpen={openSettings} 
