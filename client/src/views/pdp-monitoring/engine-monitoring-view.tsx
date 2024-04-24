@@ -156,7 +156,7 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                                     startIcon={<WifiTetheringIcon/>} 
                                     onClick={() => {
                                         setOpenConnection(!openConnection);  
-                                        // socketContext.toggleConnection
+                                        socketContext.toggleConnection();
                                     }}
                                 >
                                     Connect

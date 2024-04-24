@@ -45,9 +45,8 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
     const [instrumentationPacketOut, setInstrumentationPacketOut] = useState<IInstrumentationPacket>({} as IInstrumentationPacket);
     const [controlsPacketIn, setControlsPacketIn] = useState({});
     const [instrumentationPacketIn, setInstrumentationPacketIn] = useState({});
-    const [connection, setConnection] = useState<boolean>(true);
-
-    const [packetNumber, setPacketNumber] = useState<number>(0);
+    const [isConnected, setIsConnected] = useState<boolean>(false);
+    const [socketUrl, setSocketUrl] = useState<string | null>(isConnected ? 'ws://192.168.0.1:8888' : null);
 
     const port = import.meta.env.MONITORING_SYSTEM_PORT 
         ? import.meta.env.MONITORING_SYSTEM_PORT 
@@ -57,19 +56,37 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
         : 'ws://localhost/';
 
     // TODO: change to button start socket connection
-    const toggleConnection = () => {
-        setConnection(!connection);
-    };
-
+    
     const {
         sendJsonMessage,
         lastMessage,
-        lastJsonMessage
-    } = useWebSocket(`ws://192.168.0.1:8888`, {
-        onOpen: () => console.log('Connected to Valve Cart'),
-        shouldReconnect: (closeEvent) => true
+        lastJsonMessage,
+        getWebSocket
+    } = useWebSocket(socketUrl, {
+        shouldReconnect: (closeEvent) => isConnected,
+        onClose: () =>{
+            console.log('Disconnected from Valve Cart');
+            setIsConnected(false);
+        },
+        onOpen: () => {
+            console.log('Connected to Valve Cart');
+            setIsConnected(true);
+        },
+        share: true
     });
 
+    const toggleConnection = () => {
+        setIsConnected(prevIsConnected => {
+            if (prevIsConnected) {
+                // If the WebSocket is currently connected, disconnect it
+                setSocketUrl(null);
+            } else {
+                // If the WebSocket is currently disconnected, connect it
+                setSocketUrl(`ws://localhost:8888`);
+            }
+            return !prevIsConnected;
+        });
+    };
     useEffect(() => {
         if (lastMessage) {
             setValveCartLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${lastMessage.data}`]);
