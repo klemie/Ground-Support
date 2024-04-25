@@ -115,10 +115,9 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
                     } else if (lastJsonMessage['data'] == "VC CONNECTED") {
                         setIsConnected(true);
                     }
-                defualt:
-                    setValveCartLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${lastMessage.data}`]);
-                    
+                    break;
             }
+            setValveCartLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${lastMessage.data}`]);
         }
     }, [lastJsonMessage]);
 
