@@ -69,7 +69,7 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
         lastJsonMessage,
         readyState,
         getWebSocket
-    } = useWebSocket(`ws://localhost:8888`, {
+    } = useWebSocket(`ws://192.168.0.1:8888`, {
         onOpen: () => console.log('Connected to Valve Cart'),
         shouldReconnect: (closeEvent) => true
     });
@@ -82,7 +82,7 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
 
     useEffect(() => {
         if (lastJsonMessage) {
-            console.log(lastJsonMessage);
+            console.log("lastJsonMessage", lastJsonMessage);
             setLogs((prevLogs) => [...prevLogs, JSON.stringify(lastJsonMessage)]);
         }
     }, [lastJsonMessage]);
