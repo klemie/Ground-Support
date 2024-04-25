@@ -6,11 +6,12 @@ import { Download, Info } from "@mui/icons-material";
 
 interface EngineLogDialogProps {
     isOpen: boolean;
-    onClose: () => void
+    onClose: () => void;
+    isMobile?: boolean;
 }
 
 const EngineLogDialog: React.FC<EngineLogDialogProps> = (props: EngineLogDialogProps) => {
-    const {isOpen, onClose} = props;
+    const {isOpen, onClose, isMobile} = props;
     
     const handleClose = () => {
         onClose();
@@ -26,6 +27,7 @@ const EngineLogDialog: React.FC<EngineLogDialogProps> = (props: EngineLogDialogP
             onClose={handleClose}
             maxWidth={"md"}
             fullWidth
+            fullScreen={isMobile || false}
             scroll={"paper"}
         >
             <DialogTitle id="alert-dialog-title">
