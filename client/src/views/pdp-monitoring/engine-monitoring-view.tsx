@@ -52,18 +52,11 @@ const PhoneView: React.FC<IPhoneViewProps> = (props: IPhoneViewProps) => {
                 direction="column"
                 gap={3}
                 overflow={'none'}
+                alignItems={'center'}
             >
                 {/* <InstrumentationPanel phone /> */}
+                <ControlsPanel />
                 <Stack direction="row" spacing={2} sx={{ position: "absolute", bottom: 20 }}>
-                    <Tooltip title="PDP Configuration" placement="top" arrow followCursor>
-                        <Fab 
-                            color="primary"                 
-                            sx={{ borderRadius: 2 }}
-                            onClick={() => props.openSettings()}
-                        >
-                            <Settings />
-                        </Fab>
-                    </Tooltip>
                     <Fab 
                         color="primary"
                         onClick={() => props.openLog()}

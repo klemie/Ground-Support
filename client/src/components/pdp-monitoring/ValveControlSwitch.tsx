@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ControlsActionTypes, ControlsCommandTypes, ControlsValveTypes, IControlsPacket, PacketType } from '../../utils/monitoring-system/monitoring-types';
-import { Chip, FormControlLabel, Stack, Switch, Tooltip, Typography } from '@mui/material';
+import { Chip, FormControlLabel, Stack, Switch, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useMonitoringSocketContext } from '../../utils/monitoring-system/monitoring-socket-context';
 
 interface IValveControlProps {
@@ -14,6 +14,8 @@ const ValveControl = (props: IValveControlProps) => {
     const socketContext = useMonitoringSocketContext();
     const [feedBackColor, setFeedBackColor] = useState<any>("default");
     const [feedBackLabel, setFeedBackLabel] = useState<string>("CLOSED");
+    const theme = useTheme();
+    const isNotMobile = useMediaQuery(theme.breakpoints.up('sm'));
 
     const sendCommand = (_: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
         // default closed
@@ -36,7 +38,7 @@ const ValveControl = (props: IValveControlProps) => {
 
     }, [socketContext.controlsPacketIn]);
 
-    return (
+    const ComputerView = () => (
         <Stack direction="column" spacing={0} alignItems={'center'} minWidth={140} marginY={0.5}>
             <FormControlLabel 
                 sx={{ width: "fit-content" }} 
@@ -57,6 +59,24 @@ const ValveControl = (props: IValveControlProps) => {
                 />
             </Tooltip>
         </Stack>
+    );
+
+    const PhoneView = () => (
+        <Stack direction="column" spacing={0} alignItems={'center'} minWidth={140} marginY={0.5}>
+            <Typography>{valveName}</Typography>
+            <Chip 
+                color={feedBackColor}
+                size="small" 
+                label={feedBackLabel} 
+                sx={{ width: "90%", borderRadius: 1 }}
+            />
+        </Stack>
+    );
+
+    return (
+        <>
+            {!isNotMobile ? <PhoneView /> : <ComputerView />}
+        </>
     );
 } 
 
