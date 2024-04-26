@@ -35,6 +35,19 @@ const ValveControl = (props: IValveControlProps) => {
 
     useEffect(() => {
         // Feedback logic
+        console.log('in Valve')
+        console.log(socketContext.controlsPacketIn)
+        if (socketContext.controlsPacketIn['valve'] == valveName) {
+            const action: string = socketContext.controlsPacketIn['action'];
+            setFeedBackLabel(action);
+            if (action == "OPEN") {
+                setFeedBackColor("success");
+            } else if (action == "TRANSIT") {
+                setFeedBackColor("primary");
+            } else if (action == "CLOSE") {
+                setFeedBackColor("default");
+            }
+        }
 
     }, [socketContext.controlsPacketIn]);
 

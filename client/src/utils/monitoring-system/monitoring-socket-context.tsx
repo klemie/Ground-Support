@@ -75,6 +75,8 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
         shouldReconnect: (closeEvent) => connect,
         onClose: () =>{
             console.log('Disconnected from Valve Cart');
+            setValveCartLogs([]);
+            setMissionControlLogs([]);
             setConnect(false);
             setIsConnected(false);
             setIsLabJackOn(false);
@@ -104,7 +106,7 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
     useEffect(() => {
         if (lastJsonMessage) {
             const identifier: any = lastJsonMessage['identifier'];
-            console.log(lastJsonMessage)
+            console.log(`Identifier: ${identifier}`)
             switch (identifier) {
                 case "STARTUP":
                     if (lastJsonMessage['data'] == "S ON") {
@@ -116,15 +118,21 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
                         setIsConnected(true);
                     }
                     break;
+                case "FEEDBACK":
+                    console.log(`in context`)
+                    console.log(lastJsonMessage)
+                    if (lastJsonMessage['data'] != null) {
+                        setControlsPacketIn(lastJsonMessage['data']);
+                    }
+                    break;
             }
             setValveCartLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${lastMessage.data}`]);
         }
-    }, [lastJsonMessage]);
+    }, [lastJsonMessage, lastMessage]);
 
 
     useEffect(() => {
         if (controlsPacketOut) {
-            console.log("packet out")
             setMissionControlLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${JSON.stringify(controlsPacketOut)}`]);
             sendJsonMessage(controlsPacketOut);
         }

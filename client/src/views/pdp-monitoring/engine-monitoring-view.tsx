@@ -23,7 +23,6 @@ import { useMonitoringSocketContext } from "../../utils/monitoring-system/monito
 import EngineLogDialog from "../../components/logging/EngineLog";
 import ConfigurationDialog from "../../components/pdp-monitoring/ConfigurationDialog";
 import groundSupportDarkMode from  "../../static/images/groundSupportDarkMode.svg"
-import { MCBSocketTesting } from "../../utils/monitoring-system/mcb-monitoring-context";
 import useWebSocket from "react-use-websocket";
 import { ControlsActionTypes, ControlsCommandTypes, ControlsValveTypes, IControlsPacket, PacketType } from "../../utils/monitoring-system/monitoring-types";
 
@@ -33,7 +32,6 @@ interface IPhoneViewProps {
 }
 
 const PhoneView: React.FC<IPhoneViewProps> = (props: IPhoneViewProps) => {
-    const [value, setValue] = useState<string>();
     return(
         <Box sx={{ width: '100vw', height: '100vh' }}>
             <Paper elevation={5} sx={{ padding: 2, borderRadius: 0 }}>
