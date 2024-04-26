@@ -3,24 +3,24 @@ import {
     PropsWithChildren, 
     useContext, 
     useEffect, 
-    useState, 
-    useReducer 
+    useState
 } from 'react';
 
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 
 import {
-    PacketType,
-    ControlsActionTypes, 
-    ControlsCommandTypes, 
-    ControlsValveTypes, 
     IControlsPacket,
     IInstrumentationPacket
 } from './monitoring-types';
 
 export interface IMonitoringSocketContext {
     toggleConnection: () => void;
-    logs: string[];
+    connect: boolean;
+    isConnected: boolean;
+    isLabJackOn: boolean;
+    isSerialOn: boolean;
+    missionControlLogs: string[];
+    valveCartLogs: string[];
     controlsPacketOut: IControlsPacket;
     setControlsPacketOut: (packet: IControlsPacket) => void;  
     instrumentationPacketOut: IInstrumentationPacket;
@@ -31,7 +31,12 @@ export interface IMonitoringSocketContext {
 
 export const MonitoringContext = createContext<IMonitoringSocketContext>({
     toggleConnection: () => {},
-    logs: [],
+    connect: false,
+    isConnected: false,
+    isLabJackOn: false,
+    isSerialOn: false,
+    missionControlLogs: [],
+    valveCartLogs: [],
     controlsPacketOut: {} as IControlsPacket,
     setControlsPacketOut: (packet: IControlsPacket) => {},
     instrumentationPacketOut: {} as IInstrumentationPacket,
@@ -41,14 +46,17 @@ export const MonitoringContext = createContext<IMonitoringSocketContext>({
 });
 
 export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
-    const [logs, setLogs] = useState<string[]>([]);
+    const [missionControlLogs, setMissionControlLogs] = useState<string[]>([]);
+    const [isLabJackOn, setIsLabJackOn] = useState<boolean>(false);
+    const [isSerialOn, setIsSerialOn] = useState<boolean>(false);
+    const [valveCartLogs, setValveCartLogs] = useState<string[]>([]);
     const [controlsPacketOut, setControlsPacketOut] = useState<IControlsPacket>({} as IControlsPacket);
     const [instrumentationPacketOut, setInstrumentationPacketOut] = useState<IInstrumentationPacket>({} as IInstrumentationPacket);
     const [controlsPacketIn, setControlsPacketIn] = useState({});
     const [instrumentationPacketIn, setInstrumentationPacketIn] = useState({});
-    const [connection, setConnection] = useState<boolean>(true);
-
-    const [packetNumber, setPacketNumber] = useState<number>(0);
+    const [isConnected, setIsConnected] = useState<boolean>(false);
+    const [connect, setConnect] = useState<boolean>(false);
+    const [socketUrl, setSocketUrl] = useState<string | null>(isConnected ? 'ws://192.168.0.1:8888' : null);
 
     const port = import.meta.env.MONITORING_SYSTEM_PORT 
         ? import.meta.env.MONITORING_SYSTEM_PORT 
@@ -58,38 +66,74 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
         : 'ws://localhost/';
 
     // TODO: change to button start socket connection
-    const toggleConnection = () => {
-        setConnection(!connection);
-    };
-
+    
     const {
-        sendMessage,
         sendJsonMessage,
         lastMessage,
-        lastJsonMessage,
-        readyState,
-        getWebSocket
-    } = useWebSocket(`ws://192.168.0.1:8888`, {
-        onOpen: () => console.log('Connected to Valve Cart'),
-        shouldReconnect: (closeEvent) => true
+        lastJsonMessage
+    } = useWebSocket(socketUrl, {
+        shouldReconnect: (closeEvent) => connect,
+        onClose: () =>{
+            console.log('Disconnected from Valve Cart');
+            setValveCartLogs([]);
+            setMissionControlLogs([]);
+            setConnect(false);
+            setIsConnected(false);
+            setIsLabJackOn(false);
+            setIsSerialOn(false);
+        },
+        onOpen: () => {
+            console.log('Connected to Valve Cart');
+            setConnect(true);
+        },
+        share: true
     });
 
-    useEffect(() => {
-        if (lastMessage) {
-            setLogs((prevLogs) => [...prevLogs, lastMessage.data]);
-        }
-    }, [lastMessage]);
+    const toggleConnection = () => {
+        setConnect(prevIsConnected => {
+            if (prevIsConnected) {
+                // If the WebSocket is currently connected, disconnect it
+                setSocketUrl(null);
+            } else {
+                // If the WebSocket is currently disconnected, connect it
+                setSocketUrl(`ws://192.168.0.1:8888`);
+            }
+            return !prevIsConnected;
+        });
+    };
+
 
     useEffect(() => {
         if (lastJsonMessage) {
-            console.log("lastJsonMessage", lastJsonMessage);
-            setLogs((prevLogs) => [...prevLogs, JSON.stringify(lastJsonMessage)]);
+            const identifier: any = lastJsonMessage['identifier'];
+            console.log(`Identifier: ${identifier}`)
+            switch (identifier) {
+                case "STARTUP":
+                    if (lastJsonMessage['data'] == "S ON") {
+                        console.log("serial is on")
+                        setIsSerialOn(true);
+                    } else if (lastJsonMessage['data'] == "LJ ON") {
+                        setIsLabJackOn(true);
+                    } else if (lastJsonMessage['data'] == "VC CONNECTED") {
+                        setIsConnected(true);
+                    }
+                    break;
+                case "FEEDBACK":
+                    console.log(`in context`)
+                    console.log(lastJsonMessage)
+                    if (lastJsonMessage['data'] != null) {
+                        setControlsPacketIn(lastJsonMessage['data']);
+                    }
+                    break;
+            }
+            setValveCartLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${lastMessage.data}`]);
         }
-    }, [lastJsonMessage]);
+    }, [lastJsonMessage, lastMessage]);
 
 
     useEffect(() => {
         if (controlsPacketOut) {
+            setMissionControlLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${JSON.stringify(controlsPacketOut)}`]);
             sendJsonMessage(controlsPacketOut);
         }
     }, [controlsPacketOut]);
@@ -104,7 +148,12 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
         <MonitoringContext.Provider 
             value={{ 
                 toggleConnection,
-                logs,
+                connect,
+                isLabJackOn,
+                isSerialOn,
+                isConnected,
+                valveCartLogs,
+                missionControlLogs,
                 controlsPacketOut,
                 setControlsPacketOut,
                 instrumentationPacketOut,

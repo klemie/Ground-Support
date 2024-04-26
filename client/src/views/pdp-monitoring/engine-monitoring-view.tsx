@@ -1,33 +1,28 @@
 import React, { useEffect, useState, useReducer, useCallback } from "react";
 
 // Utils
-import { useActiveMission } from "../../utils/ActiveMissionContext";
 import api from "../../services/api";
 
 // Icons
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import WifiTetheringIcon from '@mui/icons-material/WifiTethering';
-import BuildIcon from '@mui/icons-material/Build';
 import ForumIcon from '@mui/icons-material/Forum';
 
 // Panels
 import ControlsPanel from "../../components/pdp-monitoring/ControlsPanel";
 
 // Components UI
-import { Box, Button, Grid, Paper, Stack, Typography, Tooltip, Fab, useTheme, useMediaQuery, BottomNavigation, BottomNavigationAction } from "@mui/material";
 
+import { Box, Button, Grid, Paper, Stack, Typography, Tooltip, Fab, useTheme, useMediaQuery, BottomNavigation, BottomNavigationAction, ButtonGroup } from "@mui/material";
 import Header, { Breadcrumb } from "../../components/Header";
 import StartSequencePanel from "../../components/pdp-monitoring/StartSequencePanel";
-import TelemetryLog from "../../components/logging/TelemetryLog";
 import InstrumentationPanel from "../../components/pdp-monitoring/InstrumentationPanel";
 import ConnectionDialog from "../../components/pdp-monitoring/ConnectionDialog";
-import { IAprsTelemetryPacket } from "../../utils/TelemetryTypes";
 import { Chat, InsertInvitation, Settings } from "@mui/icons-material";
 import { useMonitoringSocketContext } from "../../utils/monitoring-system/monitoring-socket-context";
 import EngineLogDialog from "../../components/logging/EngineLog";
 import ConfigurationDialog from "../../components/pdp-monitoring/ConfigurationDialog";
 import groundSupportDarkMode from  "../../static/images/groundSupportDarkMode.svg"
-import { MCBSocketTesting } from "../../utils/monitoring-system/mcb-monitoring-context";
 import useWebSocket from "react-use-websocket";
 import { ControlsActionTypes, ControlsCommandTypes, ControlsValveTypes, IControlsPacket, PacketType } from "../../utils/monitoring-system/monitoring-types";
 
@@ -37,7 +32,6 @@ interface IPhoneViewProps {
 }
 
 const PhoneView: React.FC<IPhoneViewProps> = (props: IPhoneViewProps) => {
-    const [value, setValue] = useState<string>();
     return(
         <Box sx={{ width: '100vw', height: '100vh' }}>
             <Paper elevation={5} sx={{ padding: 2, borderRadius: 0 }}>
@@ -56,18 +50,11 @@ const PhoneView: React.FC<IPhoneViewProps> = (props: IPhoneViewProps) => {
                 direction="column"
                 gap={3}
                 overflow={'none'}
+                alignItems={'center'}
             >
                 {/* <InstrumentationPanel phone /> */}
+                <ControlsPanel />
                 <Stack direction="row" spacing={2} sx={{ position: "absolute", bottom: 20 }}>
-                    <Tooltip title="PDP Configuration" placement="top" arrow followCursor>
-                        <Fab 
-                            color="primary"                 
-                            sx={{ borderRadius: 2 }}
-                            onClick={() => props.openSettings()}
-                        >
-                            <Settings />
-                        </Fab>
-                    </Tooltip>
                     <Fab 
                         color="primary"
                         onClick={() => props.openLog()}
@@ -92,70 +79,73 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
 		'rgba(0, 94, 184, 1)',
 		'rgba(69, 136, 201, 1)'
 	];
-
-    const breadCrumbs: Breadcrumb[] = [
+    const socketContext = useMonitoringSocketContext();
+	const breadCrumbs: Breadcrumb[] = [
 		{ name: 'Rocket Selection', path: '/', active: false },
 		{ name: 'PDP Monitoring', path: '/', active: true }
 	];
     
-
-    const {
-        sendMessage,
-        sendJsonMessage,
-        lastMessage,
-        lastJsonMessage,
-        readyState,
-        getWebSocket
-    } = useWebSocket(`ws://localhost:8080`, {
-        onOpen: () => console.log('Connected to MCB'),
-        shouldReconnect: (closeEvent) => true
-    });
-
+    const [currentPacket, setCurrentPacket] = useState({});
+    const [openConnection, setOpenConnection] = useState(false);
+    const [openSettings, setOpenSettings] = useState(false);
+    const [openLog, setOpenLog] = useState(false);
 
     useEffect(() => {
-        if (lastJsonMessage) {
-
-            let receivedValve: any;
-            const valveValue:string = lastJsonMessage['valve'];
-            switch (valveValue){
-                case 'MEV':
-                    receivedValve = ControlsValveTypes.MEV;
-                    break;
-                case 'N2OF':
-                    receivedValve = ControlsValveTypes.N2OFlow;
-                    break;
-                case 'N2OV':
-                    receivedValve = ControlsValveTypes.N2OVent;
-                    break;
-                case 'N2F':
-                    receivedValve = ControlsValveTypes.N2Flow;
-                    break;
-                case 'N2V':
-                    receivedValve = ControlsValveTypes.N2Vent;
-                    break;
-                case 'RTV':
-                    receivedValve = ControlsValveTypes.RTV;
-                    break;
-                case 'NCV':
-                    receivedValve = ControlsValveTypes.NCV;
-                    break;
-                case 'EVV':
-                    receivedValve = ControlsValveTypes.EVV;
-                    break;
-                default:
-                    break;
-            }
-
-            const payload: IControlsPacket = {
-                identifier: PacketType.CONTROLS,
-                command: ControlsCommandTypes.CONTROL,
-                valve: receivedValve,
-                action: lastJsonMessage['action'] == 'OPEN' ? ControlsActionTypes.OPEN : ControlsActionTypes.CLOSE
-            };
-            console.log(payload)
-            socketContext.setControlsPacketOut(payload)
+        if (currentPacket) {
+            setCurrentPacket(socketContext.missionControlLogs);
         }
-    }, [lastJsonMessage]);
+    }, [currentPacket]);
+
+
+    // const {
+    //     lastJsonMessage
+    // } = useWebSocket(`ws://localhost:8080`, {
+    //     onOpen: () => console.log('Connected to MCB'),
+    //     shouldReconnect: (closeEvent) => true
+    // });
+
+
+    // useEffect(() => {
+    //     if (lastJsonMessage) {
+    //         let receivedValve: any | ControlsValveTypes;
+    //         const valveValue: string = lastJsonMessage && "valve" in (lastJsonMessage as object) 
+    //             ? lastJsonMessage['valve'] 
+    //             : '';
+    //         switch (valveValue)
+    //         {
+    //             case 'MEV':
+    //                 receivedValve = ControlsValveTypes.MEV;
+    //                 break;
+    //             case 'N2OF':
+    //                 receivedValve = ControlsValveTypes.N2OFlow;
+    //                 break;
+    //             case 'N2OV':
+    //                 receivedValve = ControlsValveTypes.N2OVent;
+    //                 break;
+    //             case 'N2F':
+    //                 receivedValve = ControlsValveTypes.N2Flow;
+    //                 break;
+    //             case 'RTV':
+    //                 receivedValve = ControlsValveTypes.RTV;
+    //                 break;
+    //             case 'NCV':
+    //                 receivedValve = ControlsValveTypes.NCV;
+    //                 break;
+    //             case 'ERV':
+    //                 receivedValve = ControlsValveTypes.ERV;
+    //                 break;
+    //         }
+
+    //         const payload: IControlsPacket = {
+    //             identifier: PacketType.CONTROLS,
+    //             command: ControlsCommandTypes.CONTROL,
+    //             valve: receivedValve,
+    //             action: lastJsonMessage['action'] == 'OPEN' ? ControlsActionTypes.OPEN : ControlsActionTypes.CLOSE
+    //         };
+    //         console.log(payload)
+    //         socketContext.setControlsPacketOut(payload)
+    //     }
+    // }, [lastJsonMessage]);
 
     return (
         <Box sx={{ width: '100vw', height: '100vh' }}>
@@ -192,32 +182,62 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
                                     >
                                     <ForumIcon />
                                 </Button>
-                                <Button 
-                                    variant="contained" 
-                                    size={'large'} 
-                                >
-                                    Instrumentation
-                                </Button>
-                                <Button 
-                                    variant="contained" 
-                                    size={'large'} 
-                                    startIcon={<WifiTetheringIcon/>} 
-                                >
-                                    Connect
-                                </Button>
+                                <ButtonGroup>
+                                    <Tooltip
+                                        title={"LabJack Status"}
+                                    >
+                                        <Button 
+                                            disabled={!socketContext.isLabJackOn} 
+                                            color={"success"}
+                                            aria-readonly
+                                            >
+                                                LabJack 
+                                        </Button>
+                                    </Tooltip>
+                                    <Tooltip title={"Serial Status"}>
+                                        <Button 
+                                            disabled={!socketContext.isSerialOn} 
+                                            aria-readonly
+                                            color={"success"}
+                                        >
+                                            Serial
+                                        </Button>
+                                    </Tooltip>
+                                    <Tooltip title={"Valve Cart Status"}>
+                                        <Button 
+                                            disabled={!socketContext.isConnected} 
+                                            color={"success"}
+                                        >
+                                            Valve Cart
+                                        </Button>
+                                    </Tooltip>
+                                    <Button 
+                                        variant="contained" 
+                                        size={'large'} 
+                                        startIcon={<WifiTetheringIcon/>} 
+                                        sx={{ width: 180 }}
+                                        onClick={() => {
+                                            // setOpenConnection(!openConnection);  
+                                            socketContext.toggleConnection();
+                                        }}
+                                    >
+                                        {socketContext.connect ? "Disconnect" : "Connect"}
+                                    </Button>
+                                </ButtonGroup>
                             </Stack>
                         </Stack>
                     </Paper>
                 </Grid>
-                <Grid item>
+                <Grid item alignItems={'center'} width={"100%"}>
                     <Stack direction="row" spacing={2}>
                         <Stack direction="column" spacing={2} alignItems={'center'}>
                             <ControlsPanel />
                             <StartSequencePanel />
                         </Stack>
-                        <InstrumentationPanel />
+                        <EngineLogDialog dialog={false} isOpen={false} onClose={()=>{}}/>
                     </Stack>
-                </Grid>
+                </Grid> 
+
             </Stack>
             <div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
                 {colors.map((color) => {
@@ -259,7 +279,7 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
 
     useEffect(() => {
         if (currentPacket) {
-            setCurrentPacket(socketContext.logs);
+            setCurrentPacket(socketContext.missionControlLogs);
         }
     }, [currentPacket]);
 
@@ -282,8 +302,9 @@ const EngineMonitoringView: React.FC<ViewProviderProps> = (props: ViewProviderPr
                 onClose={() => setOpenConnection(false)}
             />
             <EngineLogDialog
-                isOpen={openLog}
+                dialog={true}
                 onClose={() => setOpenLog(false)}
+                isOpen={openLog}
                 isMobile={!isNotMobile}
             />
             <ConfigurationDialog 

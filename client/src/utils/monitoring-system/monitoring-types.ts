@@ -16,13 +16,13 @@ interface IBasePacket {
 
 enum ControlsValveTypes {
     MEV = "MEV",
+    PRIME = "PRIME",
     N2OFlow = "N2OF",
     N2OVent = "N2OV",
     N2Flow = "N2F",
-    N2Vent = "N2V",
     RTV = "RTV",
     NCV = "NCV",
-    EVV = "EVV"
+    ERV = "ERV"
 }
 
 enum ControlsActionTypes {
@@ -39,8 +39,8 @@ enum ControlsCommandTypes {
 }
 
 export interface IControlsPacket extends IBasePacket {
-    valve: ControlsValveTypes;
-    action: ControlsActionTypes;
+    valve?: ControlsValveTypes;
+    action?: ControlsActionTypes;
     command: ControlsCommandTypes;
 }
 
