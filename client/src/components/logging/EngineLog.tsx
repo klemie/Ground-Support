@@ -8,10 +8,13 @@ interface EngineLogDialogProps {
     isOpen: boolean;
     onClose: () => void
     dialog: boolean;
+    isMobile?: boolean;
 }
 
+
 const EngineLogDialog: React.FC<EngineLogDialogProps> = (props: EngineLogDialogProps) => {
-    const {isOpen, onClose, dialog} = props;
+    const {isOpen, onClose, isMobile, dialog} = props;
+    
     const handleClose = () => {
         onClose();
     }
@@ -21,6 +24,7 @@ const EngineLogDialog: React.FC<EngineLogDialogProps> = (props: EngineLogDialogP
     }
 
     const MonitoringContext = useMonitoringSocketContext();
+    
     const Content = () => (
         <Stack direction={'column'} gap={2}>
             <Typography variant="subtitle1">Valve Cart Log</Typography>
@@ -71,6 +75,7 @@ const EngineLogDialog: React.FC<EngineLogDialogProps> = (props: EngineLogDialogP
                 onClose={handleClose}
                 maxWidth={"md"}
                 fullWidth
+                fullScreen={isMobile || false}
                 scroll={"paper"}
             >
                 <DialogTitle id="alert-dialog-title">
