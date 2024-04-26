@@ -44,10 +44,16 @@ const ValveControl = (props: IValveControlProps) => {
             setFeedBackLabel(action);
             if (action == "OPEN") {
                 setFeedBackColor("success");
+                if (!isSwitchChecked) {
+                    setIsSwitchChecked(true);
+                }
             } else if (action == "TRANSIT") {
                 setFeedBackColor("primary");
             } else if (action == "CLOSE") {
                 setFeedBackColor("default");
+                if (isSwitchChecked) {
+                    setIsSwitchChecked(false);
+                }
             }
         }
 
