@@ -16,8 +16,9 @@ const ValveControl = (props: IValveControlProps) => {
     const [feedBackLabel, setFeedBackLabel] = useState<string>("CLOSED");
     const theme = useTheme();
     const isNotMobile = useMediaQuery(theme.breakpoints.up('sm'));
+    const [isSwitchChecked, setIsSwitchChecked] = useState<boolean>(false);
 
-    const sendCommand = (_: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+    const sendCommand = (event: React.ChangeEvent<HTMLInputElement>) => {
         // default closed
         const payload: IControlsPacket = {
             identifier: PacketType.CONTROLS,
@@ -25,18 +26,19 @@ const ValveControl = (props: IValveControlProps) => {
             valve: valveName,
             action: ControlsActionTypes.CLOSE
         };
-
-        if (checked) {
+        setIsSwitchChecked(event.target.checked);
+        // console.log(`switch ${valveName}: ${event.target.checked}`);
+        if (event.target.checked) {
             payload.action = ControlsActionTypes.OPEN;
         }
+        // checked = !checked;
+    
         onFlip && onFlip();
         socketContext.setControlsPacketOut(payload);
     }
 
     useEffect(() => {
         // Feedback logic
-        console.log('in Valve')
-        console.log(socketContext.controlsPacketIn)
         if (socketContext.controlsPacketIn['valve'] == valveName) {
             const action: string = socketContext.controlsPacketIn['action'];
             setFeedBackLabel(action);
@@ -57,6 +59,7 @@ const ValveControl = (props: IValveControlProps) => {
                 sx={{ width: "fit-content" }} 
                 disabled={disabled}
                 control={<Switch 
+                    checked={isSwitchChecked}
                     disabled={disabled} 
                     onChange={sendCommand}
                 />} 
