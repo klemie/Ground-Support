@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 
 import '../root/App.css'
 // Views
@@ -7,8 +7,12 @@ import ComponentDocs from '../views/component-docs-view';
 import RocketDetailsView from '../views/rocket-details-view';
 import DataConfigView from '../views/data-config-view';
 import ActiveMissionView from '../views/active-mission';
+
+// Contexts
 import { ActiveMissionProvider } from './ActiveMissionContext';
 import { SocketGateway } from './socket-context';
+import { ViewContextProvider, useViewProvider, ViewKeys } from './viewProviderContext';
+
 
 const ROCKET_SELECT_KEY = 'ROCKET_SELECT';
 const COMPONENT_DOCUMENT_KEY = 'COMPONENT_DOCUMENT';
@@ -26,10 +30,13 @@ interface ViewProviderProps {
 }
 
 export default function ViewProvider(props: ViewProviderProps) {
+	const viewProviderContext = useViewProvider();
+
     const [currentRocketId, setCurrentRocketId] = useState<string>("");
 	const [currentMissionId, setCurrentMissionId] = useState<string>("");
 	const [currentDataConfigId, setCurrentDataConfigId] = useState<string>("");
 
+	// Handlers
 	const updateMissionId = (id: string) => {
 		setCurrentMissionId(id);
 	};
@@ -58,6 +65,12 @@ export default function ViewProvider(props: ViewProviderProps) {
 	const handleToRocketDetails = (): any => {
 		viewDispatch({ type: ROCKET_DETAILS_KEY });
 	};
+
+	useEffect(() => {
+		viewDispatch({ 
+			type: viewProviderContext.viewKey.view 
+		});
+	}, [viewProviderContext.viewKey.view]);
 
 	function viewReducer(state: any, action: any) {
 		switch (action.type) {
@@ -118,9 +131,11 @@ export default function ViewProvider(props: ViewProviderProps) {
 
     return (
 		<div className='app'>
-			<ActiveMissionProvider>
-				{viewState.currentView}
-			</ActiveMissionProvider>
+			<ViewContextProvider>
+				<ActiveMissionProvider>
+					{viewState.currentView}
+				</ActiveMissionProvider>
+			</ViewContextProvider>
         </div>
     );
 }

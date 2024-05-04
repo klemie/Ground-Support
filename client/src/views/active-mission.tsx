@@ -3,6 +3,7 @@ import React, { useEffect, useState, useReducer, useCallback } from "react";
 // Utils
 import { useActiveMission } from "../utils/ActiveMissionContext";
 import { useSocketContext } from "../utils/socket-context";
+import { useViewProvider, ViewKeys } from './viewProviderContext';
 import { IDataPoint, IMission, IMissionPopulated, IRocketPopulated } from "../utils/entities";
 import api from "../services/api";
 
@@ -18,6 +19,7 @@ import RocketSelectionView from './active/flight-report-view';
 // Components UI
 import { Button, Grid, Stack, Step, StepButton, Stepper, styled } from "@mui/material";
 import SettingsDialog from "../components/SettingsDialog";
+
 
 // Active Mission Keys
 const START_UP_KEY = "START_UP";
@@ -41,6 +43,7 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
     const { rocketId, missionId, backToRocketSelection } = props;
     const socketContext = useSocketContext();
     const activeMissionContext = useActiveMission();
+    const viewProviderContext = useViewProvider();
 
     function phaseReducer(state: any, action: any) {
         switch (action.type) {
@@ -184,7 +187,9 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
                                 fullWidth={true}
                                 variant="contained"
                                 color="primary"
-                                onClick={backToRocketSelection}
+                                onClick={()=> {
+                                    viewProviderContext.
+                                }}
                             >
                                 Back
                             </Button>

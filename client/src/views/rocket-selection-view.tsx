@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Grid, Chip, Stack } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import addRocket from '../static/images/AddRocket.svg';
+import { useViewProvider } from '../utils/viewProviderContext';
 
 import '../styles/rocketSelection.css';
 import RocketProfilePopup from '../components/RocketProfilePopup';
@@ -21,6 +22,8 @@ interface RocketSelectProps {
 }
 
 export default function RocketSelectionView(props: RocketSelectProps) {
+	const viewProviderContext = useViewProvider();
+
 	const colors: string[] = [
 		'rgba(255, 197, 87, 1)',
 		'rgba(214, 91, 79, 1)',
@@ -121,7 +124,7 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 				rocketProfileId={rocketProfileId}
 				isOpen={isOpen}
 				onSave={() => {
-					props.setCurrentView();
+					viewProviderContext.updateViewKey(ViewKeys.ROCKET_DETAILS_KEY);
 					setIsOpen(false);
 				}}
 				onClose={() => setIsOpen(false)}
@@ -130,7 +133,7 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 			rocketProfileId={rocketProfileId}
 			isOpen={isOpen}
 			onSave={() => { 
-				props.setCurrentView();
+				viewProviderContext.updateViewKey(ViewKeys.ROCKET_DETAILS_KEY);
 				if(props.setRocketID){props.setRocketID(rocketProfileId)};
 				setIsOpen(false);
 			}}
