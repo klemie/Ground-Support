@@ -71,7 +71,7 @@ export const ViewContextProvider = ({ children }: PropsWithChildren<any>) => {
         viewKey, 
         viewDispatch
     ] = useReducer(viewReducer, {
-        view: ViewKeys.ROCKET_SELECT_KEY
+        view: ViewKeys.PLATFORM_SELECTION_KEY
     });
 
     const updateViewKey = (view: ViewKeys) => {

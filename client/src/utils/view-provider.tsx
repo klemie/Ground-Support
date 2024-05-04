@@ -12,6 +12,7 @@ import ActiveMissionView from '../views/active-mission';
 import { ActiveMissionProvider } from './ActiveMissionContext';
 import { SocketGateway } from './socket-context';
 import { ViewContextProvider, useViewProvider, ViewKeys } from './viewProviderContext';
+import PlatformSelector from '../views/platfrom-selector';
 
 
 const ROCKET_SELECT_KEY = 'ROCKET_SELECT';
@@ -115,6 +116,11 @@ export default function ViewProvider(props: ViewProviderProps) {
 							backToRocketSelection={handleToRocketDetails}
 						/>
 					</SocketGateway>
+				}
+			case ViewKeys.PLATFORM_SELECTION_KEY:
+				return {
+					view: ViewKeys.PLATFORM_SELECTION_KEY,
+					currentView: <PlatformSelector />
 				}
 			default:
 				throw Error(`Unknown action type: ${action.type}`);

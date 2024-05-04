@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Grid, Chip, Stack } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import addRocket from '../static/images/AddRocket.svg';
-import { useViewProvider } from '../utils/viewProviderContext';
+import { ViewKeys, useViewProvider } from '../utils/viewProviderContext';
 
 import '../styles/rocketSelection.css';
 import RocketProfilePopup from '../components/RocketProfilePopup';

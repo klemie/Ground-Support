@@ -3,7 +3,7 @@ import React, { useEffect, useState, useReducer, useCallback } from "react";
 // Utils
 import { useActiveMission } from "../utils/ActiveMissionContext";
 import { useSocketContext } from "../utils/socket-context";
-import { useViewProvider, ViewKeys } from './viewProviderContext';
+import { useViewProvider, ViewKeys } from '../utils/viewProviderContext';
 import { IDataPoint, IMission, IMissionPopulated, IRocketPopulated } from "../utils/entities";
 import api from "../services/api";
 
@@ -188,7 +188,7 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
                                 variant="contained"
                                 color="primary"
                                 onClick={()=> {
-                                    viewProviderContext.
+                                    viewProviderContext.updateViewKey(ViewKeys.ROCKET_SELECT_KEY);
                                 }}
                             >
                                 Back
