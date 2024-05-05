@@ -8,12 +8,14 @@ import { IDataConfig } from '../../utils/entities';
 import api from '../../services/api';
 import ModuleStatus from '../../components/ModuleNew';
 import TelemetryLog from '../../components/TelemetryLog';
+import { ViewKeys } from '../../utils/viewProviderContext';
 
 export default function FlightView() {
 	
 	const breadCrumbs: Breadcrumb[] = [
-		{ name: "New Mission", path: "/", active: false },
-		{ name: "Flight", path: "/", active: true }
+		{ name: "Ground Support", viewKey: ViewKeys.PLATFORM_SELECTION_KEY, active: false },
+		{ name: "New Mission", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: false },
+		{ name: "Flight", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: true }
 	];
 
 	const context = useActiveMission();
@@ -44,7 +46,7 @@ export default function FlightView() {
 			gap={3}
 		>
 			<Grid container>
-				<Header breadCrumbs={breadCrumbs} />
+				<Header icon='ROCKET_MONITORING' breadCrumbs={breadCrumbs} />
 			</Grid>
 			<Grid item>
                 <Paper elevation={2} sx={{ padding: 2 }}>

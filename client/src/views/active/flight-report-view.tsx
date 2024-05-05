@@ -10,14 +10,16 @@ import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DataUpload from '../../components/DataUpload';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import { ViewKeys } from '../../utils/viewProviderContext';
 
 export default function RocketSelectionView() {
     const [missionData, setMissionData] = useState<IMission>();
     const [dataConfigs, setDataConfigs] = useState<IDataConfig[]>([]);
     const [isDataUploadOpen, setIsDataUploadOpen] = useState<boolean>(false);
     const breadCrumbs: Breadcrumb[] = [
-		{ name: missionData?.Name || "New Mission", path: "/", active: false },
-		{ name: "Flight Report", path: "/", active: true }
+        { name: "Ground Support", viewKey: ViewKeys.ROCKET_SELECT_KEY, active: false },
+		{ name: missionData?.Name || "New Mission", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: false },
+		{ name: "Flight Report", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: true }
 	];
 
     const context = useActiveMission()
@@ -51,7 +53,7 @@ export default function RocketSelectionView() {
 			gap={3}
 		>
 			<Grid container>
-				<Header breadCrumbs={breadCrumbs} />
+				<Header icon='ROCKET_MONITORING' breadCrumbs={breadCrumbs} />
 			</Grid>
             <Grid item>
                 <Paper elevation={2} sx={{ padding: 2 }}>

@@ -27,6 +27,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import api from '../services/api';
 import ModuleEditor from '../components/dataConfigEditor/ModuleEditor';
 import lodash from 'lodash';
+import { ViewKeys } from '../utils/viewProviderContext';
 
 interface Props {
     DataConfigID: string;
@@ -36,9 +37,9 @@ interface Props {
 export default function DataConfigView(props: Props) {
     const { DataConfigID, onClickBack } = props;
     const breadCrumbs: Breadcrumb[] = [
-        { name: 'Rocket Selection', path: '/', active: false },
-        { name: 'Rocket Details', path: '/', active: false },
-        { name: 'Data Configuration', path: '/', active: true }
+        { name: 'Rocket Selection', viewKey: ViewKeys.ROCKET_SELECT_KEY, active: false },
+        { name: 'Rocket Details', viewKey: ViewKeys.ROCKET_DETAILS_KEY, active: false },
+        { name: 'Data Configuration', viewKey: ViewKeys.DATA_CONFIG_KEY, active: true }
     ];
 
     const [dataConfig, setDataConfig] = useState<IDataConfig>({Modules: []} as IDataConfig);
@@ -193,7 +194,7 @@ export default function DataConfigView(props: Props) {
                     overflow={'none'}
                 >
                 <Grid item>
-                    <Header breadCrumbs={breadCrumbs} />
+                    <Header icon='ROCKET_MONITORING' breadCrumbs={breadCrumbs} />
                 </Grid>
 
                 <MUIDataTable

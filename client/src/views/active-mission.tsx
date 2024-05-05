@@ -2,7 +2,7 @@ import React, { useEffect, useState, useReducer, useCallback } from "react";
 
 // Utils
 import { useActiveMission } from "../utils/ActiveMissionContext";
-import { useSocketContext } from "../utils/socket-context";
+import { SocketGateway, useSocketContext } from "../utils/socket-context";
 import { useViewProvider, ViewKeys } from '../utils/viewProviderContext';
 import { IDataPoint, IMission, IMissionPopulated, IRocketPopulated } from "../utils/entities";
 import api from "../services/api";
@@ -30,7 +30,6 @@ const FLIGHT_REPORT_KEY = "FLIGHT_REPORT";
 interface ViewProviderProps {
     rocketId: string;
     missionId: string;
-    backToRocketSelection: () => void;
 }
 
 const StyledStepper = styled(Stepper)`
@@ -40,7 +39,7 @@ const StyledStepper = styled(Stepper)`
 `;
 
 const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps) => {
-    const { rocketId, missionId, backToRocketSelection } = props;
+    const { rocketId, missionId } = props;
     const socketContext = useSocketContext();
     const activeMissionContext = useActiveMission();
     const viewProviderContext = useViewProvider();
@@ -142,62 +141,64 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
     }, []);
 
     return (
-        <Grid container spacing={2} direction="row">
-            {/* Any views should be rendered within this grid item */}
-            <Grid item xs={10}>
-                {activePhaseState.currentView}
-            </Grid>
+        <SocketGateway>
+            <Grid container spacing={2} direction="row">
+                {/* Any views should be rendered within this grid item */}
+                <Grid item xs={10}>
+                    {activePhaseState.currentView}
+                </Grid>
 
-            <Grid item xs={2}>
-                <Grid
-                    paddingX="1rem"
-                    paddingY="1rem"
-                    container
-                    direction="column"
-                    justifyContent="space-between"
-                    height="100%"
-                    style={{ height: '100vh', overflow: 'auto' }}
-                >
-                    <Grid item justifyContent="end" alignContent={'end'}>
-                        <SettingsDialog isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-                    </Grid>
+                <Grid item xs={2}>
+                    <Grid
+                        paddingX="1rem"
+                        paddingY="1rem"
+                        container
+                        direction="column"
+                        justifyContent="space-between"
+                        height="100%"
+                        style={{ height: '100vh', overflow: 'auto' }}
+                    >
+                        <Grid item justifyContent="end" alignContent={'end'}>
+                            <SettingsDialog isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+                        </Grid>
 
-                    {/* Page change stepper */}
-                    <Grid container justifyContent="center">
-                        <StyledStepper 
-                            nonLinear 
-                            activeStep={activeStep} 
-                            orientation="vertical" 
-                            sx={{ 'ActiveColor': 'uvr.yellow', '--completed-color': 'uvr.yellow'}}
-                        >
-                            {activeStepKeys.map((label, index) => (
-                                <Step key={label}  completed={completedStep[index]} >
-                                    <StepButton onClick={handleStep(index)}>
-                                        {label}
-                                    </StepButton>
-                                </Step>
-                            ))}
-                        </StyledStepper>
-                    </Grid>
-
-                    <Grid item>
-                        <Stack direction={'row'} gap={2}>
-                            <Button
-                                startIcon={<NavigateBeforeIcon />}
-                                fullWidth={true}
-                                variant="contained"
-                                color="primary"
-                                onClick={()=> {
-                                    viewProviderContext.updateViewKey(ViewKeys.ROCKET_SELECT_KEY);
-                                }}
+                        {/* Page change stepper */}
+                        <Grid container justifyContent="center">
+                            <StyledStepper 
+                                nonLinear 
+                                activeStep={activeStep} 
+                                orientation="vertical" 
+                                sx={{ 'ActiveColor': 'uvr.yellow', '--completed-color': 'uvr.yellow'}}
                             >
-                                Back
-                            </Button>
-                        </Stack>
+                                {activeStepKeys.map((label, index) => (
+                                    <Step key={label}  completed={completedStep[index]} >
+                                        <StepButton onClick={handleStep(index)}>
+                                            {label}
+                                        </StepButton>
+                                    </Step>
+                                ))}
+                            </StyledStepper>
+                        </Grid>
+
+                        <Grid item>
+                            <Stack direction={'row'} gap={2}>
+                                <Button
+                                    startIcon={<NavigateBeforeIcon />}
+                                    fullWidth={true}
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={()=> {
+                                        viewProviderContext.updateViewKey(ViewKeys.ROCKET_SELECT_KEY);
+                                    }}
+                                >
+                                    Back
+                                </Button>
+                            </Stack>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>
-        </Grid>
+        </SocketGateway>
     );
 
 }

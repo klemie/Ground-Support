@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Grid, Chip, Stack } from '@mui/material';
 import Header, { Breadcrumb } from '../components/Header';
 import addRocket from '../static/images/AddRocket.svg';
+import RocketImage from '../static/images/Skookum1.svg';
 import { ViewKeys, useViewProvider } from '../utils/viewProviderContext';
 
 import '../styles/rocketSelection.css';
@@ -17,7 +18,6 @@ interface Rocket {
 }
 
 interface RocketSelectProps {
-	setCurrentView: () => void;
 	setRocketID?: (rocketID: string) => void;
 }
 
@@ -31,7 +31,10 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 		'rgba(69, 136, 201, 1)'
 	];
 
-	const breadCrumbs: Breadcrumb[] = [{ name: 'Rocket Selection', path: '/', active: true }];
+	const breadCrumbs: Breadcrumb[] = [
+		{ name: 'Ground Support', viewKey: ViewKeys.PLATFORM_SELECTION_KEY, active: false },
+		{ name: 'Rocket Selection', viewKey: ViewKeys.ROCKET_SELECT_KEY, active: true }
+	];
 
 	const [isOpen, setIsOpen] = useState(false);
 	const [rocketData, setRocketData] = useState<Rocket[]>([]);
@@ -65,7 +68,7 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 	};
 
 	const getRocketImageURL = (data: Rocket) => {
-		return new URL(`../static/images/${data.image}`, import.meta.url).href;
+		return new URL(`../static/images/Xenia2.svg`, import.meta.url).href;
 	}
 
 	const rockets = rocketData.map((data: Rocket) => {
@@ -73,7 +76,7 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 		return (
 			<div key={data.id.toString()}>
 				<Stack direction="column" spacing={1} onClick={data.active ? () => setRocket(data) : () => {}}>
-					<img src={rocketImageURL} alt="Rocket" width={60}></img>
+					<img src={RocketImage} alt="Rocket" width={40} />
 					<Chip label={data.name} color={data.active ? 'primary' : 'default'} sx={{ fontWeight: 'bold' }} />
 				</Stack>
 			</div>
@@ -91,8 +94,8 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 				sx={{ height: '100%', width: '100%' }}
 			>
 				{/* Page Header */}
-				<Grid item>
-					<Header breadCrumbs={breadCrumbs} />
+				<Grid item justifyContent={'flex-start'}>
+					<Header icon='ROCKET_MONITORING' breadCrumbs={breadCrumbs} />
 				</Grid>
 
 				{/* Rocket Selection */}
@@ -110,6 +113,7 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 				{colors.map((color) => {
 					return (
 						<div
+							key={color}
 							style={{
 								backgroundColor: color,
 								width: '25%',

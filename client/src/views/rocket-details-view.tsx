@@ -22,6 +22,7 @@ import MissionConfig from '../components/MissionConfig';
 import api from '../services/api';
 import _ from 'lodash';
 import { IRocketPopulated } from '../utils/entities';
+import { ViewKeys, useViewProvider } from '../utils/viewProviderContext';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -58,6 +59,9 @@ interface RocketDetailsProps {
 
 export default function RocketDetailsView(props: RocketDetailsProps) {
     const { openActiveMission, setActiveView, toDataConfig } = props;
+
+    const viewProviderContext = useViewProvider();
+
 	const colors: string[] = [
 		'rgba(255, 197, 87, 1)',
 		'rgba(214, 91, 79, 1)',
@@ -66,8 +70,8 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
 	];
 
 	const breadCrumbs: Breadcrumb[] = [
-		{ name: 'Rocket Selection', path: '/', active: false },
-		{ name: 'Rocket Details', path: '/', active: true }
+		{ name: 'Rocket Selection', viewKey: ViewKeys.ROCKET_SELECT_KEY, active: false },
+		{ name: 'Rocket Details', viewKey: ViewKeys.ROCKET_DETAILS_KEY, active: true }
 	];
 
     //value is for tab things
@@ -198,7 +202,7 @@ export default function RocketDetailsView(props: RocketDetailsProps) {
                         </TabPanel>
                         <TabPanel value={value} index={1}>
                             <ComponentsTab
-                                dataConfigClick={toDataConfig}
+                                dataConfigClick={() => viewProviderContext.updateViewKey(ViewKeys.DATA_CONFIG_KEY)}
                                 rocket={rocketData} 
                                 refresh={() => refresh} 
                                 componentIds={rocketData.Components ? rocketData.Components.map((c) => c._id as string) : []} 
