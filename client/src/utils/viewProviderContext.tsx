@@ -2,8 +2,19 @@ import {
     useReducer,
     useContext,
     createContext,
-    PropsWithChildren
+    PropsWithChildren,
+    useState
 } from "react";
+
+// Views
+import RocketSelectionView from "../views/rocket-selection-view";
+import ComponentDocs from "../views/component-docs-view";
+import RocketDetailsView from "../views/rocket-details-view";
+import DataConfigView from "../views/data-config-view";
+import ActiveMissionView from "../views/active-mission";
+import { ActiveMissionProvider } from "./ActiveMissionContext";
+import PlatformSelector from "../views/platform-selector";
+
 
 export enum ViewKeys {
     PLATFORM_SELECTION_KEY = 'PLATFORM_SELECTION',
@@ -18,74 +29,115 @@ export enum ViewKeys {
 }
 
 export interface IViewProviderContext {
-    viewKey: { view: ViewKeys; };
+    viewState: { 
+        viewKey: ViewKeys; 
+        currentView: any 
+    };
     updateViewKey: (view: ViewKeys) => void;
 }
 
 export const ViewProviderContext = createContext<IViewProviderContext>({
-    viewKey: { view: ViewKeys.PLATFORM_SELECTION_KEY },
+    viewState: { 
+        viewKey: ViewKeys.PLATFORM_SELECTION_KEY, 
+        currentView: <PlatformSelector />
+    },
     updateViewKey: (view: ViewKeys) => { }
 });
 
-function viewReducer(_: any, action: any) {
-    switch (action.type) {
-        case ViewKeys.PLATFORM_SELECTION_KEY:
-            return {
-                view: ViewKeys.PLATFORM_SELECTION_KEY
-            }
-        case ViewKeys.ROCKET_SELECT_KEY:
-            return {
-                view: ViewKeys.ROCKET_SELECT_KEY
-            }
-        case ViewKeys.COMPONENT_DOCUMENT_KEY:
-            return {
-                view: ViewKeys.COMPONENT_DOCUMENT_KEY
-            }
-        case ViewKeys.ROCKET_DETAILS_KEY:
-            return {
-                view: ViewKeys.ROCKET_DETAILS_KEY
-            }
-        case ViewKeys.DATA_CONFIG_KEY:
-            return {
-                view: ViewKeys.DATA_CONFIG_KEY
-            }
-        case ViewKeys.ACTIVE_FLIGHT_KEY:
-            return {
-                view: ViewKeys.ACTIVE_FLIGHT_KEY
-            }
-        case ViewKeys.MISSION_REPLAY_KEY:
-            return {
-                view: ViewKeys.MISSION_REPLAY_KEY
-            }
-        case ViewKeys.PDP_MONITORING_KEY:
-            return {
-                view: ViewKeys.PDP_MONITORING_KEY
-            }
-        default:
-            throw Error(`Unknown action type: ${action.type}`);
-    }
-}
-
 export const ViewContextProvider = ({ children }: PropsWithChildren<any>) => {
     const [
-        viewKey, 
+        viewState, 
         viewDispatch
     ] = useReducer(viewReducer, {
-        view: ViewKeys.PLATFORM_SELECTION_KEY
+        viewKey: ViewKeys.PLATFORM_SELECTION_KEY,
+        currentView: <PlatformSelector />
     });
 
+    const [rocketId, setRocketId] = useState<string>("");
+	const [missionId, setMissionId] = useState<string>("");
+	const [dataConfigId, setDataConfigId] = useState<string>("");
+    
+
+    function viewReducer(_: any, action: any) {
+        switch (action.type) {
+            case ViewKeys.PLATFORM_SELECTION_KEY:
+                return {
+                    viewKey: ViewKeys.PLATFORM_SELECTION_KEY,
+                    currentView: <PlatformSelector />
+                }
+            case ViewKeys.ROCKET_SELECT_KEY:
+                return {
+                    viewKey: ViewKeys.ROCKET_SELECT_KEY,
+                    currentView: <RocketSelectionView 
+                        setRocketID={(r) => setRocketId(r)}
+                    />
+                }
+            case ViewKeys.COMPONENT_DOCUMENT_KEY:
+                return {
+                    viewKey: ViewKeys.COMPONENT_DOCUMENT_KEY,
+                    currentView: <ComponentDocs />
+                }
+            case ViewKeys.ROCKET_DETAILS_KEY:
+                return {
+                    viewKey: ViewKeys.ROCKET_DETAILS_KEY,
+                    currentView: <RocketDetailsView 
+                        toDataConfig={() => updateViewKey(ViewKeys.DATA_CONFIG_KEY)} 
+                        setActiveView={() => updateViewKey(ViewKeys.ACTIVE_FLIGHT_KEY)} 
+                        openActiveMission={(id) => {
+                            setMissionId(id);
+                            updateViewKey(ViewKeys.ACTIVE_FLIGHT_KEY);
+                        }} 
+                        rocketID={rocketId}
+                    />
+                }
+            case ViewKeys.DATA_CONFIG_KEY:
+                return {
+                    viewKey: ViewKeys.DATA_CONFIG_KEY,
+                    currentView: <DataConfigView 
+                        onClickBack={() => updateViewKey(ViewKeys.ROCKET_DETAILS_KEY)} 
+                        DataConfigID={dataConfigId}
+                    />
+                }
+            case ViewKeys.ACTIVE_FLIGHT_KEY:
+                return {
+                    viewKey: ViewKeys.ACTIVE_FLIGHT_KEY,
+                    currentView: <ActiveMissionView 
+                        rocketId={rocketId} 
+                        missionId={missionId} 
+                    />
+                }
+            case ViewKeys.MISSION_REPLAY_KEY:
+                return {
+                    viewKey: ViewKeys.MISSION_REPLAY_KEY,
+                    currentView: <></>
+                }
+            case ViewKeys.PDP_MONITORING_KEY:
+                return {
+                    viewKey: ViewKeys.PDP_MONITORING_KEY,
+                    currentView: <></>
+                }
+            default:
+                throw Error(`Unknown action type: ${action.type}`);
+        }
+    }
+
+
     const updateViewKey = (view: ViewKeys) => {
-        viewDispatch({ type: viewKey });
+        viewDispatch({ type: view });
     };
+
+    
 
     return (
         <ViewProviderContext.Provider 
             value={{ 
-                viewKey,
-                updateViewKey
+                viewState,
+                updateViewKey, 
             }}
-        >
-            {children}
+        >   
+            <ActiveMissionProvider>
+                {viewState.currentView}
+            </ActiveMissionProvider>
         </ViewProviderContext.Provider>
     );
 }
