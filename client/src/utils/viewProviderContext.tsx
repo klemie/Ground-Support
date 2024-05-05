@@ -83,10 +83,7 @@ export const ViewContextProvider = ({ children }: PropsWithChildren<any>) => {
             case ViewKeys.ACTIVE_FLIGHT_KEY:
                 return {
                     viewKey: ViewKeys.ACTIVE_FLIGHT_KEY,
-                    currentView: <ActiveMissionView 
-                        rocketId={rocketId} 
-                        missionId={missionId} 
-                    />
+                    currentView: <ActiveMissionView />
                 }
             case ViewKeys.MISSION_REPLAY_KEY:
                 return {

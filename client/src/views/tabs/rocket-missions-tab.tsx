@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { IMission, IRocketPopulated } from '../../utils/entities';
 import MUIDataTable, { MUIDataTableOptions } from 'mui-datatables';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
+import { ViewKeys, useViewProvider } from '../../utils/viewProviderContext';
 
 interface FormattedMissionData {
     Name: string;
@@ -33,6 +34,9 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
     const { rocket, onMissionClick } = props;
     const [ missions, setMissions ] = useState<FormattedMissionData[]>([]);
 
+    const viewProviderContext = useViewProvider();
+    const activeMissionContext = useActiveMission()
+
     const getMissions = useCallback(async () => {
         rocket.Missions.map(async (mission: IMission) => {
             const m: FormattedMissionData = {
@@ -57,19 +61,21 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
         getMissions();
     }, []);
     
-    const activeMissionContext = useActiveMission()
-
 
     const options: MUIDataTableOptions = {
         filter: true,
         responsive: 'standard',
         onRowClick: (rowData: any[], rowMeta: { dataIndex: number, rowIndex: number }) => {
+            console.log('Navigating to mission replay view');
             activeMissionContext.updateMission(rocket.Missions[rowMeta.dataIndex]);
             activeMissionContext.updateRocket(rocket);
-            console.log(activeMissionContext.activeMission);
-            onMissionClick(missions[rowMeta.dataIndex]);
+            viewProviderContext.updateViewKey(ViewKeys.ACTIVE_FLIGHT_KEY)
+            //What do I put here to get the new view?
+            // dataConfigClick={ROCKET_DETAILS_KEY}
         }
     };
+
+    
 
     const columns: ITableColumns[] = [
         {

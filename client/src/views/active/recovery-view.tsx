@@ -20,15 +20,16 @@ import RouteIcon from '@mui/icons-material/Route';
 import { ViewKeys } from '../../utils/viewProviderContext';
 
 export default function RecoveryView() {
+    const activeContext = useActiveMission();
 	const breadCrumbs: Breadcrumb[] = [
 		{ name: "Ground Support", viewKey: ViewKeys.PLATFORM_SELECTION_KEY, active: false },
-		{ name: "New Mission", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: false },
+        { name: activeContext.rocket.Name, viewKey: ViewKeys.ROCKET_DETAILS_KEY, active: false },
+		{ name: activeContext.activeMission.Name || "New Mission", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: true },
 		{ name: "Recovery", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: true }
 	];
 
     const [detailsOpen, setDetailsOpen] = useState(false);
 
-    const activeContext = useActiveMission();
 
     const defaultProps = {
         center: {

@@ -12,17 +12,18 @@ import DataUpload from '../../components/DataUpload';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import { ViewKeys } from '../../utils/viewProviderContext';
 
-export default function RocketSelectionView() {
+export default function FlightReportView() {
+    const context = useActiveMission()
     const [missionData, setMissionData] = useState<IMission>();
     const [dataConfigs, setDataConfigs] = useState<IDataConfig[]>([]);
     const [isDataUploadOpen, setIsDataUploadOpen] = useState<boolean>(false);
     const breadCrumbs: Breadcrumb[] = [
         { name: "Ground Support", viewKey: ViewKeys.ROCKET_SELECT_KEY, active: false },
-		{ name: missionData?.Name || "New Mission", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: false },
+        { name: context.rocket.Name, viewKey: ViewKeys.ROCKET_DETAILS_KEY, active: false },
+		{ name: missionData?.Name || "New Mission", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: true },
 		{ name: "Flight Report", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: true }
 	];
 
-    const context = useActiveMission()
     useEffect(()=> {
         // reset state 
         setMissionData(undefined);

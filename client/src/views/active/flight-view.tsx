@@ -12,13 +12,14 @@ import { ViewKeys } from '../../utils/viewProviderContext';
 
 export default function FlightView() {
 	
+	const context = useActiveMission();
 	const breadCrumbs: Breadcrumb[] = [
 		{ name: "Ground Support", viewKey: ViewKeys.PLATFORM_SELECTION_KEY, active: false },
-		{ name: "New Mission", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: false },
+		{ name: context.rocket.Name, viewKey: ViewKeys.ROCKET_DETAILS_KEY, active: false },
+		{ name: context.activeMission.Name || "New Mission", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: true },
 		{ name: "Flight", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: true }
 	];
 
-	const context = useActiveMission();
 
 	const [dataConfigs, setDataConfigs] = useState<IDataConfig[]>([]);
 

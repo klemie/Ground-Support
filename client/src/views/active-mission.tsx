@@ -19,6 +19,7 @@ import RocketSelectionView from './active/flight-report-view';
 // Components UI
 import { Button, Grid, Stack, Step, StepButton, Stepper, styled } from "@mui/material";
 import SettingsDialog from "../components/SettingsDialog";
+import FlightReportView from "./active/flight-report-view";
 
 
 // Active Mission Keys
@@ -27,10 +28,6 @@ const FLIGHT_KEY = "FLIGHT";
 const RECOVERY_KEY = "RECOVERY";
 const FLIGHT_REPORT_KEY = "FLIGHT_REPORT"; 
     
-interface ViewProviderProps {
-    rocketId: string;
-    missionId: string;
-}
 
 const StyledStepper = styled(Stepper)`
     .MuiStepper-root {
@@ -38,8 +35,7 @@ const StyledStepper = styled(Stepper)`
     }
 `;
 
-const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps) => {
-    const { rocketId, missionId } = props;
+const ActiveMissionView: React.FC = () => {
     const socketContext = useSocketContext();
     const activeMissionContext = useActiveMission();
     const viewProviderContext = useViewProvider();
@@ -64,7 +60,7 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
             case FLIGHT_REPORT_KEY:
                 return {
                     phase: FLIGHT_REPORT_KEY,
-                    currentView: <RocketSelectionView />
+                    currentView: <FlightReportView />
                 }
             default:
                 throw Error(`Unknown action type: ${action.type}`);
@@ -118,22 +114,22 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
     const activeContext = useActiveMission();
 
     const getActiveMission = useCallback(async () => {
-        const mId = activeContext.activeMission._id ? activeContext.activeMission._id : '';
+        const mId = activeContext.activeMission._id ? activeContext.activeMission._id : activeContext.missionId;
         if (mId === "") return;
         const response = await api.getMission(mId);
         const data = response.data as IMissionPopulated;
         console.log(data)
         activeContext.updateMission(data);
         setActiveMission(data);
-    }, [missionId]);
+    }, [activeContext.missionId]);
 
     const getActiveRocket = useCallback(async (): Promise<IRocketPopulated> => {
-        const response = await api.getRocket(rocketId);
+        const response = await api.getRocket(activeContext.rocketId || '');
         const data = response.data as IRocketPopulated;
         activeContext.updateRocket(data);
         setRocket(data);
         return data;
-    }, [rocketId]);
+    }, [activeContext.rocketId]);
 
     useEffect(() => {
         getActiveRocket();
@@ -188,7 +184,7 @@ const ActiveMissionView: React.FC<ViewProviderProps> = (props: ViewProviderProps
                                     variant="contained"
                                     color="primary"
                                     onClick={()=> {
-                                        viewProviderContext.updateViewKey(ViewKeys.ROCKET_SELECT_KEY);
+                                        viewProviderContext.updateViewKey(ViewKeys.ROCKET_DETAILS_KEY);
                                     }}
                                 >
                                     Back
