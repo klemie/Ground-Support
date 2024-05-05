@@ -109,7 +109,7 @@ export default function StartUpView() {
                         <Stack direction="row" spacing={5} justifyContent={'space-between'} alignItems={'center'}>
 							<Stack direction="row" alignItems={'center'} spacing={2}>
                                 <RocketLaunchIcon sx={{ color: 'uvr.yellow' }} /> 
-                                <Typography align='left' variant='h6'>
+                                <Typography align='left' variant='h5'>
                                     {activeContext.rocket.Name || 'Mission Not found'}
                                 </Typography>
                             </Stack>

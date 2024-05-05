@@ -12,18 +12,23 @@ const PlatformSelector: React.FC = () => {
 		{ name: "Ground Support", viewKey: ViewKeys.PLATFORM_SELECTION_KEY, active: true }
 	];
     const viewProviderContext = useViewProvider();
+    const colors: string[] = [
+		'rgba(255, 197, 87, 1)',
+		'rgba(214, 91, 79, 1)',
+		'rgba(0, 94, 184, 1)',
+		'rgba(69, 136, 201, 1)'
+	];
     return (
-        <Stack padding={2} alignItems={'flex-start'}>
+        <Stack padding={4} alignItems={'flex-start'} height={'100vh'}>
             <Header icon='PLATFORM_HUB' breadCrumbs={breadCrumbs} />
             <Grid 
                 direction="row"
-                spacing={5}
                 rowGap={2}
                 columnGap={5}
                 container
                 sx={{
                     minWidth: "100%",
-                    minHeight: "100vh",
+                    minHeight: "100%",
                     display: "flex",
                     flexDirection: "row",
                     justifyContent: "center"
@@ -31,7 +36,7 @@ const PlatformSelector: React.FC = () => {
                 alignItems="center"
             >
                 <motion.div
-                    whileHover={{ scale: 1.10 }}
+                    whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 100, damping: 10, bounce: 0 }}
                 >      
                     <Card
@@ -46,7 +51,7 @@ const PlatformSelector: React.FC = () => {
                                     <img height={40} src={GroundSupportDarkMode}/>
                                     <Typography 
                                         color="text.primary"
-                                        variant="h6"
+                                        variant="h5"
                                         fontWeight={600}
                                     >
                                         Rocket Monitoring 
@@ -67,7 +72,7 @@ const PlatformSelector: React.FC = () => {
                                     <img height={40} src={MonitoringSystemLogo}/> 
                                     <Typography 
                                         color="text.primary"
-                                        variant="h6"
+                                        variant="h5"
                                         fontWeight={600}
                                     >
                                         Engine Monitoring 
@@ -77,6 +82,20 @@ const PlatformSelector: React.FC = () => {
                         />
                     </Card>
                 </motion.div>
+                <div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
+				{colors.map((color) => {
+					return (
+						<div
+							style={{
+								backgroundColor: color,
+								width: '25%',
+								height: '1vh',
+								float: 'left'
+							}}
+						/>
+					);
+				})}
+			</div>
             </Grid>
         </Stack>
     );

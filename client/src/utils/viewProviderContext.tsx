@@ -51,12 +51,7 @@ export const ViewContextProvider = ({ children }: PropsWithChildren<any>) => {
     ] = useReducer(viewReducer, {
         viewKey: ViewKeys.PLATFORM_SELECTION_KEY,
         currentView: <PlatformSelector />
-    });
-
-    const [rocketId, setRocketId] = useState<string>("");
-	const [missionId, setMissionId] = useState<string>("");
-	const [dataConfigId, setDataConfigId] = useState<string>("");
-    
+    });    
 
     function viewReducer(_: any, action: any) {
         switch (action.type) {
@@ -68,9 +63,7 @@ export const ViewContextProvider = ({ children }: PropsWithChildren<any>) => {
             case ViewKeys.ROCKET_SELECT_KEY:
                 return {
                     viewKey: ViewKeys.ROCKET_SELECT_KEY,
-                    currentView: <RocketSelectionView 
-                        setRocketID={(r) => setRocketId(r)}
-                    />
+                    currentView: <RocketSelectionView />
                 }
             case ViewKeys.COMPONENT_DOCUMENT_KEY:
                 return {
@@ -80,23 +73,12 @@ export const ViewContextProvider = ({ children }: PropsWithChildren<any>) => {
             case ViewKeys.ROCKET_DETAILS_KEY:
                 return {
                     viewKey: ViewKeys.ROCKET_DETAILS_KEY,
-                    currentView: <RocketDetailsView 
-                        toDataConfig={() => updateViewKey(ViewKeys.DATA_CONFIG_KEY)} 
-                        setActiveView={() => updateViewKey(ViewKeys.ACTIVE_FLIGHT_KEY)} 
-                        openActiveMission={(id) => {
-                            setMissionId(id);
-                            updateViewKey(ViewKeys.ACTIVE_FLIGHT_KEY);
-                        }} 
-                        rocketID={rocketId}
-                    />
+                    currentView: <RocketDetailsView />
                 }
             case ViewKeys.DATA_CONFIG_KEY:
                 return {
                     viewKey: ViewKeys.DATA_CONFIG_KEY,
-                    currentView: <DataConfigView 
-                        onClickBack={() => updateViewKey(ViewKeys.ROCKET_DETAILS_KEY)} 
-                        DataConfigID={dataConfigId}
-                    />
+                    currentView: <DataConfigView />
                 }
             case ViewKeys.ACTIVE_FLIGHT_KEY:
                 return {

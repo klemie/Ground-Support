@@ -26,7 +26,6 @@ const handleClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 
 const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
     const viewProviderContext = useViewProvider();
-    const isDarkTheme = useTheme().palette.mode === 'dark';
     const crumbs = props.breadCrumbs.map((crumb: Breadcrumb) => {
         if (!crumb.active) {
             return (
@@ -63,7 +62,6 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
             direction="row"
             spacing={1}
             alignItems="center" 
-            justifyContent={"center"}
         >
             <img 
                 src={props.icon == "PLATFORM_HUB" 

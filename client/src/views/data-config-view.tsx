@@ -27,16 +27,15 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import api from '../services/api';
 import ModuleEditor from '../components/dataConfigEditor/ModuleEditor';
 import lodash from 'lodash';
-import { ViewKeys } from '../utils/viewProviderContext';
+import { ViewKeys, useViewProvider } from '../utils/viewProviderContext';
+import { useActiveMission } from '../utils/ActiveMissionContext';
 
-interface Props {
-    DataConfigID: string;
-    onClickBack: () => void;
-}
+export default function DataConfigView() {
+    const activeMissionContext = useActiveMission();
+    const viewProviderContext = useViewProvider();
 
-export default function DataConfigView(props: Props) {
-    const { DataConfigID, onClickBack } = props;
     const breadCrumbs: Breadcrumb[] = [
+        { name: 'Ground Support', viewKey: ViewKeys.PLATFORM_SELECTION_KEY, active: false },
         { name: 'Rocket Selection', viewKey: ViewKeys.ROCKET_SELECT_KEY, active: false },
         { name: 'Rocket Details', viewKey: ViewKeys.ROCKET_DETAILS_KEY, active: false },
         { name: 'Data Configuration', viewKey: ViewKeys.DATA_CONFIG_KEY, active: true }
@@ -47,9 +46,9 @@ export default function DataConfigView(props: Props) {
     const [openModuleIndex, setOpenModuleIndex] = useState<number>(0)
 
     const getDataConfig = useCallback(async () => {
-        const dataConfigResponse = await api.getDataConfig(DataConfigID);
+        const dataConfigResponse = await api.getDataConfig(activeMissionContext.dataConfigId || '');
         setDataConfig(dataConfigResponse.data as IDataConfig);
-    }, [DataConfigID]);
+    }, [activeMissionContext.dataConfigId]);
 
     const columns = [
         {
@@ -145,7 +144,9 @@ export default function DataConfigView(props: Props) {
 
     const data = dataConfig.Modules.map((module, index) => {
         return [
-            module.Name, module.FieldGroups.length, <EditButtons dataConfig={dataConfig} moduleIndex={index}/>
+            module.Name, 
+            module.FieldGroups.length, 
+            <EditButtons dataConfig={dataConfig} moduleIndex={index}/>
         ]
     });
 
@@ -188,7 +189,7 @@ export default function DataConfigView(props: Props) {
             <div style={{width:'100vw',height:'100%'}}>   
                 <Stack
                     height={'100%'}
-                    padding={3}
+                    padding={4}
                     direction="column"
                     gap={3}
                     overflow={'none'}
@@ -207,7 +208,7 @@ export default function DataConfigView(props: Props) {
                 <Button
                     variant="contained" 
                     color="primary" 
-                    onClick={onClickBack} 
+                    onClick={() => viewProviderContext.updateViewKey(ViewKeys.ROCKET_DETAILS_KEY)} 
                     startIcon={<NavigateBeforeIcon />}
                 >
                     Back
@@ -279,6 +280,7 @@ function NestedTable({ module }: { module: any }) {
             {module.FieldGroups.map((fieldGroup: any, index: number) => (
                 <Grid key={index} item xs={10} sm={8} md={6} lg={4} style={{ padding: '8px' }}>
                     <MUIDataTable
+                        key={index}
                         title={fieldGroup.Name}
                         data={fieldData[index]}
                         columns={fieldColumns}

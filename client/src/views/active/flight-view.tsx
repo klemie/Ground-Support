@@ -53,7 +53,7 @@ export default function FlightView() {
                     <Stack direction="row" spacing={5} justifyContent={'space-between'} alignItems={'center'}>
                         <Stack direction="row" alignItems={'center'} spacing={2}>
 							<AirplaneTicketIcon sx={{ color: 'uvr.red' }} />
-                            <Typography align='left' variant='h6'>
+                            <Typography align='left' variant='h5'>
                                 {context.activeMission.Name + ' Flight Report'|| 'Mission Not found'}
                             </Typography>
                         </Stack>

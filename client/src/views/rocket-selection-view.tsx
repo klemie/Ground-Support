@@ -9,6 +9,7 @@ import '../styles/rocketSelection.css';
 import RocketProfilePopup from '../components/RocketProfilePopup';
 import api from '../services/api';
 import { IRocketPopulated } from '../utils/entities';
+import { useActiveMission } from '../utils/ActiveMissionContext';
 
 interface Rocket {
 	id: string;
@@ -17,12 +18,11 @@ interface Rocket {
 	active: boolean;
 }
 
-interface RocketSelectProps {
-	setRocketID?: (rocketID: string) => void;
-}
 
-export default function RocketSelectionView(props: RocketSelectProps) {
+
+export default function RocketSelectionView() {
 	const viewProviderContext = useViewProvider();
+	const activeMissionContext = useActiveMission();
 
 	const colors: string[] = [
 		'rgba(255, 197, 87, 1)',
@@ -138,7 +138,7 @@ export default function RocketSelectionView(props: RocketSelectProps) {
 			isOpen={isOpen}
 			onSave={() => { 
 				viewProviderContext.updateViewKey(ViewKeys.ROCKET_DETAILS_KEY);
-				if(props.setRocketID){props.setRocketID(rocketProfileId)};
+				activeMissionContext.updateRocketId(rocketProfileId);
 				setIsOpen(false);
 			}}
 			onClose={() => setIsOpen(false)}

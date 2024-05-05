@@ -54,7 +54,7 @@ export default function RecoveryView() {
                     <Stack direction="row" spacing={5} justifyContent={'space-between'} alignItems={'center'}>
                         <Stack direction="row" alignItems={'center'} spacing={2}>
                             <RouteIcon color={'primary'} /> 
-                            <Typography align='left' variant='h6'>
+                            <Typography align='left' variant='h5'>
                                 {activeContext.activeMission.Name || 'Mission Not found'}
                             </Typography>
                         </Stack>
