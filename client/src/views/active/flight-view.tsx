@@ -7,8 +7,8 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import { IDataConfig } from '../../utils/entities';
 import api from '../../services/api';
 import ModuleStatus from '../../components/ModuleNew';
-import TelemetryLog from '../../components/TelemetryLog';
 import { ViewKeys } from '../../utils/viewProviderContext';
+
 
 export default function FlightView() {
 	

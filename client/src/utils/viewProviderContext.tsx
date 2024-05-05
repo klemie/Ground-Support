@@ -14,6 +14,7 @@ import DataConfigView from "../views/data-config-view";
 import ActiveMissionView from "../views/active-mission";
 import { ActiveMissionProvider } from "./ActiveMissionContext";
 import PlatformSelector from "../views/platform-selector";
+import EngineMonitoringView from "../views/pdp-monitoring/engine-monitoring-view";
 
 
 export enum ViewKeys {
@@ -93,7 +94,7 @@ export const ViewContextProvider = ({ children }: PropsWithChildren<any>) => {
             case ViewKeys.PDP_MONITORING_KEY:
                 return {
                     viewKey: ViewKeys.PDP_MONITORING_KEY,
-                    currentView: <></>
+                    currentView: <EngineMonitoringView />
                 }
             default:
                 throw Error(`Unknown action type: ${action.type}`);

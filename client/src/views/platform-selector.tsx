@@ -65,7 +65,12 @@ const PlatformSelector: React.FC = () => {
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "just", stiffness: 100, damping: 10, bounce: 0 }}
                 >
-                    <Card sx={{ padding: 1}}>
+                    <Card 
+                        sx={{ padding: 1}}
+                        onClick={() => {
+                            viewProviderContext.updateViewKey(ViewKeys.PDP_MONITORING_KEY)
+                        }}
+                    >
                         <CardHeader 
                             title={
                                 <Stack direction={'row'} columnGap={1.5} alignItems="center" >
@@ -86,6 +91,7 @@ const PlatformSelector: React.FC = () => {
 				{colors.map((color) => {
 					return (
 						<div
+                            key={color}
 							style={{
 								backgroundColor: color,
 								width: '25%',

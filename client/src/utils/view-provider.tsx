@@ -1,9 +1,6 @@
 import { useEffect, useReducer, useState } from 'react';
-
-import '../root/App.css'
-
 import { ViewContextProvider, useViewProvider } from './viewProviderContext';
-
+import '../root/App.css'
 
 export default function ViewProvider() {
 	const viewProviderContext = useViewProvider();
