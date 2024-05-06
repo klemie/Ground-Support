@@ -5,6 +5,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useMemo, useState } from 'react';
 import { getDesignTokens } from './Theme';
 import { SocketGateway } from '../utils/socket-context';
+import { MonitoringGateway } from '../utils/monitoring-system/monitoring-socket-context';
 
 function App() {
 	const [mode, setMode] = useState<PaletteMode>('dark');
@@ -20,12 +21,12 @@ function App() {
 	const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 
 	return (
-		<SocketGateway>
+		<MonitoringGateway>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
 				<ViewProvider />
 			</ThemeProvider>
-		</SocketGateway>
+		</MonitoringGateway>
 	);
 }
 
