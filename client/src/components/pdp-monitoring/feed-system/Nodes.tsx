@@ -61,7 +61,7 @@ const PAndIDNode = ({ data, isConnectable, selected }) => {
             isConnectable={isConnectable}
           />
         </Stack>
-        <ValveControl valveName='MEC' />
+        {/* <ValveControl valveName='MEC' /> */}
       </Stack>
      
     </>

@@ -7,6 +7,7 @@ import api from "../../services/api";
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import WifiTetheringIcon from '@mui/icons-material/WifiTethering';
 import ForumIcon from '@mui/icons-material/Forum';
+import SettingsInputComponentIcon from '@mui/icons-material/SettingsInputComponent';
 
 // Panels
 import ControlsPanel from "../../components/pdp-monitoring/ControlsPanel";
@@ -27,6 +28,7 @@ import useWebSocket from "react-use-websocket";
 import { ControlsActionTypes, ControlsCommandTypes, ControlsValveTypes, IControlsPacket, PacketType } from "../../utils/monitoring-system/monitoring-types";
 import { ViewKeys } from "../../utils/viewProviderContext";
 import FeedSystem from "../../components/pdp-monitoring/feed-system/FeedSystem";
+import ConfigurationDrawer from "../../components/pdp-monitoring/feed-system/ConfigurationDrawer";
 
 interface IPhoneViewProps {
    openSettings: () => void;
@@ -90,6 +92,7 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
     const [currentPacket, setCurrentPacket] = useState({});
     const [openConnection, setOpenConnection] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
+    const [openConfiguration, setOpenConfiguration] = useState(false);
     const [openLog, setOpenLog] = useState(false);
 
     useEffect(() => {
@@ -184,6 +187,12 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
                                     >
                                     <ForumIcon />
                                 </Button>
+                                <Button 
+                                    variant={'contained'}
+                                    onClick={() => setOpenConfiguration(true)}
+                                    >
+                                    <SettingsInputComponentIcon />
+                                </Button>
                                 <ButtonGroup>
                                     <Tooltip
                                         title={"LabJack Status"}
@@ -232,7 +241,11 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
                 </Grid>
                 <Grid item alignItems={'center'} width={"100%"}>
                 </Grid> 
-                <FeedSystem />
+                <>
+                    <FeedSystem />
+                    <ConfigurationDrawer isOpen={openConfiguration} closeDrawer={() => setOpenConfiguration(false)} />
+                </>
+
             </Stack>
             <div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
                 {colors.map((color) => {
