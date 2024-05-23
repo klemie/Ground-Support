@@ -26,6 +26,7 @@ import groundSupportDarkMode from  "../../static/images/groundSupportDarkMode.sv
 import useWebSocket from "react-use-websocket";
 import { ControlsActionTypes, ControlsCommandTypes, ControlsValveTypes, IControlsPacket, PacketType } from "../../utils/monitoring-system/monitoring-types";
 import { ViewKeys } from "../../utils/viewProviderContext";
+import FeedSystem from "../../components/pdp-monitoring/feed-system/FeedSystem";
 
 interface IPhoneViewProps {
    openSettings: () => void;
@@ -230,15 +231,8 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
                     </Paper>
                 </Grid>
                 <Grid item alignItems={'center'} width={"100%"}>
-                    <Stack direction="row" spacing={2}>
-                        <Stack direction="column" spacing={2} alignItems={'center'}>
-                            <ControlsPanel />
-                            <StartSequencePanel />
-                        </Stack>
-                        <EngineLogDialog dialog={false} isOpen={false} onClose={()=>{}}/>
-                    </Stack>
                 </Grid> 
-
+                <FeedSystem />
             </Stack>
             <div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
                 {colors.map((color) => {
