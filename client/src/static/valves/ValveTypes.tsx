@@ -9,42 +9,41 @@ import ValveRegulator from './ValveRegulator.svg'
 import ValvePressureRegulator from './ValvePressureRegulator.svg';
 import ValveNeedle from './ValveNeedle.svg';
 
-export const DefaultValve = () => (
-    <img src={ValveDefault} alt="Default Valve" />
-);
+export const DefaultValve = ValveDefault;
 
-export const CheckValve = () => (
-    <img src={ValveCheck} alt="Check Valve" />
-);
+export const CheckValve = ValveCheck;
 
-export const HandOperatedValve = () => (
-    <img src={ValveHandOperated} alt="Hand Operated Valve" />
-);
+export const HandOperatedValve = ValveHandOperated;
 
-export const MotorValve = () => (
-    <img src={ValveMotor} alt="Motor Valve" />
-);
+export const MotorValve = ValveMotor;
 
-export const PneumaticValve = () => (
-    <img src={ValvePneumatic} alt="Pneumatic Valve" />
-);
+export const PneumaticValve = ValvePneumatic;
 
-export const SolenoidValve = () => (
-    <img src={ValveSolenoid} alt="Solenoid Valve" />
-);
+export const SolenoidValve = ValveSolenoid;
 
-export const SpringValve = () => (
-    <img src={ValveSpring} alt="Spring Valve" />
-);
+export const SpringValve = ValveSpring;
 
-export const RegulatorValve = () => (
-    <img src={ValveRegulator} alt="Regulator Valve" />
-);
+export const RegulatorValve = ValveRegulator;
 
-export const PressureRegulatorValve = () => (
-    <img src={ValvePressureRegulator} alt="Pressure Regulator Valve" />
-);
+export const PressureRegulatorValve = ValvePressureRegulator;
 
-export const NeedleValve = () => (
-    <img src={ValveNeedle} alt="Needle Valve" />
-);
+export const NeedleValve = ValveNeedle;
+
+export const ValveTypes = {
+    DefaultValve,
+    CheckValve,
+    HandOperatedValve,
+    MotorValve,
+    PneumaticValve,
+    SolenoidValve,
+    SpringValve,
+    RegulatorValve,
+    PressureRegulatorValve,
+    NeedleValve
+};
+
+export const ValveTypeStrings = Object.keys(ValveTypes).map(key => 
+    key.replace(/([A-Z])/g, ' $1').trim()
+) as Array<keyof typeof ValveTypes>;
+
+export const ValveTypeKeys = Object.keys(ValveTypes) as Array<keyof typeof ValveTypes>;

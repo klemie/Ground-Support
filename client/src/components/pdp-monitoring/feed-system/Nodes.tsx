@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { 
   Handle, 
   Position, 
@@ -6,64 +6,55 @@ import {
   NodeResizer 
 } from 'reactflow';
 
+import { ValveTypes, ValveTypeKeys } from '../../../static/valves/ValveTypes'
 import ValveControl from '../ValveControlSwitch';
+import { Stack, Typography } from '@mui/material';
 
-import { 
-  DefaultValve,
-  CheckValve,
-  HandOperatedValve,
-  MotorValve,
-  PneumaticValve,
-  SolenoidValve,
-  SpringValve,
-  RegulatorValve,
-  PressureRegulatorValve,
-  NeedleValve
-} from '../../../static/valves/ValveTypes';
-
-import ValveDefault from '../../../static/valves/ValveDefault.svg'
-import { Stack } from '@mui/material';
-
-const valveMap = {
-  default: DefaultValve,
-  check: CheckValve,
-  handOperated: HandOperatedValve,
-  motor: MotorValve,
-  pneumatic: PneumaticValve,
-  solenoid: SolenoidValve,
-  spring: SpringValve,
-  regulator: RegulatorValve,
-  pressureRegulator: PressureRegulatorValve,
-  needle: NeedleValve
-};
 
 const PAndIDNode = ({ data, isConnectable, selected }) => {
 
   // const Valve = valveMap[data.valveType];
+  const [Valve, setValve] = useState(ValveTypes[ValveTypeKeys[0]]);
+  const [handleMargin, setHandleMargin] = useState(5);
+
+  useEffect(() => {
+    // setValve(ValveTypes[data.valveType]);
+  }, [data.valveType]);
 
   return (
     <>
-    
-      <NodeResizer minWidth={50} minHeight={20} isVisible={selected} />
+      {/* <NodeResizer minWidth={50} minHeight={20} isVisible={selected} /> */}
       <Stack>
-        <Stack direction="row" spacing={2} alignItems={'center'} justifyItems={'center'}>
-          <Handle 
-            type="target" 
-            position={Position.Right}
-            onConnect={(params) => console.log('handle onConnect', params)}
-            isConnectable={isConnectable}
-          />
-          <img src={ValveDefault} alt="Default Valve" />
-          <Handle
-            type="source"
-            position={Position.Left}
-            id="b"
-            isConnectable={isConnectable}
-          />
+        <Stack direction="column" spacing={0} alignItems={'center'} justifyItems={'center'}>
+          <Stack direction="row" alignItems={'center'} justifyItems={'center'}>
+            <Handle 
+              type="source"
+              style={{ position: "relative", marginTop: handleMargin }}
+              position={Position.Left}
+              onConnect={(params) => console.log('handle onConnect', params)}
+              isConnectable={isConnectable}
+            />
+            <img 
+              src={Valve} 
+              alt={data.valveType} 
+            />
+            <Handle
+              style={{ position: "relative", marginTop: handleMargin }}
+              type="target"
+              position={Position.Right}
+              id="b"
+              isConnectable={isConnectable}
+            />
+          </Stack>
+            <Typography variant="body1">{data.label}</Typography>
+            {/* <ValveControl
+              valveName={"NCV"}
+              // setValveType={(valveType) => {
+              //   // setValve(ValveTypes[valveType]);
+              // }}
+            /> */}
         </Stack>
-        {/* <ValveControl valveName='MEC' /> */}
       </Stack>
-     
     </>
   );
 };

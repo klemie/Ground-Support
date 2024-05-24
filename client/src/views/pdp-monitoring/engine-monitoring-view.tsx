@@ -85,7 +85,7 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
 	];
     const socketContext = useMonitoringSocketContext();
 	const breadCrumbs: Breadcrumb[] = [
-		{ name: 'Rocket Selection', viewKey: ViewKeys.PLATFORM_SELECTION_KEY, active: false },
+		{ name: 'Ground Support', viewKey: ViewKeys.PLATFORM_SELECTION_KEY, active: false },
 		{ name: 'PDP Monitoring', viewKey: ViewKeys.PDP_MONITORING_KEY, active: true }
 	];
     
@@ -163,19 +163,10 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
             >
                 {/* Page Header */}
                 <Grid item >
-                    <Header icon="ENGINE_MONITORING" breadCrumbs={breadCrumbs} />
-                </Grid>
-                {/* Rocket Title */}
-                <Grid item>
-                    <Paper elevation={2} sx={{ padding: 2 }}>
-                        <Stack direction="row" alignItems={'center'} justifyContent={'space-between'}>
-                            <Stack direction="row" alignItems={'center'} spacing={2}>
-                                <LocalFireDepartmentIcon color={'primary'} /> 
-                                <Typography align='left' variant='h6'>
-                                    PDP Monitoring System
-                                </Typography>
-                            </Stack>
-                            <Stack direction="row" spacing={2}>
+                <Paper elevation={2} sx={{ padding: 2 }}>
+                    <Stack direction="row" alignItems={'center'} justifyContent={'space-between'}>
+                        <Header icon="ENGINE_MONITORING" breadCrumbs={breadCrumbs} />
+                        <Stack direction="row" spacing={2}>
                                 <Tooltip title="PDP Configuration" placement="top" arrow followCursor>
                                     <Button variant={'contained'} onClick={() =>props.openSettings()}>
                                         <Settings />
@@ -186,12 +177,6 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
                                     onClick={() => props.openLog()}
                                     >
                                     <ForumIcon />
-                                </Button>
-                                <Button 
-                                    variant={'contained'}
-                                    onClick={() => setOpenConfiguration(true)}
-                                    >
-                                    <SettingsInputComponentIcon />
                                 </Button>
                                 <ButtonGroup>
                                     <Tooltip
@@ -240,12 +225,8 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
                     </Paper>
                 </Grid>
                 <Grid item alignItems={'center'} width={"100%"}>
-                </Grid> 
-                <>
                     <FeedSystem />
-                    <ConfigurationDrawer isOpen={openConfiguration} closeDrawer={() => setOpenConfiguration(false)} />
-                </>
-
+                </Grid> 
             </Stack>
             <div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
                 {colors.map((color) => {
