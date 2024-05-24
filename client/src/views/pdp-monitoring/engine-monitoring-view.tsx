@@ -158,75 +158,70 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
                 height={'100%'}
                 padding={4}
                 direction="column"
-                gap={3}
+                gap={4}
                 overflow={'none'}
             >
-                {/* Page Header */}
-                <Grid item >
-                <Paper elevation={2} sx={{ padding: 2 }}>
-                    <Stack direction="row" alignItems={'center'} justifyContent={'space-between'}>
-                        <Header icon="ENGINE_MONITORING" breadCrumbs={breadCrumbs} />
-                        <Stack direction="row" spacing={2}>
-                                <Tooltip title="PDP Configuration" placement="top" arrow followCursor>
-                                    <Button variant={'contained'} onClick={() =>props.openSettings()}>
-                                        <Settings />
+                <Stack direction="row" alignItems={'center'} justifyContent={'space-between'}>
+                    <Header icon="ENGINE_MONITORING" breadCrumbs={breadCrumbs} />
+                    <Stack direction="row" spacing={1}>
+                            <Tooltip title="PDP Configuration" placement="top" arrow followCursor>
+                                <Button variant={'text'} onClick={() =>props.openSettings()}>
+                                    <Settings />
+                                </Button>
+                            </Tooltip>
+                            <Button 
+                                variant={'text'}
+                                onClick={() => props.openLog()}
+                                >
+                                <ForumIcon />
+                            </Button>
+                            <ButtonGroup
+                                variant="contained"
+                            >
+                                <Tooltip
+                                    title={"LabJack Status"}
+                                >
+                                    <Button 
+                                        disabled={!socketContext.isLabJackOn} 
+                                        color={"success"}
+                                        aria-readonly
+                                        >
+                                            LabJack 
+                                    </Button>
+                                </Tooltip>
+                                <Tooltip title={"Serial Status"}>
+                                    <Button 
+                                        disabled={!socketContext.isSerialOn} 
+                                        aria-readonly
+                                        color={"success"}
+                                    >
+                                        Serial
+                                    </Button>
+                                </Tooltip>
+                                <Tooltip title={"Valve Cart Status"}>
+                                    <Button 
+                                        disabled={!socketContext.isConnected} 
+                                        color={"success"}
+                                    >
+                                        Valve Cart
                                     </Button>
                                 </Tooltip>
                                 <Button 
-                                    variant={'contained'}
-                                    onClick={() => props.openLog()}
-                                    >
-                                    <ForumIcon />
+                                    variant="contained" 
+                                    size={'large'} 
+                                    startIcon={<WifiTetheringIcon/>} 
+                                    sx={{ width: 180 }}
+                                    onClick={() => {
+                                        // setOpenConnection(!openConnection);  
+                                        socketContext.toggleConnection();
+                                    }}
+                                >
+                                    {socketContext.connect ? "Disconnect" : "Connect"}
                                 </Button>
-                                <ButtonGroup>
-                                    <Tooltip
-                                        title={"LabJack Status"}
-                                    >
-                                        <Button 
-                                            disabled={!socketContext.isLabJackOn} 
-                                            color={"success"}
-                                            aria-readonly
-                                            >
-                                                LabJack 
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip title={"Serial Status"}>
-                                        <Button 
-                                            disabled={!socketContext.isSerialOn} 
-                                            aria-readonly
-                                            color={"success"}
-                                        >
-                                            Serial
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip title={"Valve Cart Status"}>
-                                        <Button 
-                                            disabled={!socketContext.isConnected} 
-                                            color={"success"}
-                                        >
-                                            Valve Cart
-                                        </Button>
-                                    </Tooltip>
-                                    <Button 
-                                        variant="contained" 
-                                        size={'large'} 
-                                        startIcon={<WifiTetheringIcon/>} 
-                                        sx={{ width: 180 }}
-                                        onClick={() => {
-                                            // setOpenConnection(!openConnection);  
-                                            socketContext.toggleConnection();
-                                        }}
-                                    >
-                                        {socketContext.connect ? "Disconnect" : "Connect"}
-                                    </Button>
-                                </ButtonGroup>
-                            </Stack>
+                            </ButtonGroup>
                         </Stack>
-                    </Paper>
-                </Grid>
-                <Grid item alignItems={'center'} width={"100%"}>
+                    </Stack>
                     <FeedSystem />
-                </Grid> 
             </Stack>
             <div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
                 {colors.map((color) => {

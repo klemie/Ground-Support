@@ -57,8 +57,50 @@ export interface IInstrumentationPacket extends IBasePacket {
     command: InstrumentationCommandTypes
 }
 
+
+
 export { 
     ControlsValveTypes, 
     ControlsActionTypes, 
     ControlsCommandTypes
 };
+
+/*------------ Feed System types -------------*/
+
+import { Node, Edge }  from 'reactflow';
+import { DefaultValve, ValveTypeKeys } from '../../static/valves/ValveTypes';
+
+/*------------ P&ID Types -------------*/
+
+export enum PAndIDNodeTypes {
+    VALVE = "Valve",
+    INSTRUMENTATION = "Instrumentation",
+    TANK = "Tank"
+}
+
+export enum PAndIDInstrumentationTypes {
+    TEMP_CONTROLLER = "TC",
+    PRESSURE_CONTROLLER = "PC",
+    LEVEL_CONTROLLER = "LC",
+    TEMP_TRANSMITTER = "TT",
+    PRESSURE_TRANSMITTER = "PT",
+    LEVEL_TRANSMITTER = "LT",
+    TEMP_INDICATOR = "TI",
+    PRESSURE_INDICATOR = "PI",
+    LEVEL_INDICATOR = "LI"
+}
+
+export interface IPAndIDNode extends Node {
+    data: {
+        nodeType: PAndIDNodeTypes;
+        controllable?: boolean;
+        instrumentationType?: PAndIDInstrumentationTypes;
+        label: ControlsValveTypes | string;
+        valveType?: typeof ValveTypeKeys;
+    };
+}
+
+export interface IFeedSystem {
+    nodes: IPAndIDNode[];
+    edges: Edge[];
+}

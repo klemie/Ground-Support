@@ -1,12 +1,40 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background, useReactFlow, MarkerType } from 'reactflow';
+import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Background, useReactFlow, MarkerType, MiniMap, ControlButton, Position } from 'reactflow';
 import 'reactflow/dist/style.css';
-import PAndIDNode from './Nodes';
-import { Box, Button, Chip, Divider, Drawer, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Stack, TextField, ToggleButton, Tooltip, Typography } from '@mui/material';
+import PAndIDValveNode from './Nodes';
+import { 
+  Box, 
+  Button, 
+  Chip, 
+  Drawer, 
+  FormControl, 
+  IconButton, 
+  InputLabel, 
+  MenuItem, 
+  Paper, 
+  Select, 
+  SelectChangeEvent, 
+  SpeedDial, 
+  SpeedDialAction, 
+  Stack, 
+  TextField, 
+  ToggleButton, 
+  Tooltip, 
+  Typography, 
+  Grid, 
+  Divider, 
+  Link 
+} from '@mui/material';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import { useMeasure } from 'react-use';
+
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
+import InfoIcon from '@mui/icons-material/Info';
+import TuneIcon from '@mui/icons-material/Tune';
+import HelpIcon from '@mui/icons-material/Help';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+
 import { 
   ValveTypes,
   ValveTypeStrings,
@@ -14,21 +42,11 @@ import {
 } from '../../../static/valves/ValveTypes';
 import Add from '@mui/icons-material/Add';
 import { useTheme } from '@mui/material/styles';
-
-
-interface Node {
-    id: string;
-    sourcePosition: string;
-    targetPosition?: string;
-    type?: string;
-    data: { label: string };
-    position: { x: number; y: number };
-    style?: any;
-}
+import { IPAndIDNode, PAndIDNodeTypes } from '../../../utils/monitoring-system/monitoring-types';
 
 const NodeDefaults = {
-    sourcePosition: 'right',
-    targetPosition: 'left',
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
     style: { 
       background: 'None', 
       color: '#333', 
@@ -39,127 +57,39 @@ const NodeDefaults = {
       alignItems: 'center',
       justifyContent: 'center',
       color: 'white'
-    },
+    }
 };
 
-interface Edge {
-    id: string;
-    source: string;
-    target: string;
-    type: string;
-    animated?: boolean;
-    label?: string;
-}
-
-const initialNodes: Node[] = [
+const initialNodes: IPAndIDNode[] = [
   {
-    id: 'horizontal-2',
+    id: 'horizontal-1',
     type: 'valveNode',
-    data: { label: 'MEC' },
+    data: { 
+      label: 'MEC', 
+      controllable: false,
+      nodeType: PAndIDNodeTypes.VALVE,
+    },
     position: { x: 250, y: 0 },
     ...NodeDefaults
+  },
+  {
+    id: 'horizontal-1',
+    type: 'valveNode',
+    data: { 
+      label: 'MEC', 
+      controllable: false,
+      nodeType: PAndIDNodeTypes.VALVE
+    },
+    position: { x: 300, y: 0 },
+    ...NodeDefaults
+  },
 
-  },
-  {
-    id: 'horizontal-3',
-    type: 'valveNode',
-    data: { label: 'NVC' },
-    position: { x: 250, y: 160 },
-    ...NodeDefaults
-  },
-  {
-    id: 'horizontal-4',
-    type: 'valveNode',
-    data: { label: 'RTV' },
-    position: { x: 500, y: 0 },
-    ...NodeDefaults
-  },
-  {
-    id: 'horizontal-5',
-    type: 'valveNode',
-    data: { label: 'EEV' },
-    position: { x: 500, y: 100 },
-    ...NodeDefaults
-  },
-  {
-    id: 'horizontal-6',
-    type: 'valveNode',
-    data: { label: 'N2OF' },
-    position: { x: 500, y: 230 },
-    ...NodeDefaults
-  },
-  {
-    id: 'horizontal-7',
-    type: 'valveNode',
-    data: { label: 'N2F' },
-    position: { x: 750, y: 50 },
-    ...NodeDefaults
-  },
-  {
-    id: 'horizontal-8',
-    type: 'valveNode',
-    data: { label: 'N2OV' },
-    position: { x: 750, y: 300 },
-    ...NodeDefaults
-  },
 ];
-
-// const initialEdges: Edge[] = [
-//   {
-//     id: 'horizontal-e1-2',
-//     source: 'horizontal-1',
-//     type: 'smoothstep',
-//     target: 'horizontal-2',
-//     animated: true,
-//   },
-//   {
-//     id: 'horizontal-e1-3',
-//     source: 'horizontal-1',
-//     type: 'smoothstep',
-//     target: 'horizontal-3',
-//     animated: true,
-//   },
-//   {
-//     id: 'horizontal-e1-4',
-//     source: 'horizontal-2',
-//     type: 'smoothstep',
-//     target: 'horizontal-4',
-//     label: 'edge label',
-//   },
-//   {
-//     id: 'horizontal-e3-5',
-//     source: 'horizontal-3',
-//     type: 'smoothstep',
-//     target: 'horizontal-5',
-//     animated: true,
-//   },
-//   {
-//     id: 'horizontal-e3-6',
-//     source: 'horizontal-3',
-//     type: 'smoothstep',
-//     target: 'horizontal-6',
-//     animated: true,
-//   },
-//   {
-//     id: 'horizontal-e5-7',
-//     source: 'horizontal-5',
-//     type: 'smoothstep',
-//     target: 'horizontal-7',
-//     animated: true,
-//   },
-//   {
-//     id: 'horizontal-e6-8',
-//     source: 'horizontal-6',
-//     type: 'smoothstep',
-//     target: 'horizontal-8',
-//     animated: true,
-//   },
-// ];
 
 const drawerWidth = 300;
 
 const nodeTypes = {
-  valveNode: PAndIDNode
+  valveNode: PAndIDValveNode
 };
 
 const snapGrid = [20, 20] as [number, number];
@@ -183,6 +113,43 @@ const FeedSystem = () => {
     },
   }));
 
+  const [nodeBuilderDrawer, setNodeBuilderDrawer] = useState(false);
+  const [helpDrawer, setHelpDrawer] = useState(false);
+  const [legendDrawer, setLegendDrawer] = useState(false);
+
+  const speedDialActions = [
+    { 
+      icon: <Add />, 
+      name: 'Add Node', 
+      onClick : () => {
+        console.log('Add Node clicked');
+        setNodeBuilderDrawer(nodeBuilderDrawer => !nodeBuilderDrawer);
+        setSpeedDialOpen(false);
+      }
+    },
+    { 
+      icon: 
+      <InfoIcon />, 
+      name: 'P&ID Legend',
+      onClick : () => {
+        console.log('info clicked');
+        setLegendDrawer(legendDrawer => !legendDrawer);
+        setSpeedDialOpen(false);
+      }
+    },
+    {
+      icon: <HelpIcon />,
+      name: 'How to guide',
+      onClick: () => {
+        console.log('help clicked');
+        setHelpDrawer(helpDrawer => !helpDrawer);
+        setSpeedDialOpen(false);
+      }
+    }
+  ];
+
+  const [speedDialOpen, setSpeedDialOpen] = useState(false);
+
   const classes = useStyles();
   const [measureRef, { height }] = useMeasure();
   const divRef = measureRef as React.RefObject<HTMLDivElement>; // Assign measureRef to a variable of type RefObject<HTMLDivElement>
@@ -191,7 +158,7 @@ const FeedSystem = () => {
   
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  
   // const [rfInstance, setRfInstance] = useState(null);
   // const { setViewport } = useReactFlow();
   
@@ -225,112 +192,223 @@ const FeedSystem = () => {
   }, [setNodes]);
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <Drawer
-        sx={{
-          flexShrink: 0,
-          position: "relative",
-          '& .MuiDrawer-paper': {
-            position: "absolute", //imp
-            transition: "none !important",
-            width: drawerWidth,
-            height: `fit-content`,
-            borderRadius: 2,
-            boxSizing: 'border-box',
-            backgroundColor: '#33373E',
-          }
-        }}
-        transitionDuration={{ enter: 3000, exit: 3000 }}
-        variant="persistent"
-        open={drawerOpen}
-      >
-        <div className={classes.drawerContainer}>
-          <div className={classes.drawer}>
-            <Paper
-              sx={{
-                width: drawerWidth,
-                height: 'fit-content',
-                borderRadius: 2,
-                boxSizing: 'border-box',
-                backgroundColor: '#2E333A',
-                padding: 2,
-              }}
-            >
-              <Stack spacing={2}>
-                <Stack direction="row" spacing={2} alignItems={'center'} justifyContent={'space-between'} width={'100%'}>
-                  <Typography variant="h5" sx={{ color: 'white' }}>P&ID Node Builder</Typography>
-                  <IconButton onClick={() => setDrawerOpen(false)} >
-                    <CloseIcon />
-                  </IconButton>
-                </Stack>
-                <Stack spacing={1}>
-                  <Typography variant="subtitle1">Node Type</Typography>
-                  <Stack direction="row" spacing={2}>
-                    <Chip label="Valve" sx={{ fontWeight: 600 }} onClick={() => {}} color='primary'/>
-                    <Chip label="Tank" sx={{ fontWeight: 600 }} onClick={() => {}}/>
-                    <Chip label="Instrumentation" sx={{ fontWeight: 600 }} onClick={() => {}}/>
+    <Box sx={{ display: 'flex', height: '100%' }}>
+      <Stack>
+
+        <Drawer
+          sx={{
+            flexShrink: 0,
+            position: "relative",
+            '& .MuiDrawer-paper': {
+              position: "absolute", //imp
+              transition: "none !important",
+              width: drawerWidth,
+              height: `fit-content`,
+              borderRadius: 2,
+              boxSizing: 'border-box',
+              backgroundColor: '#33373E',
+            }
+          }}
+          transitionDuration={{ enter: 3000, exit: 3000 }}
+          variant="persistent"
+          open={nodeBuilderDrawer}
+        >
+          <div className={classes.drawerContainer}>
+            <div className={classes.drawer}>
+              <Paper
+                sx={{
+                  width: drawerWidth,
+                  height: 'fit-content',
+                  borderRadius: 2,
+                  boxSizing: 'border-box',
+                  backgroundColor: '#2E333A',
+                  padding: 2,
+                }}
+              >
+                <Stack spacing={2}>
+                  <Stack direction="row" spacing={2} alignItems={'center'} justifyContent={'space-between'} width={'100%'}>
+                    {/* <AccountTreeIcon /> */}
+                    <Typography  variant="h6" sx={{ color: 'white', fontWeight: 600 }}>P&ID Node Builder</Typography>
+                    <IconButton onClick={() => setNodeBuilderDrawer(false)} >
+                      <CloseIcon />
+                    </IconButton>
                   </Stack>
-                </Stack>
-                <Stack direction="row" spacing={2}>
-                  <FormControl 
-                    fullWidth                     
-                    size='small'
-                  >
-                    <InputLabel id="valve-type-select-label">Valve Type</InputLabel>
-                    <Select
-                      labelId="valve-type-select-label"
-                      id="valve-type-select"
-                      value={valveType}
-                      onChange={(event: SelectChangeEvent) => {
-                        setValveType(event.target.value as typeof ValveTypeKeys[number]);
-                      }}
-                      label="Valve Type"
-                    >
-                      {ValveTypeStrings.map((key: string, index: number) => {
-                        return (
-                          <MenuItem value={ValveTypeKeys[index]}>{key}</MenuItem>
-                        );
-                      })}
-                    </Select>
-                  </FormControl>
-                  <Tooltip title={'Controllable'} placement='top'>
-                    <ToggleButton
-                      value="check"
-                      selected={selected}
-                      onChange={() => {
-                        setSelected(!selected);
-                      }}
+                  <Stack spacing={1}>
+                    <Typography variant="subtitle1">Node Type</Typography>
+                    <Stack direction="row" spacing={2}>
+                      <Chip label="Valve" sx={{ fontWeight: 600 }} onClick={() => {}} color='primary'/>
+                      <Chip label="Tank" sx={{ fontWeight: 600 }} onClick={() => {}}/>
+                      <Chip label="Instrumentation" sx={{ fontWeight: 600 }} onClick={() => {}}/>
+                    </Stack>
+                  </Stack>
+                  <Stack direction="row" spacing={2}>
+                    <FormControl 
+                      fullWidth                     
                       size='small'
                     >
-                      <CheckIcon />
-                    </ToggleButton>
-                  </Tooltip>
-                </Stack>
-                <TextField 
-                    id="node-label" 
-                    label="Valve Label" 
-                    variant="outlined"
-                    size='small'
-                    fullWidth
+                      <InputLabel id="valve-type-select-label">Valve Type</InputLabel>
+                      <Select
+                        labelId="valve-type-select-label"
+                        id="valve-type-select"
+                        value={valveType}
+                        onChange={(event: SelectChangeEvent) => {
+                          setValveType(event.target.value as typeof ValveTypeKeys[number]);
+                        }}
+                        label="Valve Type"
+                      >
+                        {ValveTypeStrings.map((key: string, index: number) => {
+                          return (
+                            <MenuItem value={ValveTypeKeys[index]}>{key}</MenuItem>
+                          );
+                        })}
+                      </Select>
+                    </FormControl>
+                    <Tooltip title={'Controllable'} placement='top'>
+                      <ToggleButton
+                        value="check"
+                        selected={selected}
+                        onChange={() => {
+                          setSelected(!selected);
+                        }}
+                        size='small'
+                      >
+                        <CheckIcon />
+                      </ToggleButton>
+                    </Tooltip>
+                  </Stack>
+                  <TextField 
+                      id="node-label" 
+                      label="Valve Label" 
+                      variant="outlined"
+                      size='small'
+                      fullWidth
+                    />
+                  <img 
+                    src={ValveTypes[valveType]} 
+                    alt={valveType} 
+                    width={'100%'}
                   />
-                <img 
-                  src={ValveTypes[valveType]} 
-                  alt={valveType} 
-                  width={'100%'}
-                />
-                <Stack direction="row" spacing={2}>
-                  <Button variant="contained" onClick={onAdd} fullWidth>Add</Button>
+                  <Stack direction="row" spacing={2}>
+                    <Button variant="contained" onClick={onAdd} fullWidth>Add</Button>
+                  </Stack>
                 </Stack>
-              </Stack>
-            </Paper>
+              </Paper>
+            </div>
           </div>
-        </div>
-      </Drawer>
+        </Drawer>
+        <Drawer
+          sx={{
+            // marginTop: 67,
+            flexShrink: 0,
+            position: "relative",
+            '& .MuiDrawer-paper': {
+              position: "absolute", //imp
+              transition: "none !important",
+              width: drawerWidth,
+              height: `fit-content`,
+              borderRadius: 2,
+              boxSizing: 'border-box',
+              backgroundColor: '#33373E',
+            }
+          }}
+          transitionDuration={{ enter: 3000, exit: 3000 }}
+          variant="persistent"
+          open={helpDrawer}
+        >
+          <Stack 
+            direction="column" 
+            padding={2}
+            gap={2}
+          >
+            <Stack direction="row" spacing={2} alignItems={'center'} justifyContent={'space-between'} width={'100%'}>
+              {/* <HelpIcon /> */}
+              <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>Help</Typography>
+              <IconButton onClick={() => setHelpDrawer(false)} >
+                <CloseIcon />
+              </IconButton>
+            </Stack>
+            <Divider />
+              <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>Keyboard Commands</Typography>
+            <Divider />
+            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+              <Chip label={'Backspace'} />
+              <Typography variant="body1" sx={{ color: 'white' }}>Delete selected Node/Edge</Typography>
+            </Stack>
+            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+              <Stack direction={'row'}>
+                <Chip label={'Ctrl'} />
+                +
+                <Chip label={'mouse wheel'} />
+              </Stack>
+              <Typography variant="body1" sx={{ color: 'white' }}>zoom</Typography>
+            </Stack>
+            <Divider />
+              <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>Guides</Typography>
+            <Divider />
+            <Link href={'https://reactflow.dev/'} target='_blank'>
+              <Typography variant="link">React Flow Documentation</Typography>
+            </Link>
+            <Link href={''} target='_blank'>
+              <Typography variant="link">UVR P&ID FeedSystem </Typography>
+            </Link>
+          </Stack>
+        </Drawer>
+        <Drawer
+          sx={{
+            // marginTop: 15,
+            flexShrink: 0,
+            position: "relative",
+            '& .MuiDrawer-paper': {
+              position: "absolute", //imp
+              transition: "none !important",
+              width: drawerWidth,
+              height: `fit-content`,
+              borderRadius: 2,
+              boxSizing: 'border-box',
+              backgroundColor: '#33373E',
+            }
+          }}
+          transitionDuration={{ enter: 3000, exit: 3000 }}
+          variant="persistent"
+          open={legendDrawer}
+        >
+          <Stack 
+            direction="row" 
+            spacing={2} 
+            alignItems={'center'} 
+            justifyContent={'space-between'} 
+            width={'100%'} 
+            padding={2}
+          >
+            <Stack direction='row' alignItems={'center'} gap={1}>
+              <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>P&ID Legend</Typography>
+            </Stack>
+            <IconButton onClick={() => setLegendDrawer(false)} >
+              <CloseIcon />
+            </IconButton>
+          </Stack>
+          <Grid container gap={2} padding={2}>
+            {[...Array(10).keys()].map((i) => (
+              <Grid item alignContent={'center'} justifyItems={'center'}>
+                <img src={ValveTypes[ValveTypeKeys[i]]} />
+                <Typography 
+                  paragraph 
+                  variant="body1"
+                  textAlign={'center'}
+                  sx={{ color: 'white', whiteSpace: "pre-wrap" }}
+                >
+                  {ValveTypeStrings[i].replace(/ /g, '\n')}
+                </Typography>
+              </Grid>
+            ))}
+          </Grid>
+        </Drawer>
+      </Stack>
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          marginLeft: drawerOpen ? 40 : 0, // Adjust the margin based on the state of the drawer
+          marginLeft: nodeBuilderDrawer || legendDrawer || helpDrawer ? 40 : 0, // Adjust the margin based on the state of the drawer
           transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -376,17 +454,51 @@ const FeedSystem = () => {
               },
             }}
           >
-            <Button 
-              sx={{ zIndex: 4 }}
-              variant='contained' 
-              onClick={() => setDrawerOpen(drawerOpen => !drawerOpen)}
+            <SpeedDial
+              icon={<TuneIcon />}
+              ariaLabel="Feed System Actions"
+              direction='down'
+              sx={{
+                '& .MuiSpeedDial-fab': {
+                  borderRadius: '5px !important',
+                },
+                left: 10,
+                top: 10,
+                position: 'absolute',
+              }}
+              FabProps={{
+                size: 'medium',
+              }}
+              open={speedDialOpen}
+              onOpen={() => setSpeedDialOpen(true)}
+              onClose={() => setSpeedDialOpen(false)}
             >
-              <Stack direction={'row'} gap={1}>
-                <Add /> 
-                Node
-              </Stack>
-            </Button>
-            <Controls />
+              {speedDialActions.map((action) => (
+                <SpeedDialAction
+                  key={action.name}
+                  icon={action.icon}
+                  tooltipTitle={action.name}
+                  onClick={action.onClick}
+                  tooltipPlacement='right'
+                />
+              ))}
+            </SpeedDial>
+            <Controls 
+              showInteractive={true}
+              style={{
+                borderRadius: '10px !important',
+              }}
+            >
+              <Tooltip title={'P&ID Legend and info'} placement='right'>
+                <ControlButton onClick={()=>{}}>
+                  <InfoIcon />
+                </ControlButton>
+              </Tooltip>
+            </Controls>
+            <MiniMap 
+              pannable 
+              zoomable
+            />
             <Background />
           </ReactFlow>
         </Paper>

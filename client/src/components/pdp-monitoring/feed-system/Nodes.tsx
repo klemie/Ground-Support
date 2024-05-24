@@ -1,9 +1,7 @@
 import { memo, useEffect, useState } from 'react';
 import { 
   Handle, 
-  Position, 
-  NodeResizeControl, 
-  NodeResizer 
+  Position
 } from 'reactflow';
 
 import { ValveTypes, ValveTypeKeys } from '../../../static/valves/ValveTypes'
@@ -11,7 +9,7 @@ import ValveControl from '../ValveControlSwitch';
 import { Stack, Typography } from '@mui/material';
 
 
-const PAndIDNode = ({ data, isConnectable, selected }) => {
+const PAndIDValveNode = ({ data, isConnectable, selected, controllable }) => {
 
   // const Valve = valveMap[data.valveType];
   const [Valve, setValve] = useState(ValveTypes[ValveTypeKeys[0]]);
@@ -46,17 +44,16 @@ const PAndIDNode = ({ data, isConnectable, selected }) => {
               isConnectable={isConnectable}
             />
           </Stack>
-            <Typography variant="body1">{data.label}</Typography>
-            {/* <ValveControl
-              valveName={"NCV"}
-              // setValveType={(valveType) => {
-              //   // setValve(ValveTypes[valveType]);
-              // }}
-            /> */}
+            {!data.controllable && <Typography variant="body1">{data.label}</Typography>}
+            {data.controllable && (
+              <ValveControl
+                valveName={data.label}
+              />
+            )}
         </Stack>
       </Stack>
     </>
   );
 };
 
-export default memo(PAndIDNode);
+export default memo(PAndIDValveNode);
