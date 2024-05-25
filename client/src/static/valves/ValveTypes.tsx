@@ -1,4 +1,4 @@
-import ValveDefault from './ValveDefault.svg';
+import ValveBall from './ValveBall.svg';
 import ValveCheck from './ValveCheck.svg';
 import ValveHandOperated from './ValveHandOperated.svg';
 import ValveMotor from './ValveMotor.svg';
@@ -9,7 +9,7 @@ import ValveRegulator from './ValveRegulator.svg'
 import ValvePressureRegulator from './ValvePressureRegulator.svg';
 import ValveNeedle from './ValveNeedle.svg';
 
-export const DefaultValve = ValveDefault;
+export const BallValve = ValveBall;
 
 export const CheckValve = ValveCheck;
 
@@ -30,7 +30,7 @@ export const PressureRegulatorValve = ValvePressureRegulator;
 export const NeedleValve = ValveNeedle;
 
 export const ValveTypes = {
-    DefaultValve,
+    BallValve,
     CheckValve,
     HandOperatedValve,
     MotorValve,

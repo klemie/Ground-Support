@@ -33,13 +33,17 @@ import CheckIcon from '@mui/icons-material/Check';
 import InfoIcon from '@mui/icons-material/Info';
 import TuneIcon from '@mui/icons-material/Tune';
 import HelpIcon from '@mui/icons-material/Help';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
 
 import { 
   ValveTypes,
   ValveTypeStrings,
   ValveTypeKeys
 } from '../../../static/valves/ValveTypes';
+import InstrumentationLegend from '../../../static/InstrumentationLegend.svg';
+import Tank from '../../../static/tanks/Tank.svg';
+import GasBottle from '../../../static/tanks/Gas Bottle.svg';
+import VerticalVessel from '../../../static/tanks/Vertical Vector.svg';
+
 import Add from '@mui/icons-material/Add';
 import { useTheme } from '@mui/material/styles';
 import { IPAndIDNode, PAndIDNodeTypes } from '../../../utils/monitoring-system/monitoring-types';
@@ -69,11 +73,11 @@ const initialNodes: IPAndIDNode[] = [
       controllable: false,
       nodeType: PAndIDNodeTypes.VALVE,
     },
-    position: { x: 250, y: 0 },
+    position: { x: 0, y: 0 },
     ...NodeDefaults
   },
   {
-    id: 'horizontal-1',
+    id: 'horizontal-2',
     type: 'valveNode',
     data: { 
       label: 'MEC', 
@@ -86,7 +90,7 @@ const initialNodes: IPAndIDNode[] = [
 
 ];
 
-const drawerWidth = 300;
+const drawerWidth = 310;
 
 const nodeTypes = {
   valveNode: PAndIDValveNode
@@ -125,6 +129,8 @@ const FeedSystem = () => {
         console.log('Add Node clicked');
         setNodeBuilderDrawer(nodeBuilderDrawer => !nodeBuilderDrawer);
         setSpeedDialOpen(false);
+        setHelpDrawer(false);
+        setLegendDrawer(false);
       }
     },
     { 
@@ -135,6 +141,8 @@ const FeedSystem = () => {
         console.log('info clicked');
         setLegendDrawer(legendDrawer => !legendDrawer);
         setSpeedDialOpen(false);
+        setHelpDrawer(false);
+        setNodeBuilderDrawer(false);
       }
     },
     {
@@ -144,6 +152,8 @@ const FeedSystem = () => {
         console.log('help clicked');
         setHelpDrawer(helpDrawer => !helpDrawer);
         setSpeedDialOpen(false);
+        setLegendDrawer(false);
+        setNodeBuilderDrawer(false);
       }
     }
   ];
@@ -194,9 +204,9 @@ const FeedSystem = () => {
   return (
     <Box sx={{ display: 'flex', height: '100%' }}>
       <Stack>
-
         <Drawer
           sx={{
+            maxHeight: `${height}px`,
             flexShrink: 0,
             position: "relative",
             '& .MuiDrawer-paper': {
@@ -227,8 +237,7 @@ const FeedSystem = () => {
               >
                 <Stack spacing={2}>
                   <Stack direction="row" spacing={2} alignItems={'center'} justifyContent={'space-between'} width={'100%'}>
-                    {/* <AccountTreeIcon /> */}
-                    <Typography  variant="h6" sx={{ color: 'white', fontWeight: 600 }}>P&ID Node Builder</Typography>
+                    <Typography  variant="h5" sx={{ color: 'white', fontWeight: 600 }}>P&ID Node Builder</Typography>
                     <IconButton onClick={() => setNodeBuilderDrawer(false)} >
                       <CloseIcon />
                     </IconButton>
@@ -299,6 +308,7 @@ const FeedSystem = () => {
         <Drawer
           sx={{
             // marginTop: 67,
+            maxHeight: `${height}px`,
             flexShrink: 0,
             position: "relative",
             '& .MuiDrawer-paper': {
@@ -322,7 +332,7 @@ const FeedSystem = () => {
           >
             <Stack direction="row" spacing={2} alignItems={'center'} justifyContent={'space-between'} width={'100%'}>
               {/* <HelpIcon /> */}
-              <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>Help</Typography>
+              <Typography variant="h5" sx={{ color: 'white', fontWeight: 600 }}>Help</Typography>
               <IconButton onClick={() => setHelpDrawer(false)} >
                 <CloseIcon />
               </IconButton>
@@ -331,25 +341,37 @@ const FeedSystem = () => {
               <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>Keyboard Commands</Typography>
             <Divider />
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-              <Chip label={'Backspace'} />
-              <Typography variant="body1" sx={{ color: 'white' }}>Delete selected Node/Edge</Typography>
+              <Chip label={'BackSpace'} sx={{ fontWeight: 600 }} />
+              <Typography variant="body1" sx={{ color: 'white' }}>Delete selected </Typography>
             </Stack>
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-              <Stack direction={'row'}>
-                <Chip label={'Ctrl'} />
-                +
-                <Chip label={'mouse wheel'} />
+              <Stack direction={'row'} alignItems={'center'}>
+                <Chip label={'Ctrl'} sx={{ fontWeight: 600 }} />
+                <Typography p={0.5}>+</Typography>
+                <Chip label={'Mouse Wheel'} sx={{ fontWeight: 600 }} />
               </Stack>
-              <Typography variant="body1" sx={{ color: 'white' }}>zoom</Typography>
+              <Typography variant="body1" sx={{ color: 'white' }}>Zoom</Typography>
+            </Stack>
+            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+              <Chip label={'Left Click'} sx={{ fontWeight: 600 }} />
+              <Typography variant="body1" sx={{ color: 'white' }}> Select </Typography>
+            </Stack>
+            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+              <Stack direction={'row'} alignItems={'center'} >
+                <Chip label={'Shift'} sx={{ fontWeight: 600 }} />
+                <Typography p={0.5}>+</Typography>
+                <Chip label={'Left Click'} sx={{ fontWeight: 600 }} />
+              </Stack>
+              <Typography variant="body1" sx={{ color: 'white' }}>Drag select</Typography>
             </Stack>
             <Divider />
               <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>Guides</Typography>
             <Divider />
             <Link href={'https://reactflow.dev/'} target='_blank'>
-              <Typography variant="link">React Flow Documentation</Typography>
+              <Typography variant="body1">React Flow Documentation</Typography>
             </Link>
             <Link href={''} target='_blank'>
-              <Typography variant="link">UVR P&ID FeedSystem </Typography>
+              <Typography variant="body1">UVR P&ID FeedSystem </Typography>
             </Link>
           </Stack>
         </Drawer>
@@ -358,6 +380,7 @@ const FeedSystem = () => {
             // marginTop: 15,
             flexShrink: 0,
             position: "relative",
+            maxHeight: `${height}px`,
             '& .MuiDrawer-paper': {
               position: "absolute", //imp
               transition: "none !important",
@@ -366,49 +389,69 @@ const FeedSystem = () => {
               borderRadius: 2,
               boxSizing: 'border-box',
               backgroundColor: '#33373E',
+              maxHeight: `${height}px`,
             }
           }}
           transitionDuration={{ enter: 3000, exit: 3000 }}
           variant="persistent"
           open={legendDrawer}
         >
-          <Stack 
-            direction="row" 
-            spacing={2} 
-            alignItems={'center'} 
-            justifyContent={'space-between'} 
-            width={'100%'} 
+          <Stack          
             padding={2}
+            spacing={2}
           >
-            <Stack direction='row' alignItems={'center'} gap={1}>
-              <Typography variant="h6" sx={{ color: 'white', fontWeight: 600 }}>P&ID Legend</Typography>
+            <Stack 
+              direction="row" 
+              spacing={1} 
+              alignItems={'center'} 
+              justifyContent={'space-between'} 
+              width={'100%'} 
+            >
+              <Stack direction='row' alignItems={'center'} gap={1}>
+                <Typography variant="h5" sx={{ color: 'white', fontWeight: 600 }}>P&ID Legend</Typography>
+              </Stack>
+              <IconButton onClick={() => setLegendDrawer(false)} >
+                <CloseIcon />
+              </IconButton>
             </Stack>
-            <IconButton onClick={() => setLegendDrawer(false)} >
-              <CloseIcon />
-            </IconButton>
+            <Divider />
+              <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>Valves</Typography>
+            <Divider />
+            <Grid container gap={1} alignContent={'space-between'} justifyContent="space-between">
+              {[...Array(10).keys()].map((i) => (
+                <Grid item alignContent={'center'} justifyContent="center">
+                  <img src={ValveTypes[ValveTypeKeys[i]]} />
+                  <Typography 
+                    paragraph 
+                    variant="body1"
+                    textAlign={'center'}
+                    sx={{ color: 'white', whiteSpace: "pre-wrap" }}
+                  >
+                    {ValveTypeStrings[i].replace(/ /g, '\n')}
+                  </Typography>
+                </Grid>
+              ))}
+            </Grid>
+            <Divider />
+              <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>Instrumentation</Typography>
+            <Divider />
+            <img src={InstrumentationLegend} width={'100%'} />
+            <Divider />
+              <Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>Tanks</Typography>
+            <Divider />
+            <Stack direction="row" spacing={2}>
+              <img src={Tank} />
+              <img src={VerticalVessel} />
+              <img src={GasBottle} />
+            </Stack>
           </Stack>
-          <Grid container gap={2} padding={2}>
-            {[...Array(10).keys()].map((i) => (
-              <Grid item alignContent={'center'} justifyItems={'center'}>
-                <img src={ValveTypes[ValveTypeKeys[i]]} />
-                <Typography 
-                  paragraph 
-                  variant="body1"
-                  textAlign={'center'}
-                  sx={{ color: 'white', whiteSpace: "pre-wrap" }}
-                >
-                  {ValveTypeStrings[i].replace(/ /g, '\n')}
-                </Typography>
-              </Grid>
-            ))}
-          </Grid>
         </Drawer>
       </Stack>
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          marginLeft: nodeBuilderDrawer || legendDrawer || helpDrawer ? 40 : 0, // Adjust the margin based on the state of the drawer
+          marginLeft: nodeBuilderDrawer || legendDrawer || helpDrawer ? 42.5 : 0, // Adjust the margin based on the state of the drawer
           transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -419,7 +462,7 @@ const FeedSystem = () => {
           component="div"
           ref={divRef} // Use the divRef variable instead of casting measureRef
           sx={{
-            height: 'calc(100vh - 20vh)',
+            height: '100%',
             width: '100%',
             display: 'flex',
             justifyContent: 'center',
@@ -483,18 +526,7 @@ const FeedSystem = () => {
                 />
               ))}
             </SpeedDial>
-            <Controls 
-              showInteractive={true}
-              style={{
-                borderRadius: '10px !important',
-              }}
-            >
-              <Tooltip title={'P&ID Legend and info'} placement='right'>
-                <ControlButton onClick={()=>{}}>
-                  <InfoIcon />
-                </ControlButton>
-              </Tooltip>
-            </Controls>
+            <Controls />
             <MiniMap 
               pannable 
               zoomable
