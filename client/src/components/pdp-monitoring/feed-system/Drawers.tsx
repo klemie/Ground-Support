@@ -16,7 +16,8 @@ import {
 	ToggleButton, 
 	Tooltip, 
 	Typography, 
-	styled 
+	styled, 
+	useTheme
 } from '@mui/material';
 import React, { useState, useCallback } from 'react';
 
@@ -67,10 +68,14 @@ const PAndIDBuilderDrawer: React.FC<PAndIDBuilderProps> = (props: PAndIDBuilderP
 	const { openDrawer, setNodeBuilderDrawer, onAdd } = props;
 	const [valveType, setValveType] = useState(ValveTypeKeys[0]);
 	const [controllable, setControllable] = useState(false);
+	const theme = useTheme();
 
     return (
         <BaseDrawer
-            transitionDuration={{ enter: 300, exit: 300 }}
+            transitionDuration={{ 
+				enter: theme.transitions.duration.leavingScreen, 
+				exit: theme.transitions.duration.leavingScreen 
+			}}
             variant="persistent"
             open={openDrawer}
         >
@@ -149,9 +154,14 @@ interface HelpDrawerProps {
 
 const HelpDrawer: React.FC<HelpDrawerProps> = (props: HelpDrawerProps) => {
 	const { helpDrawer, setHelpDrawer } = props;
+	const theme = useTheme();
+
     return (
         <BaseDrawer
-			transitionDuration={{ enter: 300, exit: 300 }}
+			transitionDuration={{ 
+				enter: theme.transitions.duration.leavingScreen, 
+				exit: theme.transitions.duration.leavingScreen 
+			}}
 			variant="persistent"
 			open={helpDrawer}
 			>
@@ -224,9 +234,14 @@ interface LegendDrawerProps {
 }
 const LegendDrawer: React.FC<LegendDrawerProps> = (props: LegendDrawerProps) => {
 	const { legendDrawer, setLegendDrawer } = props;
+	const theme = useTheme();
+
     return (
         <BaseDrawer
-			transitionDuration={{ enter: 300, exit: 300 }}
+			transitionDuration={{ 
+				enter: theme.transitions.duration.leavingScreen, 
+				exit: theme.transitions.duration.leavingScreen 
+			}}
 			variant="persistent"
 			open={legendDrawer}
 		>
