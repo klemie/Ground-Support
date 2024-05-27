@@ -26,15 +26,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 
 
-import { ValveTypeKeys, ValveTypeStrings, ValveTypes } from '../../../static/valves/ValveTypes';
+import { ValveTypeKeys, ValveTypeStrings, ValveTypeSVGs } from '../../../static/valves/ValveTypes';
 import { IPAndIDNode, PAndIDNodeTypes } from '../../../utils/monitoring-system/monitoring-types';
 
 // images
 import Tank from '../../../static/tanks/Tank.svg';
-import GasBottle from '../../../static/tanks/Gas Bottle.svg';
-import VerticalVessel from '../../../static/tanks/Vertical Vector.svg';
+import GasBottle from '../../../static/tanks/GasBottle.svg';
+import VerticalVessel from '../../../static/tanks/VerticalVessel.svg';
 import InstrumentationLegend from '../../../static/InstrumentationLegend.svg';
-import { Position } from 'reactflow';
 
 const DRAWER_WIDTH = 310;
 
@@ -57,44 +56,76 @@ interface PAndIDBuilderProps {
 	openDrawer: boolean;
 	setNodeBuilderDrawer: () => void;
 	onAdd: (node: IPAndIDNode) => void;
+	nodeCount: number;
 }
 
 const PAndIDBuilderDrawer: React.FC<PAndIDBuilderProps> = (props: PAndIDBuilderProps) => {
-	const { openDrawer, setNodeBuilderDrawer, onAdd } = props;
+	const { 
+		openDrawer, 
+		setNodeBuilderDrawer, 
+		onAdd, 
+		nodeCount 
+	} = props;
 
 	const theme = useTheme();
+	const id: string = (nodeCount + 1).toString();
 	// Node builder form state
 	const [label, setLabel] = useState<string>('');
 	const [valveType, setValveType] = useState(ValveTypeKeys[0]);
 	const [controllable, setControllable] = useState(false);
+	const [nodeType, setNodeType] = useState<PAndIDNodeTypes>(PAndIDNodeTypes.TANK);
 
-	const [node, setNode] = useState<IPAndIDNode>({
-		id: 'horizontal-1',
-		type: 'valveNode',
-		data: {
-			label: 'MEC',
-			controllable: false,
-			nodeType: PAndIDNodeTypes.VALVE,
-			valveType: ValveTypeKeys[0]
-		},
+	const defaultNode: IPAndIDNode = {
+		id: id,
+		type: PAndIDNodeTypes.INSTRUMENTATION,
 		position: { x: 0, y: 0 },
-		sourcePosition: Position.Right,
-		targetPosition: Position.Left
-	});
+		data: {
+			label: 'Test',
+			controllable: false,
+			tankType: 'GasBottleTank',
+			valveType: valveType
+		},
+	};
 
-	// Node builder Handlers 
-	const updateType = useCallback((type: string) => {
-		setNode({ ...node, type: type });
-	}, [node]);
+	const [node, setNode] = useState<IPAndIDNode>(defaultNode);
 
-	const updateLabel = useCallback((label: string) => {
-		setNode({ ...node, data: { ...node.data, label: label } });
-	}, [label]);
+	// Node Handler
+	const updateNode = () => {
+		setNode({ 
+			id: id,
+			type: PAndIDNodeTypes.INSTRUMENTATION,
+			position: { x: 0, y: 0 },
+			data: { 
+				controllable: controllable,
+				tankType: 'TankTank',
+				valveType: valveType,
+				label: label 
+			} 
+		});
+		console.log('---- Node Updated values ----')
+		console.log(`Label: ${label}`);
+		console.log(`Valve Type: ${valveType}`);
+		console.log(`Controllable: ${controllable}`);
+		console.log(`Node Type: ${nodeType}`);
+	
+		console.log(`Node Updated: `);
+		console.log(node);
+	};
 
-	const updateControllable = useCallback((controllable: boolean) => {
-		setNode({ ...node, data: { ...node.data, controllable: controllable } });
-	}, [controllable]);
+	const resetNode = useCallback(() => {
+		setLabel('');
+		setValveType(ValveTypeKeys[0]);
+		setControllable(false);
+		setNodeType(PAndIDNodeTypes.VALVE);
+		setNode(defaultNode);
+	}, []);
 
+	const handleNodeAdd = () => {
+		updateNode();
+		onAdd(node);
+		resetNode();
+		setNodeBuilderDrawer();
+	}
 
     return (
         <BaseDrawer
@@ -106,8 +137,19 @@ const PAndIDBuilderDrawer: React.FC<PAndIDBuilderProps> = (props: PAndIDBuilderP
             open={openDrawer}
         >
 			<Stack spacing={2} padding={2}>
-				<Stack direction="row" spacing={2} alignItems={'center'} justifyContent={'space-between'} width={'100%'}>
-					<Typography  variant="h5" sx={{ color: 'white', fontWeight: 600 }}>P&ID Node Builder</Typography>
+				<Stack 
+					direction="row" 
+					spacing={2} 
+					alignItems={'center'} 
+					justifyContent={'space-between'} 
+					width={'100%'}
+				>
+					<Typography  
+						variant="h5" 
+						sx={{ color: 'white', fontWeight: 600 }}
+					>
+						P&ID Node Builder
+					</Typography>
 					<IconButton onClick={() => setNodeBuilderDrawer()} >
 						<CloseIcon />
 					</IconButton>
@@ -115,9 +157,30 @@ const PAndIDBuilderDrawer: React.FC<PAndIDBuilderProps> = (props: PAndIDBuilderP
 				<Stack spacing={1}>
 					<Typography variant="subtitle1">Node Type</Typography>
 					<Stack direction="row" spacing={2}>
-						<Chip label="Valve" sx={{ fontWeight: 600 }} onClick={() => {}} color='primary'/>
-						<Chip label="Tank" sx={{ fontWeight: 600 }} onClick={() => {}}/>
-						<Chip label="Instrumentation" sx={{ fontWeight: 600 }} onClick={() => {}}/>
+						<Chip 
+							label="Valve" 
+							sx={{ fontWeight: 600 }} 
+							onClick={() => {
+								setNodeType(PAndIDNodeTypes.VALVE)
+							}} 
+							color={nodeType == PAndIDNodeTypes.VALVE  ? 'primary' : 'default'}
+						/>
+						<Chip 
+							label="Tank" 
+							sx={{ fontWeight: 600 }} 
+							onClick={() => {
+								setNodeType(PAndIDNodeTypes.TANK);
+							}}
+							color={nodeType == PAndIDNodeTypes.TANK  ? 'primary' : 'default'}
+						/>
+						<Chip 
+							label="Instrumentation" 
+							sx={{ fontWeight: 600 }} 
+							onClick={() => {
+								setNodeType(PAndIDNodeTypes.INSTRUMENTATION)
+							}}
+							color={nodeType == PAndIDNodeTypes.INSTRUMENTATION  ? 'primary' : 'default'}
+						/>
 					</Stack>
 				</Stack>
 				<Stack direction="row" spacing={2}>
@@ -132,11 +195,13 @@ const PAndIDBuilderDrawer: React.FC<PAndIDBuilderProps> = (props: PAndIDBuilderP
 							value={valveType}
 							onChange={(event: SelectChangeEvent) => {
 								setValveType(event.target.value as typeof ValveTypeKeys[number]);
+								console.log(`Valve Type: ${valveType}`);
 							}}
 							label="Valve Type"
+							required
 						>
 							{ValveTypeStrings.map((key: string, index: number) => (
-								<MenuItem value={ValveTypeKeys[index]}>
+								<MenuItem key={key} value={ValveTypeKeys[index]}>
 									{key}
 								</MenuItem>
 							))}
@@ -148,7 +213,7 @@ const PAndIDBuilderDrawer: React.FC<PAndIDBuilderProps> = (props: PAndIDBuilderP
 							selected={controllable}
 							onChange={() => {
 								setControllable(!controllable);
-								updateControllable(controllable);
+								console.log(`Controllable: ${controllable}`);
 							}}
 							size='small'
 							>
@@ -161,18 +226,25 @@ const PAndIDBuilderDrawer: React.FC<PAndIDBuilderProps> = (props: PAndIDBuilderP
 					label="Valve Label"
 					variant="outlined"
 					size='small'
+					value={label} 
+					required
+					onChange={(event) => {
+						setLabel(event.target.value);
+						console.log(`Label: ${label}`);
+					}}
 					fullWidth
-					/>
+				/>
 				<img
-					src={ValveTypes[valveType]}
+					src={ValveTypeSVGs[valveType]}
 					alt={valveType}
 					width={'100%'}
 				/>
 				<Stack direction="row" spacing={2}>
 					<Button 
 						variant="contained" 
-						onClick={() => onAdd(node)} 
+						onClick={() => handleNodeAdd()} 
 						fullWidth
+						disabled={label.length == 0}
 					>
 						Add
 					</Button>
@@ -304,16 +376,16 @@ const LegendDrawer: React.FC<LegendDrawerProps> = (props: LegendDrawerProps) => 
 				<Divider />
 				<Grid container gap={1} alignContent={'space-between'} justifyContent="space-between">
 					{[...Array(10).keys()].map((i) => (
-						<Grid item alignContent={'center'} justifyContent="center">
-						<img src={ValveTypes[ValveTypeKeys[i]]} />
-						<Typography
-							paragraph
-							variant="body1"
-							textAlign={'center'}
-							sx={{ color: 'white', whiteSpace: "pre-wrap" }}
-						>
-							{ValveTypeStrings[i].replace(/ /g, '\n')}
-						</Typography>
+						<Grid key={i} item alignContent={'center'} justifyContent="center">
+							<img src={ValveTypeSVGs[ValveTypeKeys[i]]} />
+							<Typography
+								paragraph
+								variant="body1"
+								textAlign={'center'}
+								sx={{ color: 'white', whiteSpace: "pre-wrap" }}
+							>
+								{ValveTypeStrings[i].replace(/ /g, '\n')}
+							</Typography>
 						</Grid>
 					))}
 				</Grid>

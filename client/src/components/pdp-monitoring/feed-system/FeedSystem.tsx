@@ -7,7 +7,8 @@ import ReactFlow, {
 	Background, 
 	MarkerType, 
 	MiniMap, 
-	Position, 
+	Position,
+	useNodes, 
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -26,7 +27,10 @@ import HelpIcon from '@mui/icons-material/Help';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
 
-import PAndIDValveNode from './Nodes';
+import PAndIDValveNode from './ValveNode';
+import InstrumentationNode from './InstrumentationNode';
+import TankNode from './TankNode';
+
 import { IPAndIDNode, PAndIDNodeTypes } from '../../../utils/monitoring-system/monitoring-types';
 import { HelpDrawer, LegendDrawer, PAndIDBuilderDrawer } from './Drawers';
 import { ValveTypeKeys } from '../../../static/valves/ValveTypes';
@@ -52,7 +56,7 @@ const NodeDefaults = {
 const initialNodes: IPAndIDNode[] = [
 	{
 		id: 'horizontal-1',
-		type: 'valveNode',
+		type: 'Valve',
 		data: {
 			label: 'MEC',
 			controllable: false,
@@ -64,7 +68,7 @@ const initialNodes: IPAndIDNode[] = [
 	},
 	{
 		id: 'horizontal-2',
-		type: 'valveNode',
+		type: 'Valve',
 		data: {
 			label: 'NCV',
 			controllable: false,
@@ -77,7 +81,9 @@ const initialNodes: IPAndIDNode[] = [
 ];
 
 const nodeTypes = {
-  valveNode: PAndIDValveNode
+  Valve: PAndIDValveNode,
+  Tank: TankNode,
+  Instrumentation: InstrumentationNode
 };
 
 const snapGrid = [1, 1] as [number, number];
@@ -173,22 +179,8 @@ const FeedSystem: React.FC = () => {
 		restoreFlow();
 	}, [setNodes ]);
 
-	const onAdd = useCallback(() => {
-		const newNode = {
-			id: 'horizontal-1',
-			type: 'valveNode',
-			data: { 
-				nodeType: PAndIDNodeTypes.VALVE, 
-				label: 'Valve', 
-				controllable: true, 
-				valveType: ValveTypeKeys[6] 
-			},
-			position: {
-				x: 100,
-				y: 100,
-			},
-		};
-		setNodes((nds) => nds.concat(newNode));
+	const onAdd = useCallback((node: IPAndIDNode) => {
+		setNodes((nds) => nds.concat(node));
 	}, [setNodes]);
 
 	useEffect(() => {
@@ -203,6 +195,7 @@ const FeedSystem: React.FC = () => {
 				onAdd={onAdd} 
 				openDrawer={nodeBuilderDrawer} 
 				setNodeBuilderDrawer={() => setNodeBuilderDrawer(!nodeBuilderDrawer)} 
+				nodeCount={useNodes().length}
 			/>
 			<HelpDrawer 
 				helpDrawer={helpDrawer} 

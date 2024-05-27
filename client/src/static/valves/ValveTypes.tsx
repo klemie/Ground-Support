@@ -29,7 +29,7 @@ export const PressureRegulatorValve = ValvePressureRegulator;
 
 export const NeedleValve = ValveNeedle;
 
-export const ValveTypes = {
+export const ValveTypeSVGs = {
     BallValve,
     CheckValve,
     HandOperatedValve,
@@ -42,8 +42,8 @@ export const ValveTypes = {
     NeedleValve
 };
 
-export const ValveTypeStrings = Object.keys(ValveTypes).map(key => 
+export const ValveTypeStrings = Object.keys(ValveTypeSVGs).map(key => 
     key.replace(/([A-Z])/g, ' $1').trim()
-) as Array<keyof typeof ValveTypes>;
+) as Array<keyof typeof ValveTypeSVGs>;
 
-export const ValveTypeKeys = Object.keys(ValveTypes) as Array<keyof typeof ValveTypes>;
+export const ValveTypeKeys = Object.keys(ValveTypeSVGs) as Array<keyof typeof ValveTypeSVGs>;

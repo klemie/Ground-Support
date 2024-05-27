@@ -29,6 +29,7 @@ import { ControlsActionTypes, ControlsCommandTypes, ControlsValveTypes, IControl
 import { ViewKeys } from "../../utils/viewProviderContext";
 import FeedSystem from "../../components/pdp-monitoring/feed-system/FeedSystem";
 import ConfigurationDrawer from "../../components/pdp-monitoring/feed-system/ConfigurationDrawer";
+import { ReactFlowProvider } from "reactflow";
 
 interface IPhoneViewProps {
    openSettings: () => void;
@@ -221,12 +222,15 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
                             </ButtonGroup>
                         </Stack>
                     </Stack>
-                    <FeedSystem />
+                    <ReactFlowProvider>
+                        <FeedSystem />
+                    </ReactFlowProvider>
             </Stack>
             <div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
                 {colors.map((color) => {
                     return (
                         <div
+                            key={color}
                             style={{
                                 backgroundColor: color,
                                 width: '25%',

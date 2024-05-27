@@ -68,7 +68,6 @@ export {
 /*------------ Feed System types -------------*/
 
 import { Node, Edge }  from 'reactflow';
-import { DefaultValve, ValveTypeKeys } from '../../static/valves/ValveTypes';
 
 /*------------ P&ID Types -------------*/
 
@@ -92,11 +91,23 @@ export enum PAndIDInstrumentationTypes {
 
 export interface IPAndIDNode extends Node {
     data: {
-        nodeType: PAndIDNodeTypes;
+        nodeType?: PAndIDNodeTypes;
         controllable?: boolean;
+        tankType?: "GasBottleTank"
+            | "VerticalVesselTank"
+            | "TankTank";
         instrumentationType?: PAndIDInstrumentationTypes;
         label: ControlsValveTypes | string;
-        valveType?: typeof ValveTypeKeys;
+        valveType?: "BallValve" 
+            | "CheckValve" 
+            | "HandOperatedValve" 
+            | "MotorValve" 
+            | "PneumaticValve" 
+            | "SolenoidValve" 
+            | "SpringValve" 
+            | "RegulatorValve" 
+            | "PressureRegulatorValve" 
+            | "NeedleValve";
     };
 }
 
