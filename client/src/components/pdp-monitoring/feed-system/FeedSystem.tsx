@@ -56,11 +56,10 @@ const NodeDefaults = {
 const initialNodes: IPAndIDNode[] = [
 	{
 		id: 'horizontal-1',
-		type: 'Valve',
+		type: PAndIDNodeTypes.VALVE,
 		data: {
 			label: 'MEC',
 			controllable: false,
-			nodeType: PAndIDNodeTypes.VALVE,
 			valveType: ValveTypeKeys[0]
 		},
 		position: { x: 0, y: 0 },
@@ -68,11 +67,10 @@ const initialNodes: IPAndIDNode[] = [
 	},
 	{
 		id: 'horizontal-2',
-		type: 'Valve',
+		type: PAndIDNodeTypes.VALVE,
 		data: {
 			label: 'NCV',
 			controllable: false,
-			nodeType: PAndIDNodeTypes.VALVE,
 			valveType: ValveTypeKeys[1]
 		},
 		position: { x: 300, y: 0 },
@@ -165,7 +163,7 @@ const FeedSystem: React.FC = () => {
 			const flow = rfInstance.toObject();
 			localStorage.setItem(FLOW_KEY, JSON.stringify(flow));
 		}
-	}, [rfInstance]);
+	}, []);
 
 	const onRestore = useCallback(() => {
 		const restoreFlow = async () => {
@@ -177,16 +175,24 @@ const FeedSystem: React.FC = () => {
 		  }
 		};
 		restoreFlow();
-	}, [setNodes ]);
+	}, []);
 
 	const onAdd = useCallback((node: IPAndIDNode) => {
 		setNodes((nds) => nds.concat(node));
-	}, [setNodes]);
+	}, []);
 
 	useEffect(() => {
 		if (localStorage.getItem(FLOW_KEY)) {
 			onRestore();
 		}
+	}, []);
+
+	const handleSpeedDialOpen = useCallback(() => {
+		setSpeedDialOpen(true);
+	}, []);
+
+	const handleSpeedDialClose = useCallback(() => {
+		setSpeedDialOpen(false);
 	}, []);
 
 	return (
@@ -242,7 +248,7 @@ const FeedSystem: React.FC = () => {
 						snapGrid={snapGrid}
 						fitView
 						attributionPosition="bottom-left"
-						onInit={setRfInstance}
+						// onInit={setRfInstance}
 						defaultEdgeOptions={{
 							type: 'smoothstep',
 							deletable: true,
@@ -273,9 +279,9 @@ const FeedSystem: React.FC = () => {
 							FabProps={{
 								size: 'medium',
 							}}
-							open={speedDialOpen}
-							onOpen={() => setSpeedDialOpen(true)}
-							onClose={() => setSpeedDialOpen(false)}
+							// open={speedDialOpen}
+							// onOpen={handleSpeedDialOpen}
+							// onClose={handleSpeedDialClose}
 						>
 						{speedDialActions.map((action) => (
 							<SpeedDialAction

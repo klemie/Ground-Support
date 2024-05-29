@@ -1,4 +1,5 @@
 import { 
+	Box,
 	Button,
 	Chip, 
 	Divider, 
@@ -8,6 +9,8 @@ import {
 	IconButton, 
 	InputLabel, 
 	Link, 
+	List, 
+	ListItem, 
 	MenuItem, 
 	Select, 
 	SelectChangeEvent, 
@@ -19,21 +22,29 @@ import {
 	styled, 
 	useTheme
 } from '@mui/material';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, Dispatch, SetStateAction, useEffect } from 'react';
 
 // Icons
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 
-
+// Symbol mappings
 import { ValveTypeKeys, ValveTypeStrings, ValveTypeSVGs } from '../../../static/valves/ValveTypes';
-import { IPAndIDNode, PAndIDNodeTypes } from '../../../utils/monitoring-system/monitoring-types';
+import { TankTypesSVGs, TankTypeKeys, TankTypeStrings } from '../../../static/tanks/TankTypes';
+
+// Monitoring System Types
+import { 
+	IPAndIDNode, 
+	InstrumentationTypes, 
+	PAndIDInstrumentationTypes, 
+	PAndIDNodeTypes, 
+	TankTypes, 
+	ValveTypes 
+} from '../../../utils/monitoring-system/monitoring-types';
 
 // images
-import Tank from '../../../static/tanks/Tank.svg';
-import GasBottle from '../../../static/tanks/GasBottle.svg';
-import VerticalVessel from '../../../static/tanks/VerticalVessel.svg';
 import InstrumentationLegend from '../../../static/InstrumentationLegend.svg';
+import InstrumentationSymbol from '../../../static/instrumentation/InstrumentationSymbol.svg';
 
 const DRAWER_WIDTH = 310;
 
@@ -69,63 +80,253 @@ const PAndIDBuilderDrawer: React.FC<PAndIDBuilderProps> = (props: PAndIDBuilderP
 
 	const theme = useTheme();
 	const id: string = (nodeCount + 1).toString();
+
 	// Node builder form state
-	const [label, setLabel] = useState<string>('');
-	const [valveType, setValveType] = useState(ValveTypeKeys[0]);
-	const [controllable, setControllable] = useState(false);
-	const [nodeType, setNodeType] = useState<PAndIDNodeTypes>(PAndIDNodeTypes.TANK);
+	const [nodeType, setNodeType] = useState<PAndIDNodeTypes>(PAndIDNodeTypes.VALVE);
 
 	const defaultNode: IPAndIDNode = {
 		id: id,
-		type: PAndIDNodeTypes.INSTRUMENTATION,
+		type: nodeType,
 		position: { x: 0, y: 0 },
 		data: {
-			label: 'Test',
-			controllable: false,
-			tankType: 'GasBottleTank',
-			valveType: valveType
+			label: '',
+			controllable: false
 		},
 	};
 
-	const [node, setNode] = useState<IPAndIDNode>(defaultNode);
+	// const [node, setNode] = useState<IPAndIDNode>(defaultNode);
 
 	// Node Handler
-	const updateNode = () => {
-		setNode({ 
-			id: id,
-			type: PAndIDNodeTypes.INSTRUMENTATION,
-			position: { x: 0, y: 0 },
-			data: { 
-				controllable: controllable,
-				tankType: 'TankTank',
-				valveType: valveType,
-				label: label 
-			} 
-		});
-		console.log('---- Node Updated values ----')
-		console.log(`Label: ${label}`);
-		console.log(`Valve Type: ${valveType}`);
-		console.log(`Controllable: ${controllable}`);
-		console.log(`Node Type: ${nodeType}`);
-	
-		console.log(`Node Updated: `);
-		console.log(node);
+	// const updateNode = () => {
+	// 	setNode({ 
+	// 		id: id,
+	// 		type: nodeType,
+	// 		position: { x: 0, y: 0 },
+	// 		data: { 
+	// 			controllable: controllable,
+	// 			tankType: tankType,
+	// 			valveType: valveType,
+	// 			instrumentationType: instrumentationType,
+	// 			label: nodeType == PAndIDNodeTypes.VALVE ? valveLabel : tankLabel
+	// 		} 
+	// 	});
+	// };
+
+	const resetNode = () => {
+		setNodeType(PAndIDNodeTypes.VALVE);
 	};
 
-	const resetNode = useCallback(() => {
-		setLabel('');
-		setValveType(ValveTypeKeys[0]);
-		setControllable(false);
-		setNodeType(PAndIDNodeTypes.VALVE);
-		setNode(defaultNode);
-	}, []);
 
-	const handleNodeAdd = () => {
-		updateNode();
-		onAdd(node);
-		resetNode();
-		setNodeBuilderDrawer();
+	interface ValveFormProps {
+		onAdd: (node: IPAndIDNode) => void;
 	}
+
+	const ValveFormContent = (props: ValveFormProps) => {
+		const { onAdd } = props;
+
+		const [controllable, setControllable] = useState<boolean>(false);
+		const [valveType, setValveType] = useState<ValveTypes>('');
+		const [valveLabel, setValveLabel] = useState<string>('');
+
+		const [valveNode , setValveNode] = useState<IPAndIDNode>(defaultNode);
+	
+		useEffect(() => {
+			setValveNode({ 
+				id: id,
+				type: nodeType,
+				position: { x: 0, y: 0 },
+				data: { 
+					controllable: controllable,
+					valveType: valveType,
+					label: valveLabel
+				} 
+			});
+		}, [controllable, valveType, valveLabel]);		
+		
+		const resetState = () => {
+			setValveLabel('');
+			setValveType('');
+			setControllable(false);
+		};
+
+		return (
+			<Stack gap={2}>
+				<Stack direction="row" spacing={2}>
+					<FormControl
+						fullWidth
+						size='small'
+					>
+						<InputLabel id="valve-type-select-label">Valve Type</InputLabel>
+						<Select
+							labelId="valve-type-select-label"
+							id="valve-type-select"
+							value={valveType}
+							onChange={(event: SelectChangeEvent) => {
+								setValveType(event.target.value as ValveTypes);
+							}}
+							label="Valve Type"
+							required
+						>
+							{ValveTypeStrings.map((key: string, index: number) => (
+								<MenuItem key={key} value={ValveTypeKeys[index]}>
+									{key}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+					<Tooltip title={'Controllable'} placement='top'>
+						<ToggleButton
+							value="check"
+							selected={controllable}
+							onChange={() => {
+								setControllable(!controllable);
+							}}
+							size='small'
+							>
+								<CheckIcon />
+						</ToggleButton>
+					</Tooltip>
+				</Stack>
+				<TextField
+					key={'valve-label'}
+					id="valve-label"
+					label="Valve Label"
+					variant="outlined"
+					size='small'
+					value={valveLabel} 
+					required
+					onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+						setValveLabel(event.target.value);
+					}}
+					fullWidth
+				/>
+				<img
+					src={ValveTypeSVGs[valveType]}
+					alt={valveType as string}
+					width={'100%'}
+				/>
+				<Button 
+						variant="contained" 
+						onClick={() => {
+							onAdd(valveNode);
+							resetState();
+						}} 
+						fullWidth
+						disabled={valveLabel.length === 0}
+					>
+					Add
+				</Button>
+			</Stack>
+		);
+	};
+
+	interface TankFormProps {
+		tankLabel: string;
+		setTankLabel: (val: string) => void;
+		tankType: TankTypes;
+		setTankType: (val: TankTypes) => void;
+	}
+
+	const TankFormContent = (props: TankFormProps) => (
+		<Stack gap={2}>
+			<TextField
+				key={"tank-label"}
+				id="tank-label"
+				label="Tank Label"
+				variant="outlined"
+				size='small'
+				value={props.tankLabel} 
+				required
+				onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+					props.setTankLabel(event.target.value);
+				}}
+				fullWidth
+			/>
+			<FormControl
+					fullWidth
+					size='small'
+				>
+					<InputLabel id="tank-type-select-label">Tank Type</InputLabel>
+					<Select
+						labelId="tank-type-select-label"
+						id="tank-type-select"
+						value={props.tankType as string}
+						onChange={(event: SelectChangeEvent) => {
+							props.setTankType(event.target.value as TankTypes);
+						}}
+						label="Valve Type"
+						required
+					>
+						{TankTypeStrings.map((key: string, index: number) => (
+							<MenuItem key={key} value={TankTypeKeys[index]}>
+								{key}
+							</MenuItem>
+						))}
+					</Select>
+				</FormControl>
+			<img
+				src={TankTypesSVGs[tankType]}
+				alt={props.tankType as string}
+				width={'25%'}
+			/>
+		</Stack>
+	);
+
+	interface InstrumentationFormProps {
+		instrumentationType: InstrumentationTypes;
+		setInstrumentationType: (val: InstrumentationTypes) => void;
+	}
+	const InstrumentationFormContent = (props: InstrumentationFormProps) => (
+		<Stack gap={2}>
+			<FormControl
+				fullWidth
+				size='small'
+			>
+				<InputLabel id="instrumentation-type-select-label">Instrumentation Type</InputLabel>
+				<Select
+					labelId="instrumentation-type-select-label"
+					id="instrumentation-type-select"
+					value={props.instrumentationType as string}
+					onChange={(event: SelectChangeEvent) => {
+						props.setInstrumentationType(event.target.value as InstrumentationTypes);
+					}}
+					label="Instrumentation Type"
+					required
+				>
+					{Object.values(PAndIDInstrumentationTypes).map((key: string) => (
+						<MenuItem key={key} value={key}>
+							{key}
+						</MenuItem>
+					))}
+				</Select>
+			</FormControl>
+			<Box 
+				alignItems={'center'} 
+				justifyItems={'center'} 
+				position={'relative'}
+			>
+				<img
+					src={InstrumentationSymbol}
+					alt={instrumentationType as string}
+					width={'100%'}
+				/>
+				<Box 
+					position={'absolute'} 
+					textAlign={'center'}
+					top="50%" 
+    				left="50%" 
+					sx={{
+						transform: 'translate(-50%, -50%)', 
+						zIndex: 2 
+					}} 
+					alignItems={'center'}
+				>
+					<Typography variant="body1" fontSize={80}>{instrumentationType}</Typography>
+					{instrumentationType && <Typography variant="body1" fontSize={80}>000</Typography>}
+				</Box>
+			</Box>
+		</Stack>
+	);
 
     return (
         <BaseDrawer
@@ -150,7 +351,10 @@ const PAndIDBuilderDrawer: React.FC<PAndIDBuilderProps> = (props: PAndIDBuilderP
 					>
 						P&ID Node Builder
 					</Typography>
-					<IconButton onClick={() => setNodeBuilderDrawer()} >
+					<IconButton onClick={() => {
+						resetNode();
+						setNodeBuilderDrawer();
+					}}>
 						<CloseIcon />
 					</IconButton>
 				</Stack>
@@ -183,72 +387,19 @@ const PAndIDBuilderDrawer: React.FC<PAndIDBuilderProps> = (props: PAndIDBuilderP
 						/>
 					</Stack>
 				</Stack>
-				<Stack direction="row" spacing={2}>
-					<FormControl
-						fullWidth
-						size='small'
-					>
-						<InputLabel id="valve-type-select-label">Valve Type</InputLabel>
-						<Select
-							labelId="valve-type-select-label"
-							id="valve-type-select"
-							value={valveType}
-							onChange={(event: SelectChangeEvent) => {
-								setValveType(event.target.value as typeof ValveTypeKeys[number]);
-								console.log(`Valve Type: ${valveType}`);
-							}}
-							label="Valve Type"
-							required
-						>
-							{ValveTypeStrings.map((key: string, index: number) => (
-								<MenuItem key={key} value={ValveTypeKeys[index]}>
-									{key}
-								</MenuItem>
-							))}
-						</Select>
-					</FormControl>
-					<Tooltip title={'Controllable'} placement='top'>
-						<ToggleButton
-							value="check"
-							selected={controllable}
-							onChange={() => {
-								setControllable(!controllable);
-								console.log(`Controllable: ${controllable}`);
-							}}
-							size='small'
-							>
-								<CheckIcon />
-						</ToggleButton>
-					</Tooltip>
-				</Stack>
-				<TextField
-					id="node-label"
-					label="Valve Label"
-					variant="outlined"
-					size='small'
-					value={label} 
-					required
-					onChange={(event) => {
-						setLabel(event.target.value);
-						console.log(`Label: ${label}`);
-					}}
-					fullWidth
-				/>
-				<img
-					src={ValveTypeSVGs[valveType]}
-					alt={valveType}
-					width={'100%'}
-				/>
-				<Stack direction="row" spacing={2}>
-					<Button 
-						variant="contained" 
-						onClick={() => handleNodeAdd()} 
-						fullWidth
-						disabled={label.length == 0}
-					>
-						Add
-					</Button>
-				</Stack>
+				{nodeType == PAndIDNodeTypes.VALVE && <ValveFormContent onAdd={onAdd}/>}
+				{/* {nodeType == PAndIDNodeTypes.TANK && <TankFormContent 
+					tankLabel={tankLabel} 
+					setTankLabel={setTankLabel} 
+					tankType={tankType}
+					setTankType={setTankType}
+				/>}
+				{nodeType == PAndIDNodeTypes.INSTRUMENTATION && <InstrumentationFormContent 
+					instrumentationType={instrumentationType} 
+					setInstrumentationType={setInstrumentationType}
+				/>} */}
+				
+					
 			</Stack>
         </BaseDrawer>
     );
@@ -392,14 +543,36 @@ const LegendDrawer: React.FC<LegendDrawerProps> = (props: LegendDrawerProps) => 
 				<Divider />
 				<Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>Instrumentation</Typography>
 				<Divider />
-				<img src={InstrumentationLegend} width={'100%'} />
+				<Typography variant="subtitle2" sx={{ color: 'white', fontWeight: 600 }}>Instrument Type</Typography>
+				<Stack direction="row" spacing={1}>
+					<Chip label={'(I)ndicator'} size='small'/>
+					<Chip label={'(C)ontroller'} size='small'/>
+					<Chip label={'(R)ecorder'} size='small'/>
+				</Stack>
+				<Typography variant="subtitle2" sx={{ color: 'white', fontWeight: 600 }}>Measurement Type</Typography>
+				<Stack direction="row" spacing={1}>
+					<Chip label={'(T)emperature'} size='small'/>
+					<Chip label={'(P)ressure'} size='small'/>	
+					<Chip label={'(L)evel'} size='small'/>
+				</Stack>
+			<img src={InstrumentationLegend} width={'100%'} />
 				<Divider />
 				<Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>Tanks</Typography>
 				<Divider />
-				<Stack direction="row" spacing={2}>
-					<img src={Tank} />
-					<img src={VerticalVessel} />
-					<img src={GasBottle} />
+				<Stack direction="row" justifyContent={'space-around'}>
+					{[...Array(3).keys()].map((i) => (
+						<Stack key={i} direction="column" alignItems={'center'} justifyContent={'center'}>
+							<img src={TankTypesSVGs[TankTypeKeys[i]]} />
+							<Typography
+								paragraph
+								variant="body1"
+								textAlign={'center'}
+								sx={{ color: 'white', whiteSpace: "pre-wrap" }}
+							>
+								{TankTypeStrings[i].replace(/ /g, '\n')}
+							</Typography>
+						</Stack>
+					))}
 				</Stack>
 			</Stack>
         </BaseDrawer>

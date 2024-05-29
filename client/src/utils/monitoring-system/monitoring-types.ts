@@ -89,25 +89,35 @@ export enum PAndIDInstrumentationTypes {
     LEVEL_INDICATOR = "LI"
 }
 
+export declare type TankTypes = "GasBottleTank" 
+    | "VerticalVesselTank" 
+    | "TankTank" 
+    | "";
+
+export declare type ValveTypes = "BallValve" 
+    | "CheckValve" 
+    | "HandOperatedValve" 
+    | "MotorValve" 
+    | "PneumaticValve" 
+    | "SolenoidValve" 
+    | "SpringValve" 
+    | "RegulatorValve" 
+    | "PressureRegulatorValve" 
+    | "NeedleValve" 
+    | "";
+
+export declare type InstrumentationTypes = PAndIDInstrumentationTypes | "";
+
+
+
 export interface IPAndIDNode extends Node {
     data: {
+        label: ControlsValveTypes | string;
         nodeType?: PAndIDNodeTypes;
         controllable?: boolean;
-        tankType?: "GasBottleTank"
-            | "VerticalVesselTank"
-            | "TankTank";
-        instrumentationType?: PAndIDInstrumentationTypes;
-        label: ControlsValveTypes | string;
-        valveType?: "BallValve" 
-            | "CheckValve" 
-            | "HandOperatedValve" 
-            | "MotorValve" 
-            | "PneumaticValve" 
-            | "SolenoidValve" 
-            | "SpringValve" 
-            | "RegulatorValve" 
-            | "PressureRegulatorValve" 
-            | "NeedleValve";
+        tankType?: TankTypes;
+        instrumentationType?: InstrumentationTypes;
+        valveType?: ValveTypes
     };
 }
 
