@@ -1,7 +1,8 @@
-import { memo, useEffect, useState } from 'react';
+import { memo } from 'react';
 
 import InstrumentationSymbol from '../../../static/instrumentation/instrumentationSymbol.svg';
 import { Stack, Typography } from '@mui/material';
+import { Handle, Position } from 'reactflow';
 
 
 const InstrumentationNode = ({ data, isConnectable }) => {
@@ -16,6 +17,12 @@ const InstrumentationNode = ({ data, isConnectable }) => {
 				<Typography variant="body1" fontSize={10}>{data.instrumentationType}</Typography>
 				<Typography variant="body1" fontSize={10}>000</Typography>
 			</Stack>
+			{/* <Handle 
+				type="source"
+				position={Position.Top}
+				onConnect={(params) => console.log('handle onConnect', params)}
+				isConnectable={isConnectable}
+			/> */}
 		</Stack>
   );
 };

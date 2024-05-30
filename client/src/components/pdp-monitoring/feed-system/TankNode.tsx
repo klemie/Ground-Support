@@ -13,7 +13,7 @@ const PAndIDTankNode = ({ data, isConnectable }) => {
     <Stack direction="column" spacing={0} alignItems={'center'} justifyItems={'center'}>
       <Stack direction="row" alignItems={'center'} justifyItems={'center'}>
         <Handle 
-          type="source"
+          type={Tank == 'TankTank' ? "source" : "target"}
           position={Position.Top}
           onConnect={(params) => console.log('handle onConnect', params)}
           isConnectable={isConnectable}
