@@ -6,7 +6,7 @@ import ValveControl from './ValveControlSwitch';
 const ControlsPanel: React.FC = () => (
     <Paper
         elevation={2}
-        sx={{ padding: 2, width: "fit-content" }}
+        sx={{ padding: 2, width: "fit-content", height: "fit-content"}}
     >
         <FormControl component="fieldset">
             <Stack direction={'row'}>

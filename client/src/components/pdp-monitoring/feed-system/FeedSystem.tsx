@@ -167,16 +167,8 @@ const FeedSystem: React.FC = () => {
 		setNodes((nds) => nds.concat(node));
 	}, []);
 
-	const handleSpeedDialOpen = useCallback(() => {
-		setSpeedDialOpen(true);
-	}, []);
-
-	const handleSpeedDialClose = useCallback(() => {
-		setSpeedDialOpen(false);
-	}, []);
-
 	return (
-		<Box sx={{ display: 'flex', height: '100%' }}>
+		<Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
 			<PAndIDBuilderDrawer 
 				onAdd={onAdd} 
 				openDrawer={nodeBuilderDrawer} 
