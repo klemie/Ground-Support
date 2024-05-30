@@ -8,7 +8,6 @@ import ReactFlow, {
 	MarkerType, 
 	MiniMap, 
 	Position,
-	useNodes, 
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -84,7 +83,7 @@ const nodeTypes = {
   Instrumentation: InstrumentationNode
 };
 
-const snapGrid = [1, 1] as [number, number];
+const snapGrid = [5, 5] as [number, number];
 
 const FeedSystem: React.FC = () => {
 	const theme = useTheme();
@@ -106,23 +105,26 @@ const FeedSystem: React.FC = () => {
 				setSpeedDialOpen(false);
 				setHelpDrawer(false);
 				setLegendDrawer(false);
-			}
+			},
+			disabled: false
 		},
 		{
 			icon: <SaveIcon />,
 			name: 'Save P&ID',
 			onClick : () => {
 				console.log('save clicked');
-				onSave();
-			}
+				// onSave();
+			},
+			disabled: true
 		},
 		{
 			icon: <RestoreIcon />,
 			name: 'Restore P&ID',
 			onClick: () => {
 				console.log('Restore clicked');
-				onRestore();
-			}
+				// onRestore();
+			},
+			disabled: true
 		},
 		{
 			icon: <InfoIcon />,
@@ -133,7 +135,8 @@ const FeedSystem: React.FC = () => {
 				setSpeedDialOpen(false);
 				setHelpDrawer(false);
 				setNodeBuilderDrawer(false);
-			}
+			},
+			disabled: false
 		},
 		{
 			icon: <HelpIcon />,
@@ -144,47 +147,24 @@ const FeedSystem: React.FC = () => {
 				setSpeedDialOpen(false);
 				setLegendDrawer(false);
 				setNodeBuilderDrawer(false);
-			}
+			},
+			disabled: false
 		}
 	];
 
 	// Flow State and Handlers
-	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-	const [rfInstance, setRfInstance] = useState(null);
-  	// const { setViewport } = useReactFlow();
 
-	const onConnect = useCallback((params: any) => setEdges(
-		(els) => addEdge(params, els)
-	), []);
+	const onConnect = useCallback((params: any) => setEdges((eds) => addEdge({ ...params, style: { stroke: '#fff' } }, eds)), []);
+	const [nodeCount, setNodeCount] = useState(0);
+	useEffect(() => {
+		setNodeCount(nodes.length);
+	}, [nodes]);
 
-	const onSave = useCallback(() => {
-		if (rfInstance) {
-			const flow = rfInstance.toObject();
-			localStorage.setItem(FLOW_KEY, JSON.stringify(flow));
-		}
-	}, []);
-
-	const onRestore = useCallback(() => {
-		const restoreFlow = async () => {
-		  const flow = JSON.parse(localStorage.getItem(FLOW_KEY) as string);
-	
-		  if (flow) {
-			setNodes(flow.nodes || []);
-			setEdges(flow.edges || []);
-		  }
-		};
-		restoreFlow();
-	}, []);
 
 	const onAdd = useCallback((node: IPAndIDNode) => {
 		setNodes((nds) => nds.concat(node));
-	}, []);
-
-	useEffect(() => {
-		if (localStorage.getItem(FLOW_KEY)) {
-			onRestore();
-		}
 	}, []);
 
 	const handleSpeedDialOpen = useCallback(() => {
@@ -201,7 +181,7 @@ const FeedSystem: React.FC = () => {
 				onAdd={onAdd} 
 				openDrawer={nodeBuilderDrawer} 
 				setNodeBuilderDrawer={() => setNodeBuilderDrawer(!nodeBuilderDrawer)} 
-				nodeCount={useNodes().length}
+				nodeCount={nodeCount}
 			/>
 			<HelpDrawer 
 				helpDrawer={helpDrawer} 
@@ -279,13 +259,13 @@ const FeedSystem: React.FC = () => {
 							FabProps={{
 								size: 'medium',
 							}}
-							// open={speedDialOpen}
-							// onOpen={handleSpeedDialOpen}
-							// onClose={handleSpeedDialClose}
 						>
 						{speedDialActions.map((action) => (
 							<SpeedDialAction
 								key={action.name}
+								FabProps={{
+									disabled: action.disabled
+								}}
 								icon={action.icon}
 								tooltipTitle={action.name}
 								onClick={action.onClick}

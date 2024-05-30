@@ -13,7 +13,7 @@ const InstrumentationNode = ({ data, isConnectable }) => {
 				alt={InstrumentationSymbol} 
 			/>
 			<Stack direction={'column'} sx={{ position: 'absolute', top: 3 }} alignItems={'center'}>
-				<Typography variant="body1" fontSize={10}>TT</Typography>
+				<Typography variant="body1" fontSize={10}>{data.instrumentationType}</Typography>
 				<Typography variant="body1" fontSize={10}>000</Typography>
 			</Stack>
 		</Stack>

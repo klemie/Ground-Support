@@ -22,6 +22,12 @@ const PAndIDTankNode = ({ data, isConnectable }) => {
           src={TankTypesSVGs[Tank]} 
           alt="Tank" 
         />
+        <Handle 
+          type="target"
+          position={Position.Bottom}
+          onConnect={(params) => console.log('handle onConnect', params)}
+          isConnectable={isConnectable}
+        />
       </Stack>
       <Typography variant="body1">{data.label}</Typography>
     </Stack>
