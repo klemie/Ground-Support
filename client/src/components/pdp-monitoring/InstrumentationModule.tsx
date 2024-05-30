@@ -6,7 +6,7 @@ import Graph from "../RealTimeGraph";
 export enum InstrumentationType_t {
     TEMPERATURE = 'Temperature',
     PRESSURE = 'Pressure',
-    LOAD = 'Load',
+    FORCE = 'Force',
     MASS = 'Mass'
 }
 
