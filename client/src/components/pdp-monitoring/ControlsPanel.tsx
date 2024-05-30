@@ -24,13 +24,14 @@ const ValveControl = (props: IValveControlProps) => {
 
         if (checked) {
             payload.action = ControlsActionTypes.OPEN;
+            setFeedBackLabel({});
         }
         socketContext.setControlsPacketOut(payload);
     }
 
     useEffect(() => {
         // Feedback logic
-
+        
     }, [socketContext.controlsPacketIn]);
 
     return (
