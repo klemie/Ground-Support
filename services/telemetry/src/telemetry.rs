@@ -71,7 +71,6 @@ pub async fn start_telemetry(state_ref: Arc<Mutex<State>>) -> io::Result<()> {
     loop {
         // read() blocks until data is available. This makes this not polling.
         let mut b = child_out.read(&mut readbuf);
-        // println!("{:?}",b);
         extract_packets(Arc::clone(&state_ref), readbuf.clone()).await;
     }
     Ok(())
