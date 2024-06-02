@@ -1,1 +1,2 @@
-python3 ./tools/test_data.py
+# -u = no buffering on stdout.
+python3 -u ./tools/test_data.py
