@@ -9,4 +9,4 @@ else
   FREQ=433.92M
 fi
 
-./tools/rtl_fm -f $FREQ -r 24k -s 260k -o 4 -p 93 -g 49.6 - | ./tools/direwolf -c ./tools/direwolf.conf -n 1 -r 24000 -b 16 -
+./rtl_fm -f $FREQ -r 24k -s 260k -o 4 -p 93 -g 49.6 - | ./direwolf -c ./direwolf.conf -n 1 -r 24000 -b 16 -
