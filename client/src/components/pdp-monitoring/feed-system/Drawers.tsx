@@ -533,7 +533,7 @@ const HelpDrawer: React.FC<HelpDrawerProps> = (props: HelpDrawerProps) => {
 				<Link href={'https://drive.google.com/drive/folders/1L5WAtktE5G_QPIZmBnmV_Xi1zLYX3coi?usp=sharing'} target='_blank'>
 					<Typography variant="body1">PDP Docs</Typography>
 				</Link>
-				<Link href={''} target='_blank'>
+				<Link href={'https://youtu.be/05_RjNkkwrc'} target='_blank'>
 					<Typography variant="body1">UVR P&ID FeedSystem Video</Typography>
 				</Link>
 			</Stack>
