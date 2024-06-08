@@ -3,7 +3,6 @@ import { ViewKeys, useViewProvider } from "../utils/viewProviderContext";
 
 import GroundSupportDarkMode from "../static/images/groundSupportDarkMode.svg";
 import MonitoringSystemLogo from "../static/images/MonitoringSystemLogo.svg"
-
 import Header, { Breadcrumb } from "../components/Header";
 import { motion } from 'framer-motion';
 
