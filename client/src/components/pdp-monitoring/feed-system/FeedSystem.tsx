@@ -112,19 +112,17 @@ const FeedSystem: React.FC = () => {
 			icon: <SaveIcon />,
 			name: 'Save P&ID',
 			onClick : () => {
-				console.log('save clicked');
-				// onSave();
+				onSave();
 			},
-			disabled: true
+			disabled: false
 		},
 		{
 			icon: <RestoreIcon />,
 			name: 'Restore P&ID',
 			onClick: () => {
-				console.log('Restore clicked');
-				// onRestore();
+				onRestore();
 			},
-			disabled: true
+			disabled: false
 		},
 		{
 			icon: <InfoIcon />,
@@ -166,6 +164,28 @@ const FeedSystem: React.FC = () => {
 	const onAdd = useCallback((node: IPAndIDNode) => {
 		setNodes((nds) => nds.concat(node));
 	}, []);
+
+	const [rfInstance, setRfInstance] = useState(null);
+
+	const onSave = useCallback(() => {
+		if (rfInstance) {
+			const flow = rfInstance.toObject();
+			localStorage.setItem(FLOW_KEY, JSON.stringify(flow));
+		}
+	}, [rfInstance]);
+
+	const onRestore = useCallback(() => {
+		const restoreFlow = async () => {
+			const flow = localStorage.getItem(FLOW_KEY);
+			if (flow) {
+				const flowObj = JSON.parse(flow);
+				setNodes(flowObj.nodes || []);
+				setEdges(flowObj.edges || []);
+			}
+		};
+		
+		restoreFlow();
+	}, [setNodes]);
 
 	return (
 		<Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
@@ -220,7 +240,7 @@ const FeedSystem: React.FC = () => {
 						snapGrid={snapGrid}
 						fitView
 						attributionPosition="bottom-left"
-						// onInit={setRfInstance}
+						onInit={setRfInstance}
 						defaultEdgeOptions={{
 							type: 'smoothstep',
 							deletable: true,
