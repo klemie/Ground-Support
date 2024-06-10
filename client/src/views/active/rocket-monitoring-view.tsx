@@ -60,7 +60,7 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                                     disabled
                                     color={"success"}
                                 >
-                                    Telemetry Lock
+                                    GPS Lock
                                 </Button>
                             </Tooltip>
                             <Button 

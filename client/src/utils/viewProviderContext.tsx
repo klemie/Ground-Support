@@ -15,6 +15,7 @@ import ActiveMissionView from "../views/active-mission";
 import { ActiveMissionProvider } from "./ActiveMissionContext";
 import PlatformSelector from "../views/platform-selector";
 import EngineMonitoringView from "../views/pdp-monitoring/engine-monitoring-view";
+import RocketMonitoringView from "../views/active/rocket-monitoring-view";
 
 
 export enum ViewKeys {
@@ -84,7 +85,7 @@ export const ViewContextProvider = ({ children }: PropsWithChildren<any>) => {
             case ViewKeys.ACTIVE_FLIGHT_KEY:
                 return {
                     viewKey: ViewKeys.ACTIVE_FLIGHT_KEY,
-                    currentView: <ActiveMissionView />
+                    currentView: <RocketMonitoringView />
                 }
             case ViewKeys.MISSION_REPLAY_KEY:
                 return {
