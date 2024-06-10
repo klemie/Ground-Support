@@ -510,6 +510,7 @@ const HelpDrawer: React.FC<HelpDrawerProps> = (props: HelpDrawerProps) => {
 						Zoom
 					</Typography>
 				</Stack>
+				
 				<Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
 					<Chip label={'Left Click'} sx={{ fontWeight: 600 }} />
 					<Typography variant="body1" sx={{ color: 'white' }}> 
@@ -523,6 +524,36 @@ const HelpDrawer: React.FC<HelpDrawerProps> = (props: HelpDrawerProps) => {
 						<Chip label={'Left Click'} sx={{ fontWeight: 600 }} />
 					</Stack>
 					<Typography variant="body1" sx={{ color: 'white' }}>Drag select</Typography>
+				</Stack>
+				<Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+					<Stack direction={'row'} alignItems={'center'}>
+						<Chip label={'Ctrl'} sx={{ fontWeight: 600 }} />
+						<Typography p={0.5}>+</Typography>
+						<Chip label={'Z'} sx={{ fontWeight: 600 }} />
+					</Stack>
+					<Typography variant="body1" sx={{ color: 'white' }}>
+						Restore Shortcut
+					</Typography>
+				</Stack>
+				<Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+					<Stack direction={'row'} alignItems={'center'}>
+						<Chip label={'Ctrl'} sx={{ fontWeight: 600 }} />
+						<Typography p={0.5}>+</Typography>
+						<Chip label={'S'} sx={{ fontWeight: 600 }} />
+					</Stack>
+					<Typography variant="body1" sx={{ color: 'white' }}>
+						Save Shortcut
+					</Typography>
+				</Stack>
+				<Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+					<Stack direction={'row'} alignItems={'center'}>
+						<Chip label={'Ctrl'} sx={{ fontWeight: 600 }} />
+						<Typography p={0.5}>+</Typography>
+						<Chip label={'Mouse Wheel'} sx={{ fontWeight: 600 }} />
+					</Stack>
+					<Typography variant="body1" sx={{ color: 'white' }}>
+						Zoom
+					</Typography>
 				</Stack>
 				<Divider />
 				<Typography variant="subtitle1" sx={{ color: 'white', fontWeight: 600 }}>Reference Guides</Typography>

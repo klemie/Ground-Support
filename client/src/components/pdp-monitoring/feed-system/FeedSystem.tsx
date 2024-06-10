@@ -33,6 +33,8 @@ import TankNode from './TankNode';
 import { IPAndIDNode, PAndIDNodeTypes } from '../../../utils/monitoring-system/monitoring-types';
 import { HelpDrawer, LegendDrawer, PAndIDBuilderDrawer } from './Drawers';
 import { ValveTypeKeys } from '../../../static/valves/ValveTypes';
+import { useHotkeys } from 'react-hotkeys-hook'
+
 
 const FLOW_KEY = 'FEED_SYSTEM_FLOW';
 
@@ -87,6 +89,8 @@ const snapGrid = [5, 5] as [number, number];
 
 const FeedSystem: React.FC = () => {
 	const theme = useTheme();
+	useHotkeys("ctrl+s", () => onSave());
+	useHotkeys("ctrl+z", () => onRestore());
 
 	// Drawers State 
 	const [nodeBuilderDrawer, setNodeBuilderDrawer] = useState(false);
