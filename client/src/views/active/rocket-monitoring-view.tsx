@@ -7,6 +7,7 @@ import Header, { Breadcrumb } from '../../components/Header';
 import { ViewKeys } from '../../utils/viewProviderContext';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
 import { Settings, WifiTethering } from '@mui/icons-material';
+import RocketStatus from '../../components/rocket-monitoring/RocketStatus';
 
 interface IRocketMonitoringViewProps {
     // rocketId: string;
@@ -54,15 +55,20 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                         <ButtonGroup
                             variant="contained"
                         >
-                            <Tooltip title={"Serial Status"}>
-                                <Button 
-                                    aria-readonly
-                                    disabled
-                                    color={"success"}
-                                >
-                                    GPS Lock
-                                </Button>
-                            </Tooltip>
+                            <Button 
+                                aria-readonly
+                                disabled
+                                color={"success"}
+                            >
+                                GPS Lock
+                            </Button>
+                            <Button 
+                                aria-readonly
+                                disabled
+                                color={"success"}
+                            >
+                                GPS Lock
+                            </Button>
                             <Button 
                                 variant="contained" 
                                 size={'large'} 
@@ -79,6 +85,7 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                         </ButtonGroup>
                     </Stack>
                 </Stack>
+                    <RocketStatus />
             </Stack>
         </Box>
     );
