@@ -99,6 +99,11 @@ const FeedSystem: React.FC = () => {
 	
 	// Speed Dial State and Handlers
 	const [speedDialOpen, setSpeedDialOpen] = useState(false);
+
+	useEffect(() => {
+		onRestore();
+	}, []);
+
 	const speedDialActions = [
 		{
 			icon: <Add />,
