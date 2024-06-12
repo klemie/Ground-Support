@@ -7,7 +7,10 @@ import Header, { Breadcrumb } from '../../components/Header';
 import { ViewKeys } from '../../utils/viewProviderContext';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
 import { Settings, WifiTethering } from '@mui/icons-material';
-import RocketStatus from '../../components/rocket-monitoring/RocketStatus';
+import TelemetryStatus from '../../components/rocket-monitoring/TelemetryStatus';
+import ConnectionDialog from '../../components/rocket-monitoring/ConnectionDialog';
+import { useSocketContext } from '../../utils/socket-context';
+import TelemetryPacket from '../../components/rocket-monitoring/TelemetryPacket';
 
 interface IRocketMonitoringViewProps {
     // rocketId: string;
@@ -35,13 +38,17 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
 		{ name: activeContext.activeMission.Name || "New Mission", viewKey: ViewKeys.ACTIVE_FLIGHT_KEY, active: true }
 	];
 
+    const [openConnection, setOpenConnection] = useState<boolean>(false);
+    const [frequency, setFrequency] = useState<number>(0);
+    const socketContext = useSocketContext();
+
     return (
         <Box sx={{ width: '100vw', height: '100vh' }}>
             <Stack
                 height={'100%'}
                 padding={4}
                 direction="column"
-                gap={4}
+                gap={2}
                 overflow={'none'}
             >
                 <Stack direction="row" alignItems={'center'} justifyContent={'space-between'}>
@@ -67,7 +74,7 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                                 disabled
                                 color={"success"}
                             >
-                                GPS Lock
+                                Rocket Connected
                             </Button>
                             <Button 
                                 variant="contained" 
@@ -75,18 +82,18 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                                 startIcon={<WifiTethering/>} 
                                 sx={{ width: 180 }}
                                 onClick={() => {
-                                    // setOpenConnection(!openConnection);  
-                                    // socketContext.toggleConnection();
+                                    setOpenConnection(!openConnection);  
                                 }}
                             >
-                                Connect
-                                {/* {socketContext.connect ? "Disconnect" : "Connect"} */}
+                                {socketContext.isConnected ? "Disconnect" : "Connect"}
                             </Button>
                         </ButtonGroup>
                     </Stack>
                 </Stack>
-                    <RocketStatus />
+                <TelemetryStatus />
+                <TelemetryPacket />
             </Stack>
+            <ConnectionDialog isOpen={openConnection} onClose={() => setOpenConnection(false)} />
         </Box>
     );
 };
