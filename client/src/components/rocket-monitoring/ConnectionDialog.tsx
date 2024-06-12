@@ -10,8 +10,8 @@ interface IConnectionDialogProps {
 
 const ConnectionDialog: React.FC<IConnectionDialogProps> = (props: IConnectionDialogProps) => {
     const socketContext = useSocketContext();
-    const [protocol, setProtocol] = useState<string>('');
-    const [frequency, setFrequency] = useState<number>();
+    const [protocol, setProtocol] = useState<string>(socketContext.protocol);
+    const [frequency, setFrequency] = useState<number>(socketContext.frequency);
     const [launchAltitude, setLaunchAltitude] = useState<number>();
 
     // useEffect(() => {

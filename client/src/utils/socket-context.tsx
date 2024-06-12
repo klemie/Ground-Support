@@ -61,7 +61,7 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 	const [gpsLock, setGpsLock] = useState<boolean>(false);
 
 	const port = import.meta.env.TELEMETRY_SERVER_PORT ? import.meta.env.TELEMETRY_SERVER_PORT : 9193;
-	const [uri, setUri] = useState<string | null>(isConnected ? `ws://localhost:${port}` : null);
+	const [uri, setUri] = useState<string | null>(isConnected ? `ws://localhost:${9193}` : null);
 
 	useEffect(() => {
 		if (frequency) {

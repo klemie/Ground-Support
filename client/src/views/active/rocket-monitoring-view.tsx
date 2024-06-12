@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import api from '../../services/api';
 import { IRocketPopulated } from '../../utils/entities';
-import { Box, Button, ButtonGroup, Stack, Tooltip } from '@mui/material';
+import { Alert, Box, Button, ButtonGroup, Stack, Tooltip } from '@mui/material';
 import Header, { Breadcrumb } from '../../components/Header';
 import { ViewKeys } from '../../utils/viewProviderContext';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
@@ -11,6 +11,7 @@ import TelemetryStatus from '../../components/rocket-monitoring/TelemetryStatus'
 import ConnectionDialog from '../../components/rocket-monitoring/ConnectionDialog';
 import { useSocketContext } from '../../utils/socket-context';
 import TelemetryPacket from '../../components/rocket-monitoring/TelemetryPacket';
+import TelemetryLog from '../../components/logging/TelemetryLog';
 
 interface IRocketMonitoringViewProps {
     // rocketId: string;
@@ -39,9 +40,7 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
 	];
 
     const [openConnection, setOpenConnection] = useState<boolean>(false);
-    const [frequency, setFrequency] = useState<number>(0);
     const socketContext = useSocketContext();
-
     const [launchAltitude, setLaunchAltitude] = useState<number>(0);
 
     return (
@@ -86,7 +85,16 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                     </Stack>
                 </Stack>
                 <TelemetryStatus launchAltitude={launchAltitude} />
-                <TelemetryPacket />
+                {socketContext.isConnected ? (
+                    <Stack direction="row" gap={2}>
+                        <TelemetryPacket />
+                        <TelemetryLog />
+                    </Stack>
+                ) : (
+                    <Alert severity="info">
+                        Connect to telemetry to see data
+                    </Alert>
+                )}
             </Stack>
             <ConnectionDialog updateAltitude={setLaunchAltitude} isOpen={openConnection} onClose={() => setOpenConnection(false)} />
         </Box>
