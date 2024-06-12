@@ -42,6 +42,8 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
     const [frequency, setFrequency] = useState<number>(0);
     const socketContext = useSocketContext();
 
+    const [launchAltitude, setLaunchAltitude] = useState<number>(0);
+
     return (
         <Box sx={{ width: '100vw', height: '100vh' }}>
             <Stack
@@ -67,14 +69,7 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                                 disabled
                                 color={"success"}
                             >
-                                GPS Lock
-                            </Button>
-                            <Button 
-                                aria-readonly
-                                disabled
-                                color={"success"}
-                            >
-                                Rocket Connected
+                                Server Connected
                             </Button>
                             <Button 
                                 variant="contained" 
@@ -90,10 +85,10 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                         </ButtonGroup>
                     </Stack>
                 </Stack>
-                <TelemetryStatus />
+                <TelemetryStatus launchAltitude={launchAltitude} />
                 <TelemetryPacket />
             </Stack>
-            <ConnectionDialog isOpen={openConnection} onClose={() => setOpenConnection(false)} />
+            <ConnectionDialog updateAltitude={setLaunchAltitude} isOpen={openConnection} onClose={() => setOpenConnection(false)} />
         </Box>
     );
 };

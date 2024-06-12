@@ -5,13 +5,14 @@ import { useSocketContext } from "../../utils/socket-context";
 interface IConnectionDialogProps {
     isOpen: boolean;
     onClose: () => void;
+    updateAltitude: (altitude: number) => void;
 }
 
 const ConnectionDialog: React.FC<IConnectionDialogProps> = (props: IConnectionDialogProps) => {
     const socketContext = useSocketContext();
-    const [protocol, setProtocol] = useState<string>('APRS');
-    const [frequency, setFrequency] = useState<number>(433.92);
-    const [launchAltitude, setLaunchAltitude] = useState<number>(0);
+    const [protocol, setProtocol] = useState<string>('');
+    const [frequency, setFrequency] = useState<number>();
+    const [launchAltitude, setLaunchAltitude] = useState<number>();
 
     // useEffect(() => {
     //     setProtocol(socketContext.protocol);
@@ -89,10 +90,12 @@ const ConnectionDialog: React.FC<IConnectionDialogProps> = (props: IConnectionDi
                 <Button 
                     variant={"contained"} 
                     component="label" 
+                    disabled={!protocol || !frequency || !launchAltitude}
                     onClick={
                         () => {
-                            // socketContext.setProtocol(protocol);
-                            socketContext.setFrequency(frequency);
+                            socketContext.updateProtocol(protocol);
+                            socketContext.updateFrequency(frequency);
+                            props.updateAltitude(launchAltitude);
                             // socketContext.toggleConnection();
                             props.onClose()
                         }

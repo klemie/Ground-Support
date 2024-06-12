@@ -4,7 +4,11 @@ import { useSocketContext } from '../../utils/socket-context';
 
 import { GpsFixed, GpsOff, GpsNotFixed } from '@mui/icons-material';
 
-const TelemetryStatus: React.FC = () => {
+interface ITelemetryStatusProps {
+    launchAltitude?: number;
+}
+
+const TelemetryStatus: React.FC<ITelemetryStatusProps> = (props: ITelemetryStatusProps) => {
     const socketContext = useSocketContext();
 
     const [protocol, setProtocol] = useState<string>('APRS');
@@ -18,6 +22,12 @@ const TelemetryStatus: React.FC = () => {
     }, [socketContext.frequency]);
 
     const [ launchAltitude, setLaunchAltitude ] = useState<number>(0);
+
+    useEffect(() => {
+        if (props.launchAltitude) {
+            setLaunchAltitude(props.launchAltitude);
+        }
+    }, [props.launchAltitude]);
 
     return (
         <Paper

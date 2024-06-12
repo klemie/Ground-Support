@@ -25,9 +25,9 @@ export interface SocketContext {
 	logs: string[];
 	packet: IPacket;
 	frequency: number;
-	setFrequency: (frequency: number) => void;
+	updateFrequency: (frequency: number) => void;
 	protocol: string;
-	setProtocol: (protocol: Protocol) => void;
+	updateProtocol: (protocol: Protocol) => void;
 }
 
 export const Context = createContext<SocketContext>({
@@ -37,9 +37,9 @@ export const Context = createContext<SocketContext>({
 	logs: [],
 	packet: {} as IPacket,
 	frequency: 433.92,
-	setFrequency: (frequency: number) => {},
+	updateFrequency: (frequency: number) => {},
 	protocol: Protocol.APRS,
-	setProtocol: (protocol: Protocol) => {}
+	updateProtocol: (protocol: Protocol) => {}
 });
 
 function packetReducer(state: IPacket, action: { type: string; payload: any }) {
@@ -63,12 +63,32 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 	const port = import.meta.env.TELEMETRY_SERVER_PORT ? import.meta.env.TELEMETRY_SERVER_PORT : 9193;
 	const [uri, setUri] = useState<string | null>(isConnected ? `ws://localhost:${port}` : null);
 
+	useEffect(() => {
+		if (frequency) {
+			console.log('Frequency:', frequency);	
+		}
+
+		if (protocol) {
+			console.log('Protocol:', protocol);
+		}
+	}, [frequency, protocol]);
+
+	const updateFrequency = (frequency: number) => {
+		console.log('Frequency:', frequency);
+		setFrequency(frequency);
+	};
+
+	const updateProtocol = (protocol: Protocol) => {
+		console.log('Protocol:', protocol);
+		setProtocol(protocol);
+	};
+
 	const {
 		sendJsonMessage,
         lastMessage,
         lastJsonMessage
 	} = useWebSocket(uri, {
-		shouldReconnect: (closeEvent) => isConnected,
+		shouldReconnect: (_) => isConnected,
 		onClose: (closeEvent) => {
 			setIsConnect(false);
 			console.log('Socket Closed:', closeEvent);
@@ -117,9 +137,9 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 				logs,
 				packet,
 				frequency,
-				setFrequency,
+				updateFrequency,
 				protocol,
-				setProtocol
+				updateProtocol
 			}}
 		>
 			{children}
