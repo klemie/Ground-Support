@@ -66,12 +66,14 @@ const TelemetryLog: React.FC<TelemetryLogProps> = (props: TelemetryLogProps) => 
                     style={{
                         border: "none",
                         backgroundColor: "#23282F",
-                        color: "#ffffff"
+                        color: "#ffffff",
+                        paddingTop: 10,
+                        paddingLeft: 10
                     }}
                     minRows={10}
                     maxRows={10}
                     readOnly
-                    placeholder="Valve Cart Log"
+                    placeholder="Telemetry Log"
                     value={log}
                 />
                 <Stack direction={'row'} bottom={0}>

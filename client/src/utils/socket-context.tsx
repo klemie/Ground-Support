@@ -1,3 +1,4 @@
+import { Alert, Snackbar } from '@mui/material';
 import { 
 	createContext, 
 	PropsWithChildren, 
@@ -59,6 +60,7 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 	const [protocol, setProtocol] = useState<string>('APRS');
     const [isConnected, setIsConnect] = useState<boolean>(false);
 	const [gpsLock, setGpsLock] = useState<boolean>(false);
+	const [wsError, setWsError] = useState<any | null>(null);
 
 	const port = import.meta.env.TELEMETRY_SERVER_PORT ? import.meta.env.TELEMETRY_SERVER_PORT : 9193;
 	const [uri, setUri] = useState<string | null>(isConnected ? `ws://localhost:${9193}` : null);
@@ -94,6 +96,7 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 			console.log('Socket Closed:', closeEvent);
 		}, 
 		onError: (error) => {
+			setWsError(error);
 			console.log('Socket Error:', error);
 		},
 		onOpen: () => {
@@ -117,12 +120,14 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
     };
 
 	useEffect(() => {
+		console.log('Last Message:', lastMessage);
 		if (lastMessage) {
 			setLogs([...logs, lastMessage]);
 		}
 	}, [lastMessage]);
 
 	useEffect(() => {
+		console.log('Last JSON Message:', lastJsonMessage);
 		if (lastJsonMessage) {
 			packetDispatch({ type: 'SET_PACKET', payload: lastJsonMessage });
 		}
@@ -142,6 +147,13 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 				updateProtocol
 			}}
 		>
+			<Snackbar
+				open={wsError !== null}
+				message="Could not connect to socket server"
+				autoHideDuration={6000}
+			>
+				<Alert variant='filled' severity="error" onClose={() => setWsError(null)}>Could not connect to socket server</Alert>				
+			</Snackbar>
 			{children}
 		</Context.Provider>
 	);

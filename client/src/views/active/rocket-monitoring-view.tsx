@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import api from '../../services/api';
 import { IRocketPopulated } from '../../utils/entities';
-import { Alert, Box, Button, ButtonGroup, Stack, Tooltip } from '@mui/material';
+import { Alert, Box, Button, ButtonGroup, Skeleton, Stack, Tooltip } from '@mui/material';
 import Header, { Breadcrumb } from '../../components/Header';
 import { ViewKeys } from '../../utils/viewProviderContext';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
@@ -42,6 +42,20 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
     const [openConnection, setOpenConnection] = useState<boolean>(false);
     const socketContext = useSocketContext();
     const [launchAltitude, setLaunchAltitude] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        if (socketContext.isConnected) {
+            const interval = setInterval(() => {
+                setLoading(false);
+            }, 2500);
+            return () => {
+                clearInterval(interval);
+                setLoading(true);
+            }
+        }
+    }, [socketContext.isConnected]);
+
 
     return (
         <Box sx={{ width: '100vw', height: '100vh' }}>
@@ -85,7 +99,12 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                     </Stack>
                 </Stack>
                 <TelemetryStatus launchAltitude={launchAltitude} />
-                {socketContext.isConnected ? (
+                {socketContext.isConnected ? loading ? (
+                    <Stack direction="row" gap={2}>
+                        <Skeleton variant="rectangular" height={300} width={'30%'} sx={{ borderRadius: 2 }} />
+                        <Skeleton variant="rectangular" height={300} width={'70%'} sx={{ borderRadius: 2 }} />
+                    </Stack>
+                ) :(
                     <Stack direction="row" gap={2}>
                         <TelemetryPacket />
                         <TelemetryLog />
@@ -96,7 +115,11 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                     </Alert>
                 )}
             </Stack>
-            <ConnectionDialog updateAltitude={setLaunchAltitude} isOpen={openConnection} onClose={() => setOpenConnection(false)} />
+            <ConnectionDialog 
+                updateAltitude={setLaunchAltitude} 
+                isOpen={openConnection} 
+                onClose={() => setOpenConnection(false)} 
+            />
         </Box>
     );
 };

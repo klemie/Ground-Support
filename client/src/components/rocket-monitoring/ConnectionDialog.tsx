@@ -96,12 +96,12 @@ const ConnectionDialog: React.FC<IConnectionDialogProps> = (props: IConnectionDi
                             socketContext.updateProtocol(protocol);
                             socketContext.updateFrequency(frequency);
                             props.updateAltitude(launchAltitude);
-                            // socketContext.toggleConnection();
+                            socketContext.toggleConnection();
                             props.onClose()
                         }
                     }
                 >
-                    Connect
+                    {socketContext.isConnected ? 'Disconnect' : 'Connect' }
                 </Button>
             </DialogActions>
         </Dialog>

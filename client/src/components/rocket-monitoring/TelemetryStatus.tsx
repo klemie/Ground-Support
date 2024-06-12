@@ -46,8 +46,8 @@ const TelemetryStatus: React.FC<ITelemetryStatusProps> = (props: ITelemetryStatu
                         >
                             {socketContext.isConnected ? 
                                 socketContext.gpsLock ? 
-                                    (<GpsNotFixed />) 
-                                    : ( <GpsFixed />) 
+                                    (<GpsFixed />) 
+                                    : ( <GpsNotFixed/>) 
                             : (
                                 <GpsOff />
                             )}   
