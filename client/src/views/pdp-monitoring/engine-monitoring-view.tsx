@@ -87,7 +87,7 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
     const socketContext = useMonitoringSocketContext();
 	const breadCrumbs: Breadcrumb[] = [
 		{ name: 'Ground Support', viewKey: ViewKeys.PLATFORM_SELECTION_KEY, active: false },
-		{ name: 'PDP Monitoring', viewKey: ViewKeys.PDP_MONITORING_KEY, active: true }
+		{ name: 'Engine Monitoring', viewKey: ViewKeys.PDP_MONITORING_KEY, active: true }
 	];
     
     const [currentPacket, setCurrentPacket] = useState({});
