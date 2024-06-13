@@ -59,7 +59,7 @@ pub async fn start_telemetry(state_ref: Arc<Mutex<State>>) -> io::Result<()> {
     println!("Starting telemetry on {}", frequency);
 
     let mut decode_aprs = Command::new("sh")
-        .arg("../tools/decode.sh")
+        .arg("./tools/decode_test.sh")
         // .arg(frequency.to_string())
         .stdout(Stdio::piped())
         .spawn()
