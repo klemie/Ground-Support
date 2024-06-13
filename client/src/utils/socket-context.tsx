@@ -61,6 +61,7 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
     const [isConnected, setIsConnect] = useState<boolean>(false);
 	const [gpsLock, setGpsLock] = useState<boolean>(false);
 	const [wsError, setWsError] = useState<any | null>(null);
+	const packetStreamingInterval = 2; // Packets collected by telemetry server sent every X seconds
 
 	const port = import.meta.env.TELEMETRY_SERVER_PORT ? import.meta.env.TELEMETRY_SERVER_PORT : 9193;
 	const [uri, setUri] = useState<string | null>(isConnected ? `ws://localhost:${9193}` : null);
@@ -102,6 +103,7 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 		onOpen: () => {
 			console.log('Telemetry socket Opened');
 			setIsConnect(true);
+			sendJsonMessage({ type: 'establish_stream', frequency: packetStreamingInterval });
 		},
 		share: true
 	});
