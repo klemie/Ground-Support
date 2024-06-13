@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Button, InputAdornment, Stack, TextField, Tooltip } from "@mui/material";
+import { Button, InputAdornment, Paper, Stack, TextField, TextareaAutosize, Tooltip } from "@mui/material";
 import { Box } from "@mui/material";
 import { Download } from "@mui/icons-material";
 import GpsOffIcon from '@mui/icons-material/GpsOff';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimerIcon from '@mui/icons-material/Timer';
-import { IAprsTelemetryPacket, formatPacket } from "../utils/TelemetryTypes";
-import { useActiveMission } from "../utils/ActiveMissionContext";
+import { IAprsTelemetryPacket, formatPacket } from "../../utils/TelemetryTypes";
+import { useActiveMission } from "../../utils/ActiveMissionContext";
 import { saveAs } from "file-saver";
 
 interface TelemetryLogProps {
-    packet: IAprsTelemetryPacket;
-    width: string;
-    maxRows: number;
-    telemetryConnected: boolean;
+    packet?: any;
+    width?: string;
+    maxRows?: number;
+    telemetryConnected?: boolean;
 }
 
 const TelemetryLog: React.FC<TelemetryLogProps> = (props: TelemetryLogProps) => {
@@ -29,19 +29,19 @@ const TelemetryLog: React.FC<TelemetryLogProps> = (props: TelemetryLogProps) => 
 
     const [log, setLog] = useState<string[]>(activeContext.logs.map((log) => log.Log));
 
-    useEffect(() => {
-        if (props.packet) {
-            setLog((prev) => [...prev, formatPacket(props.packet)]);
-            setTimeSincePacket(0);
-        }
-    }, [props.packet]);
+    // useEffect(() => {
+    //     if (props.packet) {
+    //         setLog((prev) => [...prev, JSON.stringify(props.packet)]);
+    //         setTimeSincePacket(0);
+    //     }
+    // }, [props.packet]);
 
-    useEffect(() => {
-        setTelemetryConnected(props.telemetryConnected);
-        if (telemetryConnected) {
-            setTimeSincePacket(0);
-        }
-    }, [props.telemetryConnected]);
+    // useEffect(() => {
+    //     setTelemetryConnected(props.telemetryConnected);
+    //     if (telemetryConnected) {
+    //         setTimeSincePacket(0);
+    //     }
+    // }, [props.telemetryConnected]);
 
     useEffect(() => {
         if (telemetryConnected) {        
@@ -52,44 +52,29 @@ const TelemetryLog: React.FC<TelemetryLogProps> = (props: TelemetryLogProps) => 
         }
     }, [timeSincePacket, telemetryConnected]);
 
-
-    useEffect(() => {
-        if (props.packet?.Parsed?.lock) {
-            setLocked(true);
-        } else {
-            setLocked(false);
-        }
-    }, [props.packet]);
-
     return (
-        <Box style={{
-                backgroundColor: "#282C34",
-                borderRadius: 5,
-                width: props.width
+        <Paper 
+            sx={{
+                borderRadius: 2,
+                width: '100%',
+                minWidth: 'fit-content',
+                height: 'fit-content'
             }}
-            boxShadow={3}
         >
             <Stack direction={"column"}>
-                <TextField 
-                    value={log}
-                    variant={"standard"}
-                    multiline
-                    rows={props.maxRows}
+                <TextareaAutosize
                     style={{
-                        color: "#CA4D33",
-                        backgroundColor: "#282C34",
-                        borderRadius: 13,
-                        padding: "0px 0px 0px 20px"
+                        border: "none",
+                        backgroundColor: "#23282F",
+                        color: "#ffffff",
+                        paddingTop: 10,
+                        paddingLeft: 10
                     }}
-                    InputProps={{
-                        disableUnderline: true,
-                        readOnly: true,
-                        style: {
-                            color: "white",
-                        },
-                        multiline: true,
-                        rows: props.maxRows,
-                    }}
+                    minRows={10}
+                    maxRows={10}
+                    readOnly
+                    placeholder="Telemetry Log"
+                    value={log}
                 />
                 <Stack direction={'row'} bottom={0}>
                     {[
@@ -117,7 +102,7 @@ const TelemetryLog: React.FC<TelemetryLogProps> = (props: TelemetryLogProps) => 
                                     endAdornment: <InputAdornment position="end">s</InputAdornment>,
                                 }}
                                 value={timeSincePacket}
-                                sx={{ width: 110 }}
+                                sx={{ width: 100 }}
                             />
                         </Tooltip>
                     </Stack>
@@ -131,7 +116,7 @@ const TelemetryLog: React.FC<TelemetryLogProps> = (props: TelemetryLogProps) => 
                     </Button>
                 </Stack>
             </Stack>
-        </Box>
+        </Paper>
     );
 }
 

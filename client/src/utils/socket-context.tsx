@@ -1,37 +1,49 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useState, useReducer } from 'react';
+import { Alert, Snackbar } from '@mui/material';
+import { 
+	createContext, 
+	PropsWithChildren, 
+	useContext, 
+	useEffect, 
+	useState, 
+	useReducer 
+} from 'react';
+import useWebSocket from 'react-use-websocket';
 
 interface IPacket {
 	Data: {};
 	Type: string;
 }
 
+enum Protocol {
+	APRS = 'APRS',
+	LoRa = 'LoRa'
+}
+
 export interface SocketContext {
+	gpsLock: boolean;
+	isConnected: boolean;
+	toggleConnection: () => void;
 	logs: string[];
-	aprsPacket: IPacket;
-	loRaPacket: IPacket;
-	setPacketFrequency: (frequency: number) => void;
-	setProtocol: (protocol: string) => void;
+	packet: IPacket;
+	frequency: number;
+	updateFrequency: (frequency: number) => void;
+	protocol: string;
+	updateProtocol: (protocol: Protocol) => void;
 }
 
 export const Context = createContext<SocketContext>({
+	gpsLock: false,
+	isConnected: false,
+	toggleConnection: () => {},
 	logs: [],
-	aprsPacket: {} as IPacket,
-	loRaPacket: {} as IPacket,
-	setPacketFrequency: (frequency: number) => {},
-	setProtocol: (protocol: string) => {}
+	packet: {} as IPacket,
+	frequency: 433.92,
+	updateFrequency: (frequency: number) => {},
+	protocol: Protocol.APRS,
+	updateProtocol: (protocol: Protocol) => {}
 });
 
-function aprsReducer(state: IPacket, action: { type: string; payload: any }) {
-	switch (action.type) {
-		case 'SET_PACKET':
-			return action.payload;
-
-		default:
-			throw new Error(`Unhandled action type: ${action.type}`);
-	}
-}
-
-function loraReducer(state: IPacket, action: { type: string; payload: any }) {
+function packetReducer(state: IPacket, action: { type: string; payload: any }) {
 	switch (action.type) {
 		case 'SET_PACKET':
 			return action.payload;
@@ -43,58 +55,105 @@ function loraReducer(state: IPacket, action: { type: string; payload: any }) {
 
 export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 	const [logs, setLogs] = useState<string[]>([]);
-	const [aprsPacket, aprsDispatch] = useReducer(aprsReducer, {} as IPacket);
-	const [loRaPacket, loraDispatch] = useReducer(loraReducer, {} as IPacket);
-	const [packetFrequency, setPacketFrequency] = useState<number>(3);
+	const [packet, packetDispatch] = useReducer(packetReducer, {} as IPacket);
+	const [frequency, setFrequency] = useState<number>(433.92);
 	const [protocol, setProtocol] = useState<string>('APRS');
+    const [isConnected, setIsConnect] = useState<boolean>(false);
+	const [gpsLock, setGpsLock] = useState<boolean>(false);
+	const [wsError, setWsError] = useState<any | null>(null);
 
 	const port = import.meta.env.TELEMETRY_SERVER_PORT ? import.meta.env.TELEMETRY_SERVER_PORT : 9193;
-	const ws = new WebSocket(`ws://localhost:${port}`);
-
-	const enableLiveMode = () => {
-		ws.send(JSON.stringify({ type: 'establish_stream', frequency: packetFrequency }));
-	};
-
-	const changePacketFrequency = (frequency: number) => {
-		ws.send(JSON.stringify({ type: 'change_frequency', frequency: frequency }));
-	};
-
-	const changeProtocol = (protocol: string) => {
-		ws.send(JSON.stringify({ type: 'change_protocol', protocol: protocol }));
-	};
+	const [uri, setUri] = useState<string | null>(isConnected ? `ws://localhost:${9193}` : null);
 
 	useEffect(() => {
-		if (ws.readyState === ws.OPEN) {
-			changePacketFrequency(packetFrequency);
+		if (frequency) {
+			console.log('Frequency:', frequency);	
 		}
-	}, [packetFrequency]);
+
+		if (protocol) {
+			console.log('Protocol:', protocol);
+		}
+	}, [frequency, protocol]);
+
+	const updateFrequency = (frequency: number) => {
+		console.log('Frequency:', frequency);
+		setFrequency(frequency);
+	};
+
+	const updateProtocol = (protocol: Protocol) => {
+		console.log('Protocol:', protocol);
+		setProtocol(protocol);
+	};
+
+	const {
+		sendJsonMessage,
+        lastMessage,
+        lastJsonMessage
+	} = useWebSocket(uri, {
+		shouldReconnect: (_) => isConnected,
+		onClose: (closeEvent) => {
+			setIsConnect(false);
+			console.log('Socket Closed:', closeEvent);
+		}, 
+		onError: (error) => {
+			setWsError(error);
+			console.log('Socket Error:', error);
+		},
+		onOpen: () => {
+			console.log('Telemetry socket Opened');
+			setIsConnect(true);
+		},
+		share: true
+	});
+
+	const toggleConnection = () => {
+        setIsConnect(prevIsConnected => {
+            if (prevIsConnected) {
+                // If the WebSocket is currently connected, disconnect it
+                setUri(null);
+            } else {
+                // If the WebSocket is currently disconnected, connect it
+                setUri(`ws://localhost:${port}`);
+            }
+            return !prevIsConnected;
+        });
+    };
 
 	useEffect(() => {
-		if (ws.readyState === ws.OPEN) {
-			changeProtocol(protocol);
+		console.log('Last Message:', lastMessage);
+		if (lastMessage) {
+			setLogs([...logs, lastMessage]);
 		}
-	}, [protocol]);
+	}, [lastMessage]);
 
-	ws.addEventListener('open', () => {
-		console.log('Socket Connected');
-		enableLiveMode();
-	});
-
-	ws.addEventListener('message', (message) => {
-		const data = JSON.parse(message.data);
-		console.log(data);
-	});
+	useEffect(() => {
+		console.log('Last JSON Message:', lastJsonMessage);
+		if (lastJsonMessage) {
+			packetDispatch({ type: 'SET_PACKET', payload: lastJsonMessage });
+		}
+	}, [lastJsonMessage]);
 
 	return (
 		<Context.Provider
 			value={{
+				isConnected,
+				gpsLock,
+				toggleConnection,
 				logs,
-				aprsPacket,
-				loRaPacket,
-				setPacketFrequency,
-				setProtocol
+				packet,
+				frequency,
+				updateFrequency,
+				protocol,
+				updateProtocol
 			}}
 		>
+			<Snackbar
+				open={wsError !== null}
+				message="Could not connect to socket server"
+				autoHideDuration={6000}
+			>
+				<Alert variant='filled' severity="error" onClose={() => setWsError(null)}>Could not connect to socket server</Alert>				
+			</Snackbar>
 			{children}
 		</Context.Provider>
 	);
