@@ -1,4 +1,4 @@
-import { Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useSocketContext } from "../../utils/socket-context";
 
@@ -12,12 +12,7 @@ const ConnectionDialog: React.FC<IConnectionDialogProps> = (props: IConnectionDi
     const socketContext = useSocketContext();
     const [protocol, setProtocol] = useState<string>(socketContext.protocol);
     const [frequency, setFrequency] = useState<number>(socketContext.frequency);
-    const [launchAltitude, setLaunchAltitude] = useState<number>();
-
-    // useEffect(() => {
-    //     setProtocol(socketContext.protocol);
-    //     setFrequency(socketContext.frequency);
-    // }, [socketContext.protocol, socketContext.frequency]);
+    const [packetRetrievalFrequency, setPacketRetrievalFrequency] = useState<number>(socketContext.packetStreamingInterval);
 
     return(
         <Dialog open={props.isOpen}>
@@ -59,24 +54,25 @@ const ConnectionDialog: React.FC<IConnectionDialogProps> = (props: IConnectionDi
                             shrink: true,
                         }}
                     />
-                    <TextField
-                        fullWidth
-                        required
-                        value={launchAltitude}
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                            setLaunchAltitude(event.target.value as number);
-                        }}
-                        label="Launch Altitude"
-                        variant="outlined"
-                        size="small"
-                        type="number"
-                        InputProps={{
-                            endAdornment: <Typography>FT</Typography>,
-                        }}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
+                    <Tooltip 
+                        title="How often packets are retrieved from the Telemetry server"
+                    >
+                        <TextField
+                            fullWidth
+                            required
+                            value={packetRetrievalFrequency}
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                setPacketRetrievalFrequency(event.target.value as number);
+                            }}
+                            label="Packet Retrieval Frequency"
+                            variant="outlined"
+                            size="small"
+                            type="number"
+                            InputProps={{
+                                endAdornment: <Typography>s</Typography>,
+                            }}
+                        />
+                    </Tooltip>
                 </Stack>
             </DialogContent>
             <DialogActions>
@@ -90,12 +86,12 @@ const ConnectionDialog: React.FC<IConnectionDialogProps> = (props: IConnectionDi
                 <Button 
                     variant={"contained"} 
                     component="label" 
-                    disabled={!protocol || !frequency || !launchAltitude}
+                    disabled={!protocol || !frequency || !packetRetrievalFrequency}
                     onClick={
                         () => {
                             socketContext.updateProtocol(protocol);
                             socketContext.updateFrequency(frequency);
-                            props.updateAltitude(launchAltitude);
+                            socketContext.updatePacketStreamingInterval(packetRetrievalFrequency);
                             socketContext.toggleConnection();
                             props.onClose()
                         }

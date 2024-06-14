@@ -2,16 +2,19 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import api from '../../services/api';
 import { IRocketPopulated } from '../../utils/entities';
-import { Alert, Box, Button, ButtonGroup, Skeleton, Stack, Tooltip } from '@mui/material';
+import { Alert, AlertTitle, Box, Button, ButtonGroup, IconButton, Link, Skeleton, Snackbar, SnackbarContent, Stack, Tooltip, Typography } from '@mui/material';
 import Header, { Breadcrumb } from '../../components/Header';
 import { ViewKeys } from '../../utils/viewProviderContext';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
-import { Settings, WifiTethering } from '@mui/icons-material';
+import { Chat, Settings, WifiTethering, Save, Close } from '@mui/icons-material';
 import TelemetryStatus from '../../components/rocket-monitoring/TelemetryStatus';
 import ConnectionDialog from '../../components/rocket-monitoring/ConnectionDialog';
 import { useSocketContext } from '../../utils/socket-context';
 import TelemetryPacket from '../../components/rocket-monitoring/TelemetryPacket';
 import TelemetryLog from '../../components/logging/TelemetryLog';
+import TelemetryAltitudeGraph from '../../components/rocket-monitoring/TelemetryAltitudeGraph';
+import TelemetryMap from '../../components/rocket-monitoring/TelemetryMap';
+import { useTheme } from '@emotion/react';
 
 interface IRocketMonitoringViewProps {
     // rocketId: string;
@@ -32,6 +35,7 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
     }, []);
     
     const activeContext = useActiveMission();
+    const theme = useTheme();
 
     const breadCrumbs: Breadcrumb[] = [
 		{ name: "Ground Support", viewKey: ViewKeys.PLATFORM_SELECTION_KEY, active: false },
@@ -43,6 +47,7 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
     const socketContext = useSocketContext();
     const [launchAltitude, setLaunchAltitude] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
+    const [publishMission, setPublishMission] = useState<boolean>(false);
 
     useEffect(() => {
         if (socketContext.isConnected) {
@@ -58,7 +63,7 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
 
 
     return (
-        <Box sx={{ width: '100vw', height: '100vh' }}>
+        <Box sx={{ width: '100vw', height: '100vh', overflowX: 'none' }}>
             <Stack
                 height={'100%'}
                 padding={4}
@@ -69,49 +74,87 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                 <Stack direction="row" alignItems={'center'} justifyContent={'space-between'}>
                     <Header icon="ROCKET_MONITORING" breadCrumbs={breadCrumbs} />
                     <Stack direction="row" spacing={1}>
-                        <Tooltip title="Configuration" placement="top">
-                            <Button variant={'text'} onClick={() => {}}>
-                                <Settings />
-                            </Button>
-                        </Tooltip>
-                        <ButtonGroup
-                            variant="contained"
-                        >
-                            <Button 
-                                aria-readonly
-                                disabled
-                                color={"success"}
+                        <Stack direction="column" spacing={1}>
+                            <ButtonGroup
+                                variant="contained"
                             >
-                                Server Connected
-                            </Button>
-                            <Button 
-                                variant="contained" 
-                                size={'large'} 
-                                startIcon={<WifiTethering/>} 
-                                sx={{ width: 180 }}
-                                onClick={() => {
-                                    setOpenConnection(!openConnection);  
-                                }}
+                                <Button
+                                    startIcon={<Save/>}
+                                    disabled={!socketContext.isConnected}
+                                    onClick={() => setPublishMission(true)}
+                                >
+                                    Publish Mission
+                                </Button>
+                                <Button 
+                                    variant="contained" 
+                                    size={'large'} 
+                                    startIcon={<WifiTethering/>} 
+                                    onClick={() => {
+                                        if (socketContext.isConnected) {
+                                            socketContext.toggleConnection();
+                                        } else {
+                                            setOpenConnection(!openConnection);  
+                                        }
+                                    }}
+                                >
+                                    {socketContext.isConnected ? "Disconnect" : "Connect"}
+                                </Button>
+                            </ButtonGroup>
+                            <Snackbar
+                                open={publishMission}
+                                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >
-                                {socketContext.isConnected ? "Disconnect" : "Connect"}
-                            </Button>
-                        </ButtonGroup>
+                                <Alert 
+                                    severity="warning"
+                                    onClose={() => setPublishMission(false)}
+                                >
+                                    <AlertTitle>Are you sure?</AlertTitle>
+                                    <Stack alignItems={'end'} gap={1}>
+                                        Once a mission is published no more data can be recorded and the mission be available in replay mode only.  
+                                        <Button
+                                            color="inherit"
+                                            variant='contained'
+                                            size="small"
+                                            sx={{
+                                                width: 'fit-content',
+                                            }}
+                                            onClick={() => {
+                                                activeContext.activeMission.Published = true;
+                                                // TODO: update mission with published status & data
+                                                setPublishMission(false)
+                                            }}
+                                        >
+                                            Continue
+                                        </Button>
+                                    </Stack>
+                                </Alert>
+                            </Snackbar>
+                        </Stack>
                     </Stack>
                 </Stack>
                 <TelemetryStatus launchAltitude={launchAltitude} />
                 {socketContext.isConnected ? loading ? (
-                    <Stack direction="row" gap={2}>
-                        <Skeleton variant="rectangular" height={300} width={'30%'} sx={{ borderRadius: 2 }} />
-                        <Skeleton variant="rectangular" height={300} width={'70%'} sx={{ borderRadius: 2 }} />
+                    <Stack gap={2}>
+                        <Stack direction="row" gap={2}>
+                            <Skeleton variant="rectangular" height={300} width={'20%'} sx={{ borderRadius: 2 }} />
+                            <Skeleton variant="rectangular" height={300} width={'40%'} sx={{ borderRadius: 2 }} />
+                            <Skeleton variant="rectangular" height={300} width={'40%'} sx={{ borderRadius: 2 }} />
+                        </Stack>
+                        <Skeleton variant="rectangular" height={300} width={'100%'} sx={{ borderRadius: 2 }} />
                     </Stack>
+
                 ) :(
-                    <Stack direction="row" gap={2}>
-                        <TelemetryPacket />
-                        <TelemetryLog />
-                    </Stack>
+                        <Stack direction="column" gap={2} width={'100%'}>
+                            <Stack direction="row" gap={2}>
+                                <TelemetryPacket />
+                                <TelemetryLog />
+                                <TelemetryMap />
+                            </Stack>
+                            <TelemetryAltitudeGraph />
+                        </Stack>
                 ) : (
                     <Alert severity="info">
-                        Connect to telemetry to see data
+                        Connect to telemetry to see data. <Link href='#' color={'inherit'}>FAQ</Link> for common issues and solutions.
                     </Alert>
                 )}
             </Stack>

@@ -21,13 +21,10 @@ const TelemetryStatus: React.FC<ITelemetryStatusProps> = (props: ITelemetryStatu
         setFrequency(socketContext.frequency);
     }, [socketContext.frequency]);
 
-    const [ launchAltitude, setLaunchAltitude ] = useState<number>(0);
-
+    const [packetRetrievalFrequency, setPacketRetrievalFrequency] = useState<number>(socketContext.packetStreamingInterval);
     useEffect(() => {
-        if (props.launchAltitude) {
-            setLaunchAltitude(props.launchAltitude);
-        }
-    }, [props.launchAltitude]);
+        setPacketRetrievalFrequency(socketContext.packetStreamingInterval);
+    }, [socketContext.packetStreamingInterval]);
 
     return (
         <Paper
@@ -54,7 +51,7 @@ const TelemetryStatus: React.FC<ITelemetryStatusProps> = (props: ITelemetryStatu
                         </IconButton>
                     </Tooltip>
                     <Chip
-                        label={`Launch Altitude: ${launchAltitude} FT`} 
+                        label={`Packet retrieval rate: ${packetRetrievalFrequency} s`} 
                         sx={{ 
                             fontWeight: 600, 
                             borderRadius: 1 

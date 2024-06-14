@@ -1,27 +1,26 @@
 import { Button, Chip, Icon, Paper, Stack, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useSocketContext } from '../../utils/socket-context';
-import { Badge, Height, ShowChart, HorizontalRule, Timer } from '@mui/icons-material';
+import { Badge, Height, ShowChart, HorizontalRule, Timer, Numbers } from '@mui/icons-material';
 
 
 
 const TelemetryPacket: React.FC = () => {
     const socketContext = useSocketContext();
 
-    const [timeSincePacket, setTimeSincePacket] = useState<number>(0);
+    const [packetId, setPacketId] = useState<number>(0);
+    const [altitude, setAltitude] = useState<number>(0);
 
     useEffect(() => {
         if ((socketContext.packet && socketContext.isConnected)) {        
-            const interval = setInterval(() => {
-                setTimeSincePacket(timeSincePacket + 1);    
-            }, 1000);
-            return () => clearInterval(interval);
+            setPacketId(socketContext.packet.id);
+            setAltitude(socketContext.packet.data.altitude);
         }
-    }, [timeSincePacket, socketContext.packet]);
+    }, [packetId, socketContext.packet]);
 
     interface IPacketContent {
         label: string;
-        value: string;
+        value: string | number;
         icon: any;
     }
 
@@ -33,37 +32,33 @@ const TelemetryPacket: React.FC = () => {
         },
         {
             label: 'Altitude',
-            value: 'ft (ALG)',
+            value: `${altitude} ft`,
             icon: <ShowChart />
         },
         {
             label: 'Longitude',
-            value: '0.00 °',
+            value: 'NAN °',
             icon: <Height />
         },
         {
             label: 'Latitude',
-            value: '0.00 °',
+            value: 'NAN °',
             icon: <HorizontalRule />
         }
-    ]
-
-    useEffect(() => {
-        console.log(socketContext.packet);
-    }, [socketContext.packet]);
+    ];
 
     return (
         <Paper
             sx={{     
                 borderRadius: 2,
                 padding: 2,
-                width: 300,
                 minWidth: 'fit-content',
+                height: 'fit-content'
             }}
         >
             <Stack spacing={2} direction={'column'}>
                 <Typography variant='h6' fontWeight={600}>
-                    Current Packet
+                    Most Recent Packet
                 </Typography>
                 {content.map((item: IPacketContent, index: number) => (
                     <Stack direction={'row'} justifyContent={'space-between'} key={index}>
@@ -85,14 +80,14 @@ const TelemetryPacket: React.FC = () => {
                     </Stack>
                 ))}
                 <Chip 
-                    label={`Time Since: ${timeSincePacket}s`}
-                    icon={<Timer />}
+                    label={`Packet Id: ${packetId}`}
+                    icon={<Numbers />}
                     size='medium'
                     sx={{ 
                         fontWeight: 600, 
                         borderRadius: 1 
                     }} 
-                    color='default'
+                    color='primary'
                 />
             </Stack>
         </Paper>

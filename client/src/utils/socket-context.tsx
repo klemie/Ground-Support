@@ -9,9 +9,14 @@ import {
 } from 'react';
 import useWebSocket from 'react-use-websocket';
 
-interface IPacket {
-	Data: {};
-	Type: string;
+export type Packet = {
+	data: {
+		altitude: number;
+		latitude?: number;
+		longitude?: number;
+		call_sign?: string;
+	};
+	id: number;
 }
 
 enum Protocol {
@@ -19,12 +24,20 @@ enum Protocol {
 	LoRa = 'LoRa'
 }
 
+type IncomingPacket = {
+	type: 'data' | 'no_data_available';
+	packets: Packet[];
+	last_id: number;
+}; 
+
 export interface SocketContext {
 	gpsLock: boolean;
 	isConnected: boolean;
+	packetStreamingInterval: number;
+	updatePacketStreamingInterval: (interval: number) => void;
 	toggleConnection: () => void;
-	logs: string[];
-	packet: IPacket;
+	logs: Packet[];
+	packet: Packet;
 	frequency: number;
 	updateFrequency: (frequency: number) => void;
 	protocol: string;
@@ -34,16 +47,18 @@ export interface SocketContext {
 export const Context = createContext<SocketContext>({
 	gpsLock: false,
 	isConnected: false,
+	packetStreamingInterval: 2,
+	updatePacketStreamingInterval: (interval: number) => {},
 	toggleConnection: () => {},
 	logs: [],
-	packet: {} as IPacket,
+	packet: {} as Packet,
 	frequency: 433.92,
 	updateFrequency: (frequency: number) => {},
 	protocol: Protocol.APRS,
 	updateProtocol: (protocol: Protocol) => {}
 });
 
-function packetReducer(state: IPacket, action: { type: string; payload: any }) {
+function packetReducer(state: Packet, action: { type: string; payload: any }) {
 	switch (action.type) {
 		case 'SET_PACKET':
 			return action.payload;
@@ -54,40 +69,33 @@ function packetReducer(state: IPacket, action: { type: string; payload: any }) {
 }
 
 export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
-	const [logs, setLogs] = useState<string[]>([]);
-	const [packet, packetDispatch] = useReducer(packetReducer, {} as IPacket);
+	const [logs, setLogs] = useState<Packet[]>([]);
+	const [packet, packetDispatch] = useReducer(packetReducer, {} as Packet);
 	const [frequency, setFrequency] = useState<number>(433.92);
 	const [protocol, setProtocol] = useState<string>('APRS');
     const [isConnected, setIsConnect] = useState<boolean>(false);
 	const [gpsLock, setGpsLock] = useState<boolean>(false);
 	const [wsError, setWsError] = useState<any | null>(null);
+	const [packetStreamingInterval, setPacketStreamingInterval] = useState<number>(2); // Packets collected from the telemetry server sent every X seconds
 
 	const port = import.meta.env.TELEMETRY_SERVER_PORT ? import.meta.env.TELEMETRY_SERVER_PORT : 9193;
 	const [uri, setUri] = useState<string | null>(isConnected ? `ws://localhost:${9193}` : null);
 
-	useEffect(() => {
-		if (frequency) {
-			console.log('Frequency:', frequency);	
-		}
-
-		if (protocol) {
-			console.log('Protocol:', protocol);
-		}
-	}, [frequency, protocol]);
 
 	const updateFrequency = (frequency: number) => {
-		console.log('Frequency:', frequency);
 		setFrequency(frequency);
 	};
 
 	const updateProtocol = (protocol: Protocol) => {
-		console.log('Protocol:', protocol);
 		setProtocol(protocol);
 	};
 
+	const updatePacketStreamingInterval = (interval: number) => {
+		setPacketStreamingInterval(interval);
+	}
+
 	const {
 		sendJsonMessage,
-        lastMessage,
         lastJsonMessage
 	} = useWebSocket(uri, {
 		shouldReconnect: (_) => isConnected,
@@ -102,6 +110,7 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 		onOpen: () => {
 			console.log('Telemetry socket Opened');
 			setIsConnect(true);
+			sendJsonMessage({ type: 'establish_stream', frequency: packetStreamingInterval });
 		},
 		share: true
 	});
@@ -119,17 +128,18 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
         });
     };
 
-	useEffect(() => {
-		console.log('Last Message:', lastMessage);
-		if (lastMessage) {
-			setLogs([...logs, lastMessage]);
+
+	const handleIncomingPacket = (data: IncomingPacket) => {
+		if (data.type === 'data') {
+			const packet = data.packets.find((packet) => packet.id === data.last_id);
+			packetDispatch({ type: 'SET_PACKET', payload: packet });
+			setLogs((prevLogs) => [...prevLogs, ...data.packets]);	
 		}
-	}, [lastMessage]);
+	}
 
 	useEffect(() => {
-		console.log('Last JSON Message:', lastJsonMessage);
 		if (lastJsonMessage) {
-			packetDispatch({ type: 'SET_PACKET', payload: lastJsonMessage });
+			handleIncomingPacket(lastJsonMessage as IncomingPacket);
 		}
 	}, [lastJsonMessage]);
 
@@ -138,6 +148,8 @@ export const SocketGateway = ({ children }: PropsWithChildren<any>) => {
 			value={{
 				isConnected,
 				gpsLock,
+				packetStreamingInterval,
+				updatePacketStreamingInterval,
 				toggleConnection,
 				logs,
 				packet,
