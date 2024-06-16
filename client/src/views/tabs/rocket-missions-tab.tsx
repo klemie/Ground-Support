@@ -7,6 +7,7 @@ import { Alert, Chip, Icon, IconButton, Snackbar, Stack, Typography } from '@mui
 import { CheckBox, CheckBoxOutlineBlank, ShowChart, Height, HorizontalRule, Edit, DateRange } from '@mui/icons-material';
 import MissionConfig from '../../components/MissionConfig';
 import { saveAs } from 'file-saver';
+import ExportMissionDataDialog from '../../components/rocket-monitoring/ExportMissionDataDialog';
 
 interface FormattedMissionData {
     _id?: string;
@@ -38,17 +39,14 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
     const [ selectedMissionId, setSelectedMissionId ] = useState<string | null>(null);
     const [missionEditDialog, setMissionEditDialog] = useState<boolean>(false);
     const [tableWarning, setTableWarning] = useState<boolean>(true);
-
+    const [exportMissionDataDialog, setExportMissionDataDialog] = useState<boolean>(false);
+    const [selectedMission, setSelectedMission] = useState<FormattedMissionData | null>(null)
     const viewProviderContext = useViewProvider();
     const activeMissionContext = useActiveMission();
 
     const exportMissionData = (mission: FormattedMissionData) => {
-        if (!mission.Data) {
-            return;
-        }
-        if (mission.Published) {
-            const blob = new Blob([JSON.stringify(mission.Data)], { type: 'application/json' });
-            saveAs(blob, `${mission.Name}-data.json`);
+        if (mission.Data && mission.Published) {
+            setExportMissionDataDialog(true);
         }
     }
 
@@ -86,6 +84,7 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
             if (cellMeta.colIndex === 0) {
                 return;
             }
+            setSelectedMission(missions[cellMeta.dataIndex])
             activeMissionContext.updateMission(rocket.Missions[cellMeta.dataIndex]);
             activeMissionContext.updateRocket(rocket);
             if (rocket.Missions[cellMeta.dataIndex].Published) {
@@ -175,10 +174,11 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
                 sort: true,
                 viewColumns: true,
                 customBodyRender(value) {
+                    console.log(value);
                     return (
                         <Chip
-                            label={value === "true" ? "Test" : "Mission"}
-                            color={value === "true" ? "warning" : "primary"}
+                            label={value ? "Test" : "Mission"}
+                            color={value ? "warning" : "primary"}
                             sx={{
                                 borderRadius: 2,
                             }}
@@ -275,6 +275,11 @@ const RocketDetailsTab: React.FC<Props> = (props: Props) => {
                 isOpen={missionEditDialog}
                 onClose={() => setMissionEditDialog(false)}
                 onSave={() => {}}
+            />
+            <ExportMissionDataDialog 
+                isOpen={exportMissionDataDialog}
+                onClose={() => setExportMissionDataDialog(false)}
+                mission={selectedMission as FormattedMissionData}
             />
         </>
     );
