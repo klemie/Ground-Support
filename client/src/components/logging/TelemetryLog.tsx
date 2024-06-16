@@ -69,7 +69,7 @@ const TelemetryLog: React.FC = () => {
                         width: '99%',
                     }}
                     minRows={50}
-                    maxRows={13}
+                    maxRows={12}
                     readOnly
                     placeholder="Telemetry Log"
                     value={logs.join('\n')}

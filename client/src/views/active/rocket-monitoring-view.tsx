@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import api from '../../services/api';
-import { IRocketPopulated } from '../../utils/entities';
+import { IRocketPopulated, ITelemetryPacket } from '../../utils/entities';
 import { Alert, AlertTitle, Box, Button, ButtonGroup, IconButton, Link, Skeleton, Snackbar, SnackbarContent, Stack, Tooltip, Typography } from '@mui/material';
 import Header, { Breadcrumb } from '../../components/Header';
-import { ViewKeys } from '../../utils/viewProviderContext';
+import { ViewKeys, useViewProvider } from '../../utils/viewProviderContext';
 import { useActiveMission } from '../../utils/ActiveMissionContext';
 import { Chat, Settings, WifiTethering, Save, Close } from '@mui/icons-material';
 import TelemetryStatus from '../../components/rocket-monitoring/TelemetryStatus';
@@ -15,13 +15,13 @@ import TelemetryLog from '../../components/logging/TelemetryLog';
 import TelemetryAltitudeGraph from '../../components/rocket-monitoring/TelemetryAltitudeGraph';
 import TelemetryMap from '../../components/rocket-monitoring/TelemetryMap';
 import { useTheme } from '@emotion/react';
+// import upsertMissionData from '../../services/api';
 
 interface IRocketMonitoringViewProps {
     // rocketId: string;
 }
 
 const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRocketMonitoringViewProps) => {
-    const [rocket, setRocket] = useState<IRocketPopulated>({} as IRocketPopulated);
 
     // const getActiveRocket = useCallback(async (): Promise<IRocketPopulated> => {
     //     const response = await api.getRocket(rocketId || '');
@@ -35,6 +35,8 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
     }, []);
     
     const activeContext = useActiveMission();
+    const socketContext = useSocketContext();
+    const viewProviderContext = useViewProvider();
     const theme = useTheme();
 
     const breadCrumbs: Breadcrumb[] = [
@@ -44,10 +46,11 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
 	];
 
     const [openConnection, setOpenConnection] = useState<boolean>(false);
-    const socketContext = useSocketContext();
     const [launchAltitude, setLaunchAltitude] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [publishMission, setPublishMission] = useState<boolean>(false);
+    const [publishFeedback, setPublishFeedback] = useState<boolean>(false);
+    const [publishErrorMessage, setPublishErrorMessage] = useState<string>('');
 
     useEffect(() => {
         if (socketContext.isConnected) {
@@ -60,6 +63,29 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
             }
         }
     }, [socketContext.isConnected]);
+
+    const publishMissionData = async () => {
+        if (!activeContext.activeMission._id) {
+            setPublishErrorMessage("No mission id attached to active mission.");
+            setPublishFeedback(false);
+            return
+        }
+        const missionData = socketContext.logs.map((packet) => (
+            {
+                PacketId: packet.id,
+                Data: {
+                    Altitude: packet.data.altitude,
+                    Latitude: packet.data.latitude,
+                    Longitude: packet.data.longitude,
+                    CallSign: packet.data.call_sign
+                }
+            } as ITelemetryPacket
+            ));
+        console.log(missionData);
+        const response = await api.upsertMissionData(activeContext.activeMission._id, missionData);
+        response.error.error ? setPublishErrorMessage(`Api error: ${response.error.status}`) : setPublishFeedback(true);
+
+    };
 
 
     return (
@@ -119,12 +145,18 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                                                 width: 'fit-content',
                                             }}
                                             onClick={() => {
-                                                activeContext.activeMission.Published = true;
-                                                // TODO: update mission with published status & data
-                                                setPublishMission(false)
+                                                publishMissionData();
+                                                setPublishMission(false);
+                                                // wait a few seconds before changing view
+                                                
+                                                // if (publishFeedback) {
+                                                    setTimeout(() => {
+                                                        viewProviderContext.updateViewKey(ViewKeys.ROCKET_DETAILS_KEY);
+                                                    }, 2000);
+                                                // }
                                             }}
                                         >
-                                            Continue
+                                            Publish
                                         </Button>
                                     </Stack>
                                 </Alert>
@@ -143,7 +175,7 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                         <Skeleton variant="rectangular" height={300} width={'100%'} sx={{ borderRadius: 2 }} />
                     </Stack>
 
-                ) :(
+                ) : (
                         <Stack direction="column" gap={2} width={'100%'}>
                             <Stack direction="row" gap={2}>
                                 <TelemetryPacket />
@@ -154,10 +186,21 @@ const RocketMonitoringView: React.FC<IRocketMonitoringViewProps> = (props: IRock
                         </Stack>
                 ) : (
                     <Alert severity="info">
-                        Connect to telemetry to see data. <Link href='#' color={'inherit'}>FAQ</Link> for common issues and solutions.
+                        Connect to telemetry to see data. See the <Link href='#' color={'inherit'}>FAQ</Link> for common issues and solutions.
                     </Alert>
                 )}
             </Stack>
+            <Snackbar  
+                open={publishFeedback}
+                autoHideDuration={6000}
+                onClose={() => setPublishFeedback(false)}
+            >
+                <Alert 
+                    severity={publishErrorMessage ? 'error' : 'success'}
+                >
+                    { publishErrorMessage ? publishErrorMessage : "Mission data published successfully." }
+                </Alert>
+            </Snackbar>
             <ConnectionDialog 
                 updateAltitude={setLaunchAltitude} 
                 isOpen={openConnection} 
