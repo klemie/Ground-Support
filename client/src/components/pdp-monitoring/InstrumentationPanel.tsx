@@ -6,6 +6,7 @@ import { InstrumentationModule, InstrumentationType_t } from './InstrumentationM
 
 interface IProps {
   // props
+  phone?: boolean;
 }
 
 const InstrumentationPanel: React.FC<IProps> = (props: IProps) => {
