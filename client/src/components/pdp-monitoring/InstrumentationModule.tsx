@@ -1,7 +1,11 @@
 import { MoreVert } from '@mui/icons-material';
 import { Box, Button, Card, CardActions, CardContent, CardHeader, IconButton, Paper, Popper, Stack, Tooltip, Typography } from '@mui/material';
+import { Menu, MenuItem, } from '@mui/material';
+import VisualizationMenu from "./VisualizationMenu"; //In progress to make the menu code a component
 import React, { useEffect, useState } from 'react';
-import Graph from "../RealTimeGraph";
+import InsGraph from "./InstrumentationGraph";
+
+
 
 export enum InstrumentationType_t {
     TEMPERATURE = 'Temperature',
@@ -24,6 +28,18 @@ interface IInstrumentationModuleProps {
 }
 
 export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (props: IInstrumentationModuleProps) => {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    
+    const open = Boolean(anchorEl);
+    
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      setAnchorEl(event.currentTarget);
+    };
+    
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
+    
     const { title, type } = props;
 
     const [InstrumentationType, setInstrumentationType] = useState<IInstrumentationReadingType>({
@@ -87,6 +103,7 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
 			
 	// 	}
 	// }, [packet]);
+    
 
     return (
         <Card sx={{ maxWidth: 250, maxHeight: 250 }}>
@@ -134,11 +151,31 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
                             </Paper>
                         </Popper>
 
-                        <Tooltip title="Visualization Type">
-                            <IconButton>
+                        <div>
+                            <IconButton
+                                id="basic-button"
+                                aria-controls={open ? 'basic-menu' : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? 'true' : undefined}
+                                onClick={handleClick}
+                            >
                                 <MoreVert/>
                             </IconButton>
-                        </Tooltip>
+                            <Menu
+                                id="basic-menu"
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                MenuListProps={{
+                                'aria-labelledby': 'basic-button',
+                                }}
+                            >
+                                <MenuItem onClick={handleClose}>Graph</MenuItem>
+                                <MenuItem onClick={handleClose}>Value</MenuItem>
+                                <MenuItem onClick={handleClose}>Graph and Value</MenuItem>
+                            </Menu>
+                        </div>
+
                         <Tooltip 
                             title={`${type} Reading`}
                         >
@@ -166,7 +203,7 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
                 <div>
                 
                     <div><Box height="120px" ml="-60px">
-                            <Graph IInstrumentationModuleProps={true}
+                            <InsGraph IInstrumentationModuleProps={true}
                             staticData={["0","25","50","100"]}
                             realTime={false}
                             />
