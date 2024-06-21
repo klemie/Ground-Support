@@ -13,16 +13,16 @@ const TelemetryAltitudeGraph: React.FC = () => {
     }
     const [data, setData] = useState<IAltitudeData[]>([]);
     useEffect(() => {
-        if ((socketContext.packet && socketContext.isConnected)) {        
+        if ((socketContext.packet && socketContext.isConnected && socketContext.packet?.data)) {
             setData((prev) => [
-                ...prev, 
+                ...prev,
                 {
                     Id: socketContext.packet.id,
                     Altitude: socketContext.packet.data.altitude
                 }
             ]);
         }
-    }, [socketContext.packet]); 
+    }, [socketContext.packet]);
 
     return (
         <Paper
@@ -37,20 +37,20 @@ const TelemetryAltitudeGraph: React.FC = () => {
             <Typography variant='h6' fontWeight={600}>
                 Real Time Altitude
             </Typography>
-            <ResponsiveContainer 
-                width="100%" 
-                height={208} 
+            <ResponsiveContainer
+                width="100%"
+                height={208}
             >
-                <LineChart 
+                <LineChart
                     data={data}
                 >
-                    <XAxis 
-                        dataKey="Id" 
-                        domain={['auto', 'auto']} 
+                    <XAxis
+                        dataKey="Id"
+                        domain={['auto', 'auto']}
                     />
-                    <YAxis 
-                        orientation='right' 
-                        dataKey={"Altitude"}  
+                    <YAxis
+                        orientation='right'
+                        dataKey={"Altitude"}
                         domain={[0, 'auto']}
                     />
                     <Tooltip />
