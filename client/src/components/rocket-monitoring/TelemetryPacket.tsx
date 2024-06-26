@@ -12,7 +12,7 @@ const TelemetryPacket: React.FC = () => {
     const [altitude, setAltitude] = useState<number>(0);
 
     useEffect(() => {
-        if ((socketContext.packet && socketContext.isConnected)) {        
+        if ((socketContext.packet && socketContext.isConnected && socketContext.packet?.data)) {
             setPacketId(socketContext.packet.id);
             setAltitude(socketContext.packet.data.altitude);
         }
