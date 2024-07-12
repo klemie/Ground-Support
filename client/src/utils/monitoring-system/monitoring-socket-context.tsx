@@ -119,12 +119,17 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
                     }
                     break;
                 case "FEEDBACK":
-                    console.log(`in context`)
-                    console.log(lastJsonMessage)
                     if (lastJsonMessage['data'] != null) {
                         setControlsPacketIn(lastJsonMessage['data']);
                     }
                     break;
+                case "INSTRUMENTATION":
+                    console.log(`instrumentation packet`)
+                    console.log(lastJsonMessage['data'])
+                    if (lastJsonMessage['data'] != null) {
+                        setInstrumentationPacketIn(lastJsonMessage['data'])
+                    }
+
             }
             setValveCartLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${lastMessage.data}`]);
         }
