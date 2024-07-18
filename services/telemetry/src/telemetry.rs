@@ -9,6 +9,7 @@ use std::thread::spawn;
 use std::collections::HashMap;
 use regex::Regex;
 use std::str;
+use tokio::sync::{watch, RwLock};
 
 use crate::data::DataPacket;
 
@@ -73,13 +74,18 @@ async fn extract_packets(state_ref: Arc<Mutex<State>>, received_line: Vec<u8>) {
 /// starts telemetry by calling decode.sh which in turn calls linux direwolf and rtl_fm binaries
 ///
 /// calls extract_packets when new data received from rocket
-pub async fn start_telemetry(state_ref: Arc<Mutex<State>>) -> io::Result<()> {
+pub async fn start_telemetry(state_ref: Arc<Mutex<State>>, test_mode: bool) -> io::Result<()> {
     let frequency = state_ref.lock().unwrap().frequency;
     println!("Starting telemetry on {}", frequency);
 
+    let mut decode_path = "./tools/decode.sh";
+    if test_mode {
+        decode_path = "./tools/decode_test.sh";
+    }
+
     let mut decode_aprs = Command::new("sh")
-        .arg("./tools/decode_test.sh")
-        // .arg(frequency.to_string())
+        .arg(decode_path)
+        .arg(frequency.to_string())
         .stdout(Stdio::piped())
         .spawn()
         .expect("failed to start decoder");
@@ -111,5 +117,36 @@ pub async fn start_telemetry(state_ref: Arc<Mutex<State>>) -> io::Result<()> {
             }
         }
     }
+    Ok(())
+}
+
+pub async fn manage_telemetry_process(state_ref: Arc<Mutex<State>>, test_mode: bool, mut receiver: watch::Receiver<State>) -> io::Result<()> {
+
+    let mut current_handler = tokio::spawn({
+        let state_ref = state_ref.clone();
+        async move {
+            start_telemetry(state_ref, test_mode).await.unwrap();
+        }
+    });
+
+    loop {
+        if receiver.changed().await.is_err() {
+            break;
+        }
+
+        println!("State has changed:");
+
+        // Abort the current telemetry task
+        current_handler.abort();
+
+        // Spawn a new telemetry task with the updated state
+        current_handler = tokio::spawn({
+            let state_ref = state_ref.clone();
+            async move {
+                start_telemetry(state_ref, test_mode).await.unwrap();
+            }
+        });
+    }
+
     Ok(())
 }

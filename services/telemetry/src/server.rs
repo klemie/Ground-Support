@@ -4,6 +4,7 @@ use std::collections::HashMap;
 
 use futures_util::{SinkExt, StreamExt};
 use tokio::net::TcpStream;
+use tokio::sync::{watch, RwLock};
 
 use tokio_tungstenite::WebSocketStream;
 use tokio_tungstenite::tungstenite::Message;
@@ -41,7 +42,9 @@ struct Session {
     /// The current mode of the session.
     ///
     /// See [`SessionMode`] for more information.
-    mode: SessionMode
+    mode: SessionMode,
+    /// Sender to trigger restart of telemetry process
+    tx: Arc<watch::Sender<State>>
 }
 
 /// The mode that the session is running in.
@@ -83,12 +86,13 @@ pub const DEFAULT_SESSION_MODE: SessionMode = SessionMode::Polling;
 
 impl Session {
     /// Create a new session.
-    fn new(id: u64, stream: WebSocketStream<TcpStream>, state_ref: Arc<Mutex<State>>) -> Self {
+    fn new(id: u64, stream: WebSocketStream<TcpStream>, state_ref: Arc<Mutex<State>>, tx: Arc<watch::Sender<State>>) -> Self {
         Self {
             id,
             stream,
             state_ref,
             mode: DEFAULT_SESSION_MODE,
+            tx
         }
     }
 
@@ -153,6 +157,9 @@ impl Session {
             UvrMessage::ChangeFrequency { frequency } => {
                 log!(self, "Received change frequency message: {}", frequency);
                 self.state_ref.lock().unwrap().frequency = frequency;
+                if self.tx.send(self.state_ref.lock().unwrap().clone()).is_err() {
+                    println!("Failed to change frequency");
+                }
             }
             UvrMessage::ChangeProtocol { protocol } => {
                 log!(self, "Received change protocol message: {}", protocol);
@@ -291,7 +298,8 @@ impl Session {
 pub async fn handle_connection(
     stream: TcpStream,
     id: u64,
-    state_ref: Arc<Mutex<State>>
+    state_ref: Arc<Mutex<State>>,
+    tx: Arc<watch::Sender<State>>
 ) {
     let peer_addr = stream.peer_addr().unwrap();
     let accept = tokio_tungstenite::accept_async(stream).await;
@@ -306,7 +314,7 @@ pub async fn handle_connection(
         },
     };
 
-    let mut session = Session::new(id, stream, state_ref);
+    let mut session = Session::new(id, stream, state_ref, tx);
 
     session.run().await;
 }

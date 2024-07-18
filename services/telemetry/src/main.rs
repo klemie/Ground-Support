@@ -11,6 +11,7 @@ use clap::Parser;
 use serde::{Serialize, Deserialize};
 
 use crate::state::State;
+use tokio::sync::{watch, RwLock};
 
 mod client;
 mod data;
@@ -95,16 +96,22 @@ async fn main() {
 
     let state_ref = state.clone();
 
+    // Create a watch channel to monitor state changes
+    let (tx, rx) = watch::channel(state_ref.lock().unwrap().clone());
+    let tx = Arc::new(tx);
+
+    // Spawn a task to monitor state changes and restart process if necessary
     tokio::spawn(async move {
-        telemetry::start_telemetry(state_ref).await.unwrap();
+        telemetry::manage_telemetry_process(state_ref, true, rx).await.unwrap();
     });
 
     loop {
         let (mut socket, _) = listener.accept().await.unwrap();
 
         let state_ref = Arc::clone(&state);
+        let tx = Arc::clone(&tx);
         tokio::spawn(async move {
-            server::handle_connection(socket, connection_id, state_ref).await;
+            server::handle_connection(socket, connection_id, state_ref, tx).await;
         });
 
         connection_id += 1;
