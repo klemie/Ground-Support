@@ -237,3 +237,10 @@ TBD (@JackCotter) once rust backend is more functional
 1. `sudo service docker start`
 2. `sudo docker compose build`
 3. `sudo docker compose up`
+<<<<<<< Updated upstream
+=======
+
+### 7. Run Ground Support
+1. Open a browser and navigate to `localhost:3000`
+
+>>>>>>> Stashed changes
