@@ -195,14 +195,6 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
                                     Serial
                                 </Button>
                             </Tooltip>
-                            <Tooltip title={"Valve Cart Status"}>
-                                <Button 
-                                    disabled={!socketContext.isConnected} 
-                                    color={"success"}
-                                >
-                                    Valve Cart
-                                </Button>
-                            </Tooltip>
                             <Button 
                                 variant="contained" 
                                 size={'large'} 

@@ -295,10 +295,6 @@ const FeedSystem: React.FC = () => {
 						))}
 						</SpeedDial>
 						<Controls />
-						<MiniMap
-							pannable
-							zoomable
-						/>
 						<Background />
 					</ReactFlow>
 				</Paper>
