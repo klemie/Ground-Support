@@ -1,4 +1,4 @@
-import { Button, FormControl, FormControlLabel, FormGroup, Paper, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Button, Chip, FormControl, FormControlLabel, FormGroup, Paper, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import React from 'react';
 import {  ControlsCommandTypes, ControlsValveTypes, IControlsPacket, PacketType } from '../../utils/monitoring-system/monitoring-types';
 import ValveControl from './ValveControlSwitch';
@@ -24,32 +24,33 @@ const ControlsPanel: React.FC = () => {
         >
             <FormControl component="fieldset">
                 <Stack direction={'row'}>
-                    <ValveControl valveName={ControlsValveTypes.N2OFlow} />
-                    <ValveControl valveName={ControlsValveTypes.N2OVent} />
+                    <ValveControl valveName={ControlsValveTypes.N2OFlow} disabled={!socketContext.isSerialOn}/>
+                    <ValveControl valveName={ControlsValveTypes.N2OVent} disabled={!socketContext.isSerialOn}/>
                 </Stack>
                 <Stack direction={'row'}>
-                    <ValveControl valveName={ControlsValveTypes.N2Flow} />
-                    <ValveControl valveName={ControlsValveTypes.ERV} />
+                    <ValveControl valveName={ControlsValveTypes.N2Flow}disabled={!socketContext.isSerialOn}/>
+                    <ValveControl valveName={ControlsValveTypes.ERV} disabled={!socketContext.isSerialOn}/>
                 </Stack>
                 <Stack direction={'row'}>
-                    <ValveControl valveName={ControlsValveTypes.RTV} />
-                    <ValveControl valveName={ControlsValveTypes.NCV} />
+                    <ValveControl valveName={ControlsValveTypes.RTV} disabled={!socketContext.isSerialOn} />
+                    <ValveControl valveName={ControlsValveTypes.NCV} disabled={!socketContext.isSerialOn}/>
                 </Stack>
-                <ValveControl valveName={ControlsValveTypes.MEV} />
+                <ValveControl valveName={ControlsValveTypes.MEV} disabled={!socketContext.isSerialOn}/>
                 <FormControlLabel 
                     sx={{ marginTop: 1 }}
-                    control={<Button fullWidth variant='contained' color="error" disabled>ENERGIZED</Button>} 
+                    control={<Chip label="ENERGIZED" color="error" disabled sx={{ width: '100%', borderRadius: 1 }}/>} 
                     label={<Typography alignSelf='start'>Run Tank</Typography>}
                     labelPlacement='top' 
                 />
-                {isNotMobile ? 
+                {isNotMobile ?
                     <Button 
                         fullWidth 
                         variant='contained' 
                         color="error" 
                         sx={{ marginTop: 2, fontSize: 40, fontWeight: 600 }}
                         onClick={() => sendAbortCommand()}
-                        >
+                        disabled={!socketContext.isSerialOn}
+                    >
                         Abort
                     </Button>
                     :
