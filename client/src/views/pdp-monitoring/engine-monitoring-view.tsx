@@ -14,7 +14,7 @@ import ControlsPanel from "../../components/pdp-monitoring/ControlsPanel";
 
 // Components UI
 
-import { Box, Button, Grid, Paper, Stack, Typography, Tooltip, Fab, useTheme, useMediaQuery, BottomNavigation, BottomNavigationAction, ButtonGroup } from "@mui/material";
+import { Box, Button, Grid, Paper, Stack, Typography, Tooltip, Fab, useTheme, useMediaQuery, BottomNavigation, BottomNavigationAction, ButtonGroup, Chip } from "@mui/material";
 import Header, { Breadcrumb } from "../../components/Header";
 import StartSequencePanel from "../../components/pdp-monitoring/StartSequencePanel";
 import InstrumentationPanel from "../../components/pdp-monitoring/InstrumentationPanel";
@@ -176,24 +176,30 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
                             variant="contained"
                         >
                             <Tooltip
-                                title={"LabJack Status"}
+                                title={"Instrumentation Status"}
                             >
-                                <Button 
-                                    disabled={!socketContext.isLabJackOn} 
-                                    color={"success"}
-                                    aria-readonly
-                                    >
-                                        LabJack 
-                                </Button>
+                                <Stack direction={'row'} spacing={1} alignItems={'center'} paddingX={1.5}>
+                                    <Chip 
+                                        color={ socketContext.isLabJackOn ? "success" : "error"} 
+                                        sx={{ paddingX: 0.5 }} 
+                                        size="small"
+                                    />
+                                    <Typography variant="button">
+                                        instrumentation
+                                    </Typography>
+                                </Stack>
                             </Tooltip>
-                            <Tooltip title={"Serial Status"}>
-                                <Button 
-                                    disabled={!socketContext.isSerialOn} 
-                                    aria-readonly
-                                    color={"success"}
-                                >
-                                    Serial
-                                </Button>
+                            <Tooltip title={"Controls Status"}>
+                                <Stack direction={'row'} spacing={1} alignItems={'center'} paddingX={1.5}>
+                                    <Chip 
+                                        color={ socketContext.isSerialOn ? "success" : "error"} 
+                                        sx={{ paddingX: 0.5 }} 
+                                        size="small"
+                                    />
+                                    <Typography variant="button">
+                                        controls
+                                    </Typography>
+                                </Stack>
                             </Tooltip>
                             <Button 
                                 variant="contained" 

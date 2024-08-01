@@ -2,18 +2,93 @@ import { Chip, Grid, Paper, Stack, Switch, Tooltip, Typography, styled, } from '
 import React, { useEffect, useState } from 'react';
 
 import SensorsIcon from '@mui/icons-material/Sensors';
-import { InstrumentationModule, InstrumentationType_t } from './InstrumentationModule';
+import { InstrumentationModule, IInstrumentationType } from './InstrumentationModule';
+import { useMonitoringSocketContext } from '../../utils/monitoring-system/monitoring-socket-context';
 
-interface IProps {
-  // props
-  phone?: boolean;
-}
+const InstrumentationPanel: React.FC = () => {
+    const socketContext = useMonitoringSocketContext();
+    const [data, setData] = useState<{
+        [key: string]: number;
+    } | null>(null);
 
-const InstrumentationPanel: React.FC<IProps> = (props: IProps) => {
-    // state
-    const [data, setData] = useState<any>(null);
-
-    // render
+    useEffect(() => {
+        setData(socketContext.instrumentationPacketIn);
+    }, [socketContext.instrumentationPacketIn]);
+    
+    const sensors = [
+        {
+            label: "Run Tank",
+            key: "T_RUN_TANK",
+            type: IInstrumentationType.TEMPERATURE,
+            display: true
+        },
+        {
+            label: "Injector",
+            key: "T_INJECTOR",
+            type: IInstrumentationType.TEMPERATURE,
+            display: true
+        },
+        {
+            label: "Comb Chamber",
+            key: "T_COMBUSTION_CHAMBER",
+            type: IInstrumentationType.TEMPERATURE,
+            display: true
+        },
+        {
+            label: "Pre Combu",
+            key: "T_POST_COMBUSTION",
+            type: IInstrumentationType.TEMPERATURE,
+            display: true
+        },
+        {
+            label: "N2O Flow",
+            key: "P_N2O_FLOW",
+            type: IInstrumentationType.PRESSURE,
+            display: true
+        },
+        {
+            label: "N2 Flow",
+            key: "P_N2_FLOW",
+            type: IInstrumentationType.PRESSURE,
+            display: true
+        },
+        {
+            label: "Run Tank",
+            key: "P_RUN_TANK",
+            type: IInstrumentationType.PRESSURE,
+            display: true
+        },
+        {
+            label: "Injector",
+            key: "P_INJECTOR",
+            type: IInstrumentationType.PRESSURE,
+            display: true
+        },
+        {
+            label: "Comb Chamber",
+            key: "P_COMBUSTION_CHAMBER",
+            type: IInstrumentationType.PRESSURE,
+            display: true
+        },
+        {
+            label: "Run Tank",
+            key: "L_RUN_TANK",
+            type: IInstrumentationType.LOAD,
+            display: true
+        },
+        {
+            label: "Trust",
+            key: "L_TRUST",
+            type: IInstrumentationType.LOAD,
+            display: true
+        },
+        {
+            label: "Shunt Current",
+            key: "SHUNT",
+            type: IInstrumentationType.MASS,
+            display: true
+        }
+    ]
     return (
         <Stack spacing={2} width={'100%'}>
             <Paper elevation={2} sx={{ padding: 2 }}>
@@ -30,17 +105,25 @@ const InstrumentationPanel: React.FC<IProps> = (props: IProps) => {
                 container
                 gap={2}
             >
-                <InstrumentationModule title={"Run Tank"} type={InstrumentationType_t.PRESSURE}/>
-                <InstrumentationModule title={"N2O Flow"} type={InstrumentationType_t.PRESSURE}/>   
-                <InstrumentationModule title={"N2 Flow"} type={InstrumentationType_t.PRESSURE}/>
-                <InstrumentationModule title={"Injector"} type={InstrumentationType_t.PRESSURE}/>
-                <InstrumentationModule title={"Run Tank"} type={InstrumentationType_t.TEMPERATURE}/>
-                <InstrumentationModule title={"Run Tank"} type={InstrumentationType_t.MASS}/>
-                <InstrumentationModule title={"ShuntCurrent"} type={InstrumentationType_t.LOAD}/>
-                               
+                {
+                    sensors.map((sensor, index) => {
+                        const el = sensor.display ?
+                            <InstrumentationModule 
+                                key={index}
+                                title={sensor.label} 
+                                type={sensor.type}
+                                reading={data ? data[sensor.key] : 0}
+                                hide={() => {
+                                    sensor.display = !sensor.display;
+                                }}
+                            />
+                            : 
+                            <></>
+                        return el
+                    })
+                }
             </Grid>
         </Stack>
-        
     );
 };
 

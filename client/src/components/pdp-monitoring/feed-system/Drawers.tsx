@@ -78,9 +78,7 @@ const PAndIDBuilderDrawer: React.FC<PAndIDBuilderProps> = (props: PAndIDBuilderP
 
 	const theme = useTheme();
 	const id: string = (nodeCount + 1).toString();
-	useEffect(() => {
-		console.log(id);
-	}, []);
+
 	// Node builder form state
 	const [nodeType, setNodeType] = useState<PAndIDNodeTypes>(PAndIDNodeTypes.VALVE);
 
@@ -125,10 +123,6 @@ const PAndIDBuilderDrawer: React.FC<PAndIDBuilderProps> = (props: PAndIDBuilderP
 
 	const ValveFormContent = (props: ValveFormProps) => {
 		const { onAdd, onClose, id } = props;
-
-		useEffect(() => {
-			console.log(id);
-		}, []);
 
 		const [controllable, setControllable] = useState<boolean>(false);
 		const [valveType, setValveType] = useState<ValveTypes>('');

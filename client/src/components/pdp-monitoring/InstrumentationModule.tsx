@@ -1,33 +1,39 @@
 import { MoreVert } from '@mui/icons-material';
-import { Box, Button, Card, CardActions, CardContent, CardHeader, IconButton, Paper, Popper, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Card, CardActions, CardContent, CardHeader, IconButton, Paper, Popper, Stack, Typography } from '@mui/material';
 import { Menu, MenuItem, } from '@mui/material';
 import VisualizationMenu from "./VisualizationMenu"; //In progress to make the menu code a component
 import React, { useEffect, useState } from 'react';
-import InsGraph from "./InstrumentationGraph";
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis  } from 'recharts';
 
-
-
-export enum InstrumentationType_t {
+export enum IInstrumentationType {
     TEMPERATURE = 'Temperature',
     PRESSURE = 'Pressure',
-    FORCE = 'Force',
+    LOAD = 'Load',
     MASS = 'Mass'
 }
 
 interface IInstrumentationReadingType {
     label: string;
     color: string;
-    med: number; //Threshold to show yellow
-    hi: number; //Threshold to show red
+    min: number; //Threshold to show yellow
+    max: number; //Threshold to show red
+    unit: "N" | "PSI" | "KG" | "°C"
 }
 
 interface IInstrumentationModuleProps {
     title: string;
-    type: InstrumentationType_t;
-    state: string; //This is the color shown on the reading box
+    type: IInstrumentationType;
+    reading?: number;
+    hide: () => void;
+}
+
+interface IChartItem {
+    packetNumber: number;
+    reading: number;
 }
 
 export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (props: IInstrumentationModuleProps) => {
+    const { title, type, reading, hide } = props;
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     
     const open = Boolean(anchorEl);
@@ -40,75 +46,80 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
       setAnchorEl(null);
     };
     
-    const { title, type } = props;
+    const [InstrumentationType, setInstrumentationType] = useState<IInstrumentationReadingType>({} as IInstrumentationReadingType);
 
-    const [InstrumentationType, setInstrumentationType] = useState<IInstrumentationReadingType>({
-        label: "",
-        color: ""
-    });
+    const [moduleVisualizationType, setModuleVisualizationType] = useState<'graph' | 'value' | 'both' | string>('both');
+
+    const [data, setData] = useState<IChartItem[]>([]);
 
     useEffect(() => {
         switch (type) {
-            case InstrumentationType_t.TEMPERATURE:
+            case IInstrumentationType.TEMPERATURE:
                 setInstrumentationType({
                     label: "T",
                     color: "#D65B4F",
-                    med: 773, //Kelvin
-                    hi:973
+                    min: 773, 
+                    max: 973,
+                    unit: "°C"
                 });
                 break;
-            case InstrumentationType_t.LOAD:
+            case IInstrumentationType.LOAD:
                 setInstrumentationType({
                     label: "L",
                     color: "#FFC557",
-                    med: 20,
-                    hi:30
+                    min: 20,
+                    max:30,
+                    unit: "N"
                 });
                 break;
-            case InstrumentationType_t.PRESSURE:
+            case IInstrumentationType.PRESSURE:
                 setInstrumentationType({
                     label: "P",
                     color: "#005EB8",
-                    med: 750, //psi
-                    hi:800
+                    min: 750,
+                    max: 800,
+                    unit: "PSI"
                 });
                 break;
-            case InstrumentationType_t.MASS:
+            case IInstrumentationType.MASS:
                 setInstrumentationType({
                     label: "M",
                     color: "#3FB684",
-                    med: 50, //kg
-                    hi: 25
+                    min: 25,
+                    max: 50,
+                    unit: "KG"
                 });
                 break;
         }
-
     }, []);
-//Sets the color of the reading depending if its safe or not
-    // useEffect(() => {
-	// 	if (packet?.Parsed.altitude > 0) { //Change to Parsed.pressure to get the measurement
-	// 				Altitude: packet?.Parsed.altitude //Change to pressure, temp, load, mass
-    //                 switch (Altitude){
-    //                     case (Altitude<InstrumentationType.med):
-    //                         alert: "#419769" //Green
-    //                         break;
-    //                     case (Altitude>=InstrumentationType.med && Altitude <InstrumentationType.hi):
-    //                         alert: "#D79C00" //Yellow
-    //                         break;
-    //                     case (Altitude>=InstrumentationType.hi):
-    //                         alert: "#D65B4F" //Red
-    //                         break;
-    //                 }
-                    
-			
-	// 	}
-	// }, [packet]);
-    
+
+    useEffect(() => {
+        if (reading == null) return;
+        setData(prevData => {
+            const packetNumber = prevData.length != 0 ? prevData[prevData.length - 1].packetNumber + 1 : 1;
+            
+            const newData = prevData.length >= 10 ? prevData.slice(1) : prevData;
+
+            return [...newData, {
+                packetNumber: packetNumber,
+                reading: reading
+            }];
+        });
+    }, [reading]);
+   
 
     return (
-        <Card sx={{ maxWidth: 250, maxHeight: 250 }}>
+        <Card
+            sx={{
+                height: 'min-content',
+            }}
+        >
             <CardHeader
-                sx={{ backgroundColor: '#42464D', color: 'white'}}
+                sx={{ backgroundColor: '#42464D', color: 'white' }}
+                titleTypographyProps={{
+                    variant: "button",
+                    fontWeight: "bold"
+                }}
                 title={title}
                 action={
                     <Stack direction={"row"} marginX={1}>
@@ -118,28 +129,28 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
                             disablePortal={false}
                             modifiers={[
                                 {
-                                name: 'flip',
-                                enabled: true,
-                                options: {
-                                    altBoundary: true,
-                                    rootBoundary: 'document',
-                                    padding: 8,
-                                },
-                                },
-                                {
-                                name: 'preventOverflow',
-                                enabled: true,
-                                options: {
-                                    altAxis: true,
-                                    altBoundary: true,
-                                    tether: true,
-                                    rootBoundary: 'document',
-                                    padding: 8,
-                                },
+                                    name: 'flip',
+                                    enabled: true,
+                                    options: {
+                                        altBoundary: true,
+                                        rootBoundary: 'document',
+                                        padding: 8,
+                                    },
                                 },
                                 {
-                                name: 'arrow',
-                                enabled: false,
+                                    name: 'preventOverflow',
+                                    enabled: true,
+                                    options: {
+                                        altAxis: true,
+                                        altBoundary: true,
+                                        tether: true,
+                                        rootBoundary: 'document',
+                                        padding: 8,
+                                    },
+                                },
+                                {
+                                    name: 'arrow',
+                                    enabled: false,
                                 },
                             ]}
                         >
@@ -151,7 +162,7 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
                             </Paper>
                         </Popper>
 
-                        <div>
+                        <Stack>
                             <IconButton
                                 id="basic-button"
                                 aria-controls={open ? 'basic-menu' : undefined}
@@ -167,76 +178,86 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
                                 open={open}
                                 onClose={handleClose}
                                 MenuListProps={{
-                                'aria-labelledby': 'basic-button',
+                                    'aria-labelledby': 'basic-button',
                                 }}
                             >
-                                <MenuItem onClick={handleClose}>Graph</MenuItem>
-                                <MenuItem onClick={handleClose}>Value</MenuItem>
-                                <MenuItem onClick={handleClose}>Graph and Value</MenuItem>
+                                <MenuItem onClick={() => {
+                                    setModuleVisualizationType('graph');
+                                    handleClose();
+                                }}>Graph</MenuItem>
+                                <MenuItem onClick={() => {
+                                    setModuleVisualizationType('value');
+                                    handleClose();
+                                }}>Value</MenuItem>
+                                <MenuItem onClick={() => {
+                                    setModuleVisualizationType('both');
+                                    handleClose();
+                                }}>Graph and Value</MenuItem>
                             </Menu>
-                        </div>
-
-                        <Tooltip 
-                            title={`${type} Reading`}
+                        </Stack>
+                        <Box
+                            sx={{ 
+                                backgroundColor: InstrumentationType.color,
+                                color: 'white',
+                                borderRadius: 1,
+                                padding: 1,
+                                width: 35,
+                                height: 35
+                                
+                            }}
+                            textAlign={'center'}
                         >
-                            <Box
-                                sx={{ 
-                                    backgroundColor: InstrumentationType.color,
-                                    color: 'white',
-                                    borderRadius: 1,
-                                    padding: 1,
-                                    width: 35,
-                                    height: 35
-                                    
-                                }}
-                                textAlign={'center'}
-                                
-                                
-                            >
-                                <Typography margin={0} sx={{ fontWeight: "bold" }}>{InstrumentationType.label}</Typography>
-                            </Box>
-                        </Tooltip>
+                            <Typography margin={0} sx={{ fontWeight: "bold" }}>{InstrumentationType.label}</Typography>
+                        </Box>
                     </Stack>
                 }
             />
             <CardContent>
-                <div>
-                
-                    <div><Box height="120px" ml="-60px">
-                            <InsGraph IInstrumentationModuleProps={true}
-                            staticData={["0","25","50","100"]}
-                            realTime={false}
-                            />
-                        </Box>
-                    </div>
-
-                    <Tooltip 
-                    title={`Current ${type}`}>
-                        <center>
-                            <Box
-                                sx={{ 
-                                    backgroundColor: "#419769",
-                                    color: 'white',
-                                    borderRadius: 1,
-                                    padding: 1,
-                                    width: 90,
-                                    height: 35  
-                                }}
-                                textAlign={'center'}
-
+                <Stack spacing={1}>
+                    {
+                        (moduleVisualizationType == 'graph' || moduleVisualizationType == 'both') ?
+                        <ResponsiveContainer width={200} height={150}>
+                            <LineChart  
+                                data={data}
+                                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                             >
-                                <Typography margin={0} sx={{ fontWeight: "bold" }}>{InstrumentationType.label}</Typography>
-                            </Box>
-                        </center>
-                    </Tooltip>
-                </div>
-
+                                <Line 
+                                    type="monotone" 
+                                    dataKey="reading" 
+                                    stroke={"#515356"}
+                                    strokeWidth={3} 
+                                    activeDot={{r: 5}}
+                                    isAnimationActive={false}
+                                />
+                                <XAxis dataKey={'packetNumber'} />
+                                <YAxis   />
+                                {/* <CartesianGrid strokeDasharray="3 3" /> */}
+                                <Tooltip />
+                            </LineChart>
+                        </ResponsiveContainer>
+                        :
+                        <></>
+                    }
+                    {
+                        (moduleVisualizationType == 'value' || moduleVisualizationType == 'both') ?
+                        <Box
+                            sx={{ 
+                                backgroundColor: "#419769",
+                                color: 'white',
+                                borderRadius: 1,
+                                padding: 1,
+                            }}
+                        >
+                            <Stack justifyContent={'space-between'} direction={'row'} marginX={1}>
+                                <Typography margin={0} sx={{ fontWeight: "bold" }}>{reading ?? '—'}</Typography>
+                                <Typography margin={0} sx={{ fontWeight: "bold" }}>{InstrumentationType.unit}</Typography>
+                            </Stack>
+                        </Box>
+                        :
+                        <></>
+                    }
+                </Stack>
             </CardContent>
-            <CardActions>
-                <div>
-                    <p>Time: 0</p>
-                </div>
-            </CardActions>
         </Card>
     );
 };

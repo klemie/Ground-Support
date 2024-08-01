@@ -45,8 +45,10 @@ export const MonitoringContext = createContext<IMonitoringSocketContext>({
     controlsPacketIn: {}
 });
 
-const SERAIL_SOCKET_URL = 'ws://192.168.0.1:8080';
-const INSTRUMENTATION_SOCKET_URL = 'ws://192.168.0.1:8888';
+const URI = 'ws://localhost';
+
+const SERIAL_SOCKET_URL = `${URI}:8080`;
+const INSTRUMENTATION_SOCKET_URL = `${URI}:8888`;;
 
 
 export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
@@ -60,12 +62,12 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
     const [instrumentationPacketIn, setInstrumentationPacketIn] = useState({});
     const [isConnected, setIsConnected] = useState<boolean>(false);
     const [connect, setConnect] = useState<boolean>(false);
-    const [serailSocketUrl, setSerialSocketUrl] = useState<string | null>(isConnected ? SERAIL_SOCKET_URL : null);
+    const [serailSocketUrl, setSerialSocketUrl] = useState<string | null>(isConnected ? SERIAL_SOCKET_URL : null);
     const [instrumentationSocketUrl, setInstrumentationSocketUrl] = useState<string | null>(isConnected ? INSTRUMENTATION_SOCKET_URL : null);
 
     
     // Serail socket 
-    const serailWebsocket = useWebSocket(serailSocketUrl, {
+    const serialWebsocket = useWebSocket(serailSocketUrl, {
         shouldReconnect: (closeEvent) => connect,
         onClose: () =>{
             console.log('Disconnected from Serial WSS');
@@ -76,31 +78,31 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
             setIsSerialOn(false);
         },
         onOpen: () => {
-            console.log('Connected to Serail WSS');
+            console.log('Connected to Serial WSS');
             setConnect(true);
             setIsSerialOn(true);
         },
         share: true
     });
 
-     // Instrumentation socket 
-    //  const instrumentationWebsocket = useWebSocket(instrumentationSocketUrl, {
-    //     shouldReconnect: (closeEvent) => connect,
-    //     onClose: () =>{
-    //         console.log('Disconnected from Instrumentation WSS');
-    //         setValveCartLogs([]);
-    //         setMissionControlLogs([]);
-    //         setConnect(false);
-    //         setIsConnected(false);
-    //         setIsLabJackOn(false);
-    //     },
-    //     onOpen: () => {
-    //         console.log('Connected to Instrumentation WSS');
-    //         setConnect(true);
-    //         setIsLabJackOn(true);
-    //     },
-    //     share: true
-    // });
+    // Instrumentation socket 
+     const instrumentationWebsocket = useWebSocket(instrumentationSocketUrl, {
+        shouldReconnect: (closeEvent) => connect,
+        onClose: () =>{
+            console.log('Disconnected from Instrumentation WSS');
+            setValveCartLogs([]);
+            setMissionControlLogs([]);
+            setConnect(false);
+            setIsConnected(false);
+            setIsLabJackOn(false);
+        },
+        onOpen: () => {
+            console.log('Connected to Instrumentation WSS');
+            setConnect(true);
+            setIsLabJackOn(true);
+        },
+        share: true
+    });
 
     const toggleConnection = () => {
         setConnect(prevIsConnected => {
@@ -110,7 +112,7 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
                 setInstrumentationSocketUrl(null);
             } else {
                 // If the WebSocket is currently disconnected, connect it
-                setSerialSocketUrl(SERAIL_SOCKET_URL);
+                setSerialSocketUrl(SERIAL_SOCKET_URL);
                 setInstrumentationSocketUrl(INSTRUMENTATION_SOCKET_URL);
             }
             return !prevIsConnected;
@@ -119,50 +121,60 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
 
 
     useEffect(() => {
-        if (serailWebsocket.lastMessage) {//|| instrumentationWebsocket.lastMessage) {
-            const identifier: any = serailWebsocket.lastJsonMessage['identifier']
+        if (serialWebsocket.lastMessage) {//|| instrumentationWebsocket.lastMessage) {
+            const identifier: any = serialWebsocket.lastJsonMessage['identifier']
             // const identifier: any = serailWebsocket.lastMessage 
             //     ? serailWebsocket.lastJsonMessage['identifier'] 
             //     : instrumentationWebsocket.lastJsonMessage['idenifier'];
 
             console.log(`Identifier: ${identifier}`);
-            console.log(serailWebsocket.lastJsonMessage);
+            console.log(serialWebsocket.lastJsonMessage);
 
             switch (identifier) {
                 case "STARTUP":
-                    if (serailWebsocket.lastJsonMessage['data'] == "S ON") {
+                    if (serialWebsocket.lastJsonMessage['data'] == "S ON") {
                         console.log("serial is on")
                         setIsSerialOn(true);
-                    } else if (serailWebsocket.lastJsonMessage['data'] == "VC CONNECTED") {
+                    } else if (serialWebsocket.lastJsonMessage['data'] == "VC CONNECTED") {
                         setIsConnected(true);
                     }
                     break;
                 case "FEEDBACK":
-                    if (serailWebsocket.lastJsonMessage['data'] != null) {
-                        setControlsPacketIn(serailWebsocket.lastJsonMessage['data']);
+                    if (serialWebsocket.lastJsonMessage['data'] != null) {
+                        setControlsPacketIn(serialWebsocket.lastJsonMessage['data']);
                     }
                     break;
-                // case "INSTRUMENTATION":
-                //     console.log(instrumentationPacketIn)
-                //     if (instrumentationWebsocket.lastJsonMessage['data'] != null) {
-                //         setInstrumentationPacketIn(instrumentationWebsocket.lastJsonMessage['data'])
-                        
-                //     }
-                //     break;
             }
-            setValveCartLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${serailWebsocket.lastMessage.data}`]);
+            setValveCartLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${serialWebsocket.lastMessage.data}`]);
         }
-    }, [
-        serailWebsocket.lastMessage, 
-        // instrumentationWebsocket.lastMessage
-    ]);
+    }, [ serialWebsocket.lastMessage ]);
+
+    useEffect(() => {
+        if (instrumentationWebsocket.lastMessage) {
+            const identifier: any = instrumentationWebsocket.lastJsonMessage['identifier']
+
+            console.log(`Identifier: ${identifier}`);
+            console.log(serialWebsocket.lastJsonMessage);
+
+            switch (identifier) {  
+                case "INSTRUMENTATION":
+                    console.log(instrumentationPacketIn)
+                    if (instrumentationWebsocket.lastJsonMessage['data'] != null) {
+                        setInstrumentationPacketIn(instrumentationWebsocket.lastJsonMessage['data'])
+                        
+                    }
+                    break;
+            }
+            setValveCartLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${instrumentationWebsocket.lastMessage.data}`]);
+        }
+    }, [ instrumentationWebsocket.lastMessage ]);
 
 
     useEffect(() => {
         if (controlsPacketOut) {
             setMissionControlLogs((prevLogs) => [...prevLogs, `[${new Date().toLocaleString()}] [INFO] - ${JSON.stringify(controlsPacketOut)}`]);
             console.log(controlsPacketOut);
-            serailWebsocket.sendJsonMessage(controlsPacketOut);
+            serialWebsocket.sendJsonMessage(controlsPacketOut);
         }
     }, [controlsPacketOut]);
     
