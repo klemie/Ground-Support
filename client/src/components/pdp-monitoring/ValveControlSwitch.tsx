@@ -69,7 +69,7 @@ const ValveControl = (props: IValveControlProps) => {
                     disabled={disabled} 
                     onChange={sendCommand}
                 />} 
-                label={<Typography>{valveName}</Typography>} 
+                label={<Typography variant='button'>{valveName}</Typography>} 
                 labelPlacement='end' 
             />
             <Tooltip title="Valve Cart feedback" placement="top" arrow followCursor>

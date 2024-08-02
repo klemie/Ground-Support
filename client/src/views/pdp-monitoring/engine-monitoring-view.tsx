@@ -22,13 +22,14 @@ import ConnectionDialog from "../../components/pdp-monitoring/ConnectionDialog";
 import { Chat, InsertInvitation, Settings } from "@mui/icons-material";
 import { useMonitoringSocketContext } from "../../utils/monitoring-system/monitoring-socket-context";
 import EngineLogDialog from "../../components/logging/EngineLog";
-import ConfigurationDialog, { IConfiguration } from "../../components/pdp-monitoring/ConfigurationDialog";
+import PanelConfigurationDialog, { IConfiguration } from "../../components/pdp-monitoring/PanelConfigurationDialog";
 import groundSupportDarkMode from  "../../static/images/groundSupportDarkMode.svg"
 import useWebSocket from "react-use-websocket";
 import { ControlsActionTypes, ControlsCommandTypes, ControlsValveTypes, IControlsPacket, PacketType } from "../../utils/monitoring-system/monitoring-types";
 import { ViewKeys } from "../../utils/viewProviderContext";
 import FeedSystem from "../../components/pdp-monitoring/feed-system/FeedSystem";
 import { ReactFlowProvider } from "reactflow";
+import ConfigurationDialog from "../../components/pdp-monitoring/ConfigurationDialog";
 
 interface IPhoneViewProps {
    openSettings: () => void;
@@ -74,6 +75,7 @@ const PhoneView: React.FC<IPhoneViewProps> = (props: IPhoneViewProps) => {
 interface IComputerViewProps {
     openSettings: () => void;
     openLog: () => void;
+    openConfiguration: () => void;
     configuration: IConfiguration;
 }
 
@@ -219,7 +221,7 @@ const ComputerView: React.FC<IComputerViewProps> = (props: IComputerViewProps) =
                 <Stack direction="row" spacing={2} height={'100%'}>
                     { props.configuration.feedSystemVisualPanel && <ReactFlowProvider><FeedSystem /></ReactFlowProvider>}
                     { props.configuration.controlsPanel && <ControlsPanel />}
-                    { props.configuration.instrumentationPanel && <InstrumentationPanel />}
+                    { props.configuration.instrumentationPanel && <InstrumentationPanel onClickConfigure={() => props.openConfiguration()} />}
                 </Stack>
             </Stack>
             <div style={{ position: 'fixed', bottom: 0, width: '100%' }}>
@@ -253,6 +255,8 @@ const EngineMonitoringView: React.FC = () => {
     const [openConnection, setOpenConnection] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
     const [openLog, setOpenLog] = useState(false);
+    const [openConfiguration, setOpenConfiguration] = useState(false);
+
 
     const [panelConfiguration, setPanelConfiguration] = useState({
         controlsPanel: false,
@@ -278,6 +282,7 @@ const EngineMonitoringView: React.FC = () => {
                     openSettings={() => setOpenSettings(true)}
                     openLog={() => setOpenLog(true)}
                     configuration={panelConfiguration}
+                    openConfiguration={() => setOpenConfiguration(true)}
                 />
             }
             
@@ -291,11 +296,15 @@ const EngineMonitoringView: React.FC = () => {
                 isOpen={openLog}
                 isMobile={!isNotMobile}
             />
-            <ConfigurationDialog 
+            <PanelConfigurationDialog 
                 isOpen={openSettings} 
                 configuration={panelConfiguration}
                 setConfiguration={setPanelConfiguration}
                 onClose={() => setOpenSettings(false)}
+            />
+            <ConfigurationDialog 
+                isOpen={openConfiguration} 
+                onClose={() => setOpenConfiguration(false)}
             />
         </>
     );

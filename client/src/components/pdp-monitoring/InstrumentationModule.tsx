@@ -15,7 +15,7 @@ export enum IInstrumentationType {
 interface IInstrumentationReadingType {
     label: string;
     color: string;
-    min: number; //Threshold to show yellow
+    threshold: number; //Threshold to show yellow
     max: number; //Threshold to show red
     unit: "N" | "PSI" | "KG" | "°C"
 }
@@ -52,13 +52,22 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
 
     const [data, setData] = useState<IChartItem[]>([]);
 
+    enum ReadingColorType {
+        DEFAULT = '#515356',
+        IN_RANGE = '#419769',
+        WARNING = '#D79C00',
+        DANGER = '#D65B4F'
+    } 
+
+    const [readingColor, setReadingColor] = useState<ReadingColorType>(ReadingColorType.DEFAULT);
+
     useEffect(() => {
         switch (type) {
             case IInstrumentationType.TEMPERATURE:
                 setInstrumentationType({
                     label: "T",
                     color: "#D65B4F",
-                    min: 773, 
+                    threshold: 773, 
                     max: 973,
                     unit: "°C"
                 });
@@ -67,7 +76,7 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
                 setInstrumentationType({
                     label: "L",
                     color: "#FFC557",
-                    min: 20,
+                    threshold: 20,
                     max:30,
                     unit: "N"
                 });
@@ -76,7 +85,7 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
                 setInstrumentationType({
                     label: "P",
                     color: "#005EB8",
-                    min: 750,
+                    threshold: 750,
                     max: 800,
                     unit: "PSI"
                 });
@@ -85,7 +94,7 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
                 setInstrumentationType({
                     label: "M",
                     color: "#3FB684",
-                    min: 25,
+                    threshold: 25,
                     max: 50,
                     unit: "KG"
                 });
@@ -105,6 +114,15 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
                 reading: reading
             }];
         });
+
+        if (reading > InstrumentationType.threshold && reading < InstrumentationType.max) {
+            setReadingColor(ReadingColorType.WARNING);
+        } else if (reading > InstrumentationType.max) {
+            setReadingColor(ReadingColorType.DANGER);
+        } else {
+            setReadingColor(ReadingColorType.IN_RANGE);
+        }
+
     }, [reading]);
    
 
@@ -242,7 +260,7 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
                         (moduleVisualizationType == 'value' || moduleVisualizationType == 'both') ?
                         <Box
                             sx={{ 
-                                backgroundColor: "#419769",
+                                backgroundColor: readingColor,
                                 color: 'white',
                                 borderRadius: 1,
                                 padding: 1,
