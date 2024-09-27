@@ -23,7 +23,7 @@ interface IInstrumentationReadingType {
 interface IInstrumentationModuleProps {
     title: string;
     type: IInstrumentationType;
-    reading?: number;
+    reading: number;
     hide: () => void;
 }
 
@@ -87,7 +87,7 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
                     color: "#005EB8",
                     threshold: 750,
                     max: 800,
-                    unit: "PSI"
+                    unit: "PA"
                 });
                 break;
             case IInstrumentationType.MASS:
@@ -267,7 +267,7 @@ export const InstrumentationModule: React.FC<IInstrumentationModuleProps> = (pro
                             }}
                         >
                             <Stack justifyContent={'space-between'} direction={'row'} marginX={1}>
-                                <Typography margin={0} sx={{ fontWeight: "bold" }}>{reading ?? '—'}</Typography>
+                                <Typography margin={0} sx={{ fontWeight: "bold" }}>{Math.round(reading) ?? '—'}</Typography>
                                 <Typography margin={0} sx={{ fontWeight: "bold" }}>{InstrumentationType.unit}</Typography>
                             </Stack>
                         </Box>

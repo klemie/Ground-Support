@@ -45,10 +45,11 @@ export const MonitoringContext = createContext<IMonitoringSocketContext>({
     controlsPacketIn: {}
 });
 
-const URI = 'ws://localhost';
+// `192.168.0.1` when on cart and `localhost` for local develop
+const URI = 'ws://192.168.0.1';
 
 const SERIAL_SOCKET_URL = `${URI}:8080`;
-const INSTRUMENTATION_SOCKET_URL = `${URI}:8888`;;
+const INSTRUMENTATION_SOCKET_URL = `${URI}:8888`;
 
 
 export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
@@ -68,7 +69,7 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
     
     // Serail socket 
     const serialWebsocket = useWebSocket(serailSocketUrl, {
-        shouldReconnect: (closeEvent) => connect,
+        // shouldReconnect: (closeEvent) => connect,
         onClose: () =>{
             console.log('Disconnected from Serial WSS');
             setValveCartLogs([]);
@@ -86,7 +87,7 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
     });
 
     // Instrumentation socket 
-     const instrumentationWebsocket = useWebSocket(instrumentationSocketUrl, {
+    const instrumentationWebsocket = useWebSocket(instrumentationSocketUrl, {
         shouldReconnect: (closeEvent) => connect,
         onClose: () =>{
             console.log('Disconnected from Instrumentation WSS');
@@ -123,9 +124,6 @@ export const MonitoringGateway = ({ children }: PropsWithChildren<any>) => {
     useEffect(() => {
         if (serialWebsocket.lastMessage) {//|| instrumentationWebsocket.lastMessage) {
             const identifier: any = serialWebsocket.lastJsonMessage['identifier']
-            // const identifier: any = serailWebsocket.lastMessage 
-            //     ? serailWebsocket.lastJsonMessage['identifier'] 
-            //     : instrumentationWebsocket.lastJsonMessage['idenifier'];
 
             console.log(`Identifier: ${identifier}`);
             console.log(serialWebsocket.lastJsonMessage);

@@ -28,24 +28,18 @@ const InstrumentationPanel: React.FC<InstrumentationPanelProps> = (props: Instru
             type: IInstrumentationType.TEMPERATURE,
             display: true
         },
-        // {
-        //     label: "Injector",
-        //     key: "T_INJECTOR",
-        //     type: IInstrumentationType.TEMPERATURE,
-        //     display: true
-        // },
         {
-            label: "Comb Chamber",
-            key: "T_COMBUSTION_CHAMBER",
+            label: "Injector",
+            key: "T_INJECTOR",
             type: IInstrumentationType.TEMPERATURE,
             display: true
         },
-        // {
-        //     label: "Pre Combu",
-        //     key: "T_POST_COMBUSTION",
-        //     type: IInstrumentationType.TEMPERATURE,
-        //     display: true
-        // },
+        {
+            label: "Comb Chamber",
+            key: "T_COMB_CHMBR",
+            type: IInstrumentationType.TEMPERATURE,
+            display: true
+        },
         {
             label: "N2O Flow",
             key: "P_N2O_FLOW",
@@ -64,36 +58,30 @@ const InstrumentationPanel: React.FC<InstrumentationPanelProps> = (props: Instru
             type: IInstrumentationType.PRESSURE,
             display: true
         },
-        // {
-        //     label: "Injector",
-        //     key: "P_INJECTOR",
-        //     type: IInstrumentationType.PRESSURE,
-        //     display: true
-        // },
-        // {
-        //     label: "Comb Chamber",
-        //     key: "P_COMBUSTION_CHAMBER",
-        //     type: IInstrumentationType.PRESSURE,
-        //     display: true
-        // },
+        {
+            label: "Injector",
+            key: "P_INJECTOR",
+            type: IInstrumentationType.PRESSURE,
+            display: true
+        },
+        {
+            label: "Comb Chamber",
+            key: "P_COMB_CHMBR",
+            type: IInstrumentationType.PRESSURE,
+            display: true
+        },
         {
             label: "Run Tank",
             key: "L_RUN_TANK",
-            type: IInstrumentationType.LOAD,
+            type: IInstrumentationType.MASS,
             display: true
         },
-        // {
-        //     label: "Trust",
-        //     key: "L_TRUST",
-        //     type: IInstrumentationType.LOAD,
-        //     display: true
-        // },
-        // {
-        //     label: "Shunt Current",
-        //     key: "SHUNT",
-        //     type: IInstrumentationType.MASS,
-        //     display: true
-        // }
+        {
+            label: "Thrust",
+            key: "L_THRUST",
+            type: IInstrumentationType.LOAD,
+            display: true
+        }
     ]
     return (
         <Stack spacing={2} width={'100%'}>
