@@ -119,7 +119,7 @@ const MissionConfig: React.FC<MissionConfigProps> = (props: MissionConfigProps) 
                 Mission Configuration
             </DialogTitle>
             <DialogContent>
-                <Stack direction="column" spacing={3} alignItems="left">
+                <Stack direction="column" spacing={3} alignItems="left" paddingY={1}>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <TextField
                             InputLabelProps={{

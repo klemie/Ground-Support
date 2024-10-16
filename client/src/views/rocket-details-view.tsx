@@ -63,11 +63,7 @@ export default function RocketDetailsView() {
 		'rgba(69, 136, 201, 1)'
 	];
 
-	const breadCrumbs: Breadcrumb[] = [
-        { name: 'Ground Support', viewKey: ViewKeys.PLATFORM_SELECTION_KEY, active: false },
-		{ name: 'Rocket Selection', viewKey: ViewKeys.ROCKET_SELECT_KEY, active: false },
-		{ name: 'Rocket Details', viewKey: ViewKeys.ROCKET_DETAILS_KEY, active: true }
-	];
+	
 
     //value is for tab things
     const [value, setValue] = useState<number>(0);
@@ -124,6 +120,12 @@ export default function RocketDetailsView() {
 		getRocket();
 	}, []);
 
+    const breadCrumbs: Breadcrumb[] = [
+        { name: 'Ground Support', viewKey: ViewKeys.PLATFORM_SELECTION_KEY, active: false },
+		{ name: 'Rocket Selection', viewKey: ViewKeys.ROCKET_SELECT_KEY, active: false },
+		{ name: rocketData?.Name, viewKey: ViewKeys.ROCKET_DETAILS_KEY, active: true }
+	];
+
 	return (
 		<Box sx={{ width: '100vw', height: '100vh' }}>
 			<Stack
@@ -138,27 +140,6 @@ export default function RocketDetailsView() {
 					<Header icon={'ROCKET_MONITORING'} breadCrumbs={breadCrumbs} />
 				</Grid>
                 {/* Rocket Title */}
-                <Grid item>
-					<Paper elevation={2} sx={{ padding: 2 }}>
-                        <Stack direction="row" alignItems={'center'} justifyContent={'space-between'}>
-                            <Stack direction="row" alignItems={'center'} spacing={2}>
-                                <RocketLaunchIcon color={'primary'} /> 
-                                <Typography align='left' variant='h5'>
-                                    {rocketData?.Name || 'Rocket Not found'}
-                                </Typography>
-                            </Stack>
-                            <Button 
-                                variant="contained" 
-                                size={'large'} 
-                                startIcon={<LaunchIcon/>} 
-                                onClick={() => console.log('Start Mission')} 
-                                disabled={!isMissionActive}
-                            >
-                                Continue Mission
-                            </Button>
-                        </Stack>
-                    </Paper>
-				</Grid>
                 <Grid item overflow={'scroll'}>
                     <Box sx={{ padding: 0.5 }}>
                         <Stack direction="row" spacing={3} justifyContent="flex-start">
